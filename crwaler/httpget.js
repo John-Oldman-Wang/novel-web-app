@@ -16,7 +16,22 @@ module.exports=function(url,cb){
         throw e
     }
 }
-
+function req(url,callbake){
+    request(url,function(err,res,body){
+        var content_type=res.headers['content-type']
+        var charset=content_type.replace(/^.*charset=(.*)$/,'$1')
+        callbake&&callbake(err,res,res.buffer)
+        //console.log(iconv.decode(res.buffer,'gbk'))
+    }).on('response',function(res){
+        var buf=new Buffer('')
+        res.on('data',function(chunk){
+            buf=Buffer.concat([buf,chunk])
+        })
+        res.on('end',function(){
+            res.buffer=buf
+        })
+    })
+}
 /*
 module.exports=function(url,cb){
     request('http://www.biquge5200.com/',function(err,res,body){

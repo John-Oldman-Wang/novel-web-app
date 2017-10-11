@@ -16,27 +16,23 @@ var urls=['http://www.biqudu.com/']
 //     //console.log(`body:${body}`)
 //     //get_url(body)
 // })
+function req(url,callbake){
+    request(url,function(err,res,body){
+        var content_type=res.headers['content-type']
+        var charset=content_type.replace(/^.*charset=(.*)$/,'$1')
+        callbake&&callbake(err,res,res.buffer)
+        //console.log(iconv.decode(res.buffer,'gbk'))
+    }).on('response',function(res){
+        var buf=new Buffer('')
+        res.on('data',function(chunk){
+            buf=Buffer.concat([buf,chunk])
+        })
+        res.on('end',function(){
+            res.buffer=buf
+        })
+    })
+}
 
-var buf1=new Buffer('')
-var buf2=new Buffer('')
-var i=0
-var j=0
-var r
-request('http://www.biquge5200.com/',function(err,res,body){
-    //console.log(res)
-    var content_type=res.headers['content-type']
-    var charset=content_type.replace(/^.*charset=(.*)$/,'$1')
-    console.log(charset)
-    //console.log(iconv.decode(res.buffer,'gbk'))
-}).on('response',function(res){
-    var buf=new Buffer('')
-    res.on('data',function(chunk){
-        buf=Buffer.concat([buf,chunk])
-    })
-    res.on('end',function(){
-        res.buffer=buf
-    })
-})
 // .on('data',function(chunk){
 //     buf1=Buffer.concat([buf1,chunk])
 // }).on('end',function(){
