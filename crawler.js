@@ -16,7 +16,26 @@ for(var i=1;i<111111;i++){
     }
 }
 var json=[]
-req(novel_urls.shift(),function cb(err,res,buffer){
+
+
+req(novel_urls.shift(),function(err,res,buffer){
+    if(!err&&res.statusCode=='200'){
+        json.push(res.request.uri.href)
+        if(json.length==10){
+            console.log(json)
+        }
+    }else if(err){
+        console.log(res.request.ui.href,':',err)
+    }else{
+        console.log(res.request.ui.href,':',res.statusCode)
+    }
+    var charset=getCharsetFromResHeaders(res.headers)
+    console.log('charset',charset)
+    var body=iconv.decode(buffer,charset)
+    var mes=filterNovelMessage(body,res.request.uri.href)
+    console.log(mes)
+})
+/*req(novel_urls.shift(),function cb(err,res,buffer){
     if(!err&&res.statusCode=='200'){
         json.push(res.request.uri.href)
         if(json.length==10){
@@ -31,7 +50,7 @@ req(novel_urls.shift(),function cb(err,res,buffer){
         return
     }
     req(novel_urls.shift(),cb)
-})
+})*/
 
 function req(url,callbake){
     console.log('url:',url)
@@ -72,4 +91,21 @@ function filterForUrl(body,href){
     var url_arr=[...url_set]
     return url_arr
 }
-
+function filterNovelMessage(body,href){
+    if(!body){
+        console.log('no body')
+        return {}
+    }
+    if(typeof body!='string'){
+        console.log('body must be String!')
+        return {}
+    }
+    var obj={}
+    var $=cheerio.load(body)
+    obj.title=$('.box_con').eq(0).find('h1').eq(0).text()
+    obj.author=$('.box_con').eq(0).find('h1').eq(0).next().text().replace(/\s/g,'').replace('作者','').replace(/[:：]/g,'')
+    obj.introduction=$('#intro').text().replace(/[\n\t\s]/g,'')
+    obj.lastUpdateTime=$('.box_con').eq(0).find('h1').eq(0).next().next().next().text().replace(/\s/g,'').replace('最后更新','').replace(/[:：]/g,'')
+    obj.imgurl=url.resolve(href,$('#fmimg').find('img').attr('src'))
+    return obj
+}
