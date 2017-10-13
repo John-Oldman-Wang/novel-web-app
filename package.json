@@ -19,6 +19,7 @@
     "request": "^2.83.0"
   },
   "dependencies": {
-    "express": "^4.16.1"
+    "express": "^4.16.1",
+    "mongoose": "^4.11.13"
   }
 }
