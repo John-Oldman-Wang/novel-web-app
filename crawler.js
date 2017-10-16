@@ -5,15 +5,68 @@ var path = require('path')
 const url=require('url')
 const iconv=require('iconv-lite')
 
+const mongoose=require('mongoose')
+mongoose.Promise=Promise
+mongoose.close=function(){
+    this.connection.close()
+}
+mongoose.on=function(){
+    this.connection.on.apply(this.connection,arguments)
+}
+mongoose.on('open',function(err){
+    if(err) console.log('err',err)
+    console.log(`connect ${mongoose.connection.db.s.databaseName} sucess`)
+})
+mongoose.on('close',function(err){
+    if(err) console.log('err',err)
+    console.log(`mongoose close`)
+})
+var dburl="mongodb://localhost:27017/novelApp"
+mongoose.connect(dburl,{
+    useMongoClient: true,
+})
+
+
+var Novel=require('./models/m-novel.js')
+// Novel.fetch(function(err,novels){
+//     novels.forEach(function(item) {
+//         item.title=item.titile
+//         console.log(item)
+//     });
+// })
+Novel.findById('59e45431e1a1de2224646acb',function(err,novel){
+    if(err) return console.log(err)
+    novel.titile='a'
+    novel.title='title'
+    novel.anthor='anthor'
+    novel.b='b'
+    console.log(novel)
+    //console.log(novel.constructor)
+})
+
+// var novel1={
+//     titile:'test4',
+//     anthor: 'test4',
+//     introduction:'test4',
+//     lastUpdateTime: new Date('2016-09-04'),
+//     year:2016,
+//     image:'http://test4'
+// }
+// var _novel=new Novel(novel1)
+// console.log('_novel',_novel)
+// _novel.save(function(err,novel){
+//     if(err) return console.log(err)
+//     console.log(novel)
+//     mongoose.close()
+// })
+/*
+
 var hostname='http://www.biqudu.com'
 var urls=['http://www.biqudu.com/']
 var novel_urls=[]
 for(var i=1;i<111111;i++){
     var path='/1_'+i
     novel_urls.push(url.resolve(hostname,path))
-    if(i==10){
-        console.log(novel_urls)
-    }
 }
 var json=[]
 
