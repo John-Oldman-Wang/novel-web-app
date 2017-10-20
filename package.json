@@ -16,11 +16,13 @@
   "license": "ISC",
   "devDependencies": {
     "cheerio": "^1.0.0-rc.2",
+    "lodash.unescape": "^4.0.1",
     "request": "^2.83.0"
   },
   "dependencies": {
     "ejs": "^2.5.7",
     "express": "^4.16.1",
-    "mongoose": "^4.11.13"
+    "mongoose": "^4.11.13",
+    "underscore": "^1.8.3"
   }
 }

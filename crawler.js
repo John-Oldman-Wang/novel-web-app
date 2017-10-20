@@ -4,8 +4,9 @@ const http = require('http')
 var path = require('path')
 const url=require('url')
 const iconv=require('iconv-lite')
-
 const mongoose=require('mongoose')
+var _=require('underscore')
+
 mongoose.Promise=Promise
 mongoose.close=function(){
     this.connection.close()
@@ -22,91 +23,60 @@ mongoose.on('close',function(err){
     console.log(`mongoose close`)
 })
 var dburl="mongodb://localhost:27017/novelApp"
-mongoose.connect(dburl,{
-    useMongoClient: true,
+mongoose.connect=mongoose.connect.bind(mongoose,dburl,{
+    useMongoClient: true
 })
-
-
+mongoose.connect()
 var Novel=require('./models/m-novel.js')
-// Novel.fetch(function(err,novels){
-//     novels.forEach(function(item) {
-//         item.title=item.titile
-//         console.log(item)
-//     });
-// })
-Novel.findById('59e45431e1a1de2224646acb',function(err,novel){
-    if(err) return console.log(err)
-    novel.titile='a'
-    novel.title='title'
-    novel.anthor='anthor'
-    novel.b='b'
-    console.log(novel)
-    //console.log(novel.constructor)
-})
 
-// var novel1={
-//     titile:'test4',
-//     anthor: 'test4',
-//     introduction:'test4',
-//     lastUpdateTime: new Date('2016-09-04'),
-//     year:2016,
-//     image:'http://test4'
-// }
-// var _novel=new Novel(novel1)
-// console.log('_novel',_novel)
-// _novel.save(function(err,novel){
-//     if(err) return console.log(err)
-//     console.log(novel)
-//     mongoose.close()
-// })
-/*
+var origin='http://www.biqudu.com'
 
-var hostname='http://www.biqudu.com'
-var urls=['http://www.biqudu.com/']
-var novel_urls=[]
-for(var i=1;i<111111;i++){
-    var path='/1_'+i
-    novel_urls.push(url.resolve(hostname,path))
+var novel_urls=[];
+for(var i=1;i<70651;i++){
+    novel_urls.push(origin+'/1_'+i)
 }
-var json=[]
 
-
-req(novel_urls.shift(),function(err,res,buffer){
-    if(!err&&res.statusCode=='200'){
-        json.push(res.request.uri.href)
-        if(json.length==10){
-            console.log(json)
-        }
-    }else if(err){
+req(novel_urls.shift(),function circle_cb(err,res,buffer){
+    if(err){
         console.log(res.request.ui.href,':',err)
-    }else{
+        req(novel_urls.shift(),circle_cb)
+    }else if(res.statusCode!='200'){
         console.log(res.request.ui.href,':',res.statusCode)
+        req(novel_urls.shift(),circle_cb)
+    }else{
+        var charset=getCharsetFromResHeaders(res.headers)
+        var href=res.request.uri.href
+        console.log(`get ${href} success`)
+        console.log(`${href} charset`,charset)
+        var body=iconv.decode(buffer,charset)
+        var mes=filterNovelMessage(body,res.request.uri.href)
+        Novel.find({title:mes.title}).exec(function(err,novels){
+            var _novel
+            if(err){
+                return console.log('查找数据库标题相同的小说出错,需要查看数据库服务是否良好')
+            }else if(!novels.length){
+                _novel=new Novel(mes)
+            }else{
+                _novel=_.extend(novels[0],mes)
+            }
+            _novel.save(function(err,novel){
+                if(err){
+                    console.log('novel save err',err)
+                }
+                if(novel_urls.length==0){
+                    console.log('爬取完成!')
+                    mongoose.close()
+                    return
+                }
+                setTimeout(function(){
+                    req(novel_urls.shift(),circle_cb)
+                },1000)
+            })
+        })
     }
-    var charset=getCharsetFromResHeaders(res.headers)
-    console.log('charset',charset)
-    var body=iconv.decode(buffer,charset)
-    var mes=filterNovelMessage(body,res.request.uri.href)
-    console.log(mes)
 })
-/*req(novel_urls.shift(),function cb(err,res,buffer){
-    if(!err&&res.statusCode=='200'){
-        json.push(res.request.uri.href)
-        if(json.length==10){
-            console.log(json)
-        }
-    }else if(err){
-        console.log(res.request.ui.href,':',err)
-    }else{
-        console.log(res.request.ui.href,':',res.statusCode)
-    }
-    if(novel_urls.length==0){
-        return
-    }
-    req(novel_urls.shift(),cb)
-})*/
 
 function req(url,callbake){
-    console.log('url:',url)
     request(url,function(err,res,body){
         if('headers' in res){
             var content_type=res.headers['content-type']
@@ -114,8 +84,6 @@ function req(url,callbake){
         }else{
             console.log('headers not in res')
         }
-        
-        
         callbake&&callbake(err,res,res.buffer)
     }).on('response',function(res){
         var buf=new Buffer('')
@@ -126,23 +94,6 @@ function req(url,callbake){
             res.buffer=buf
         })
     })
-}
-function getCharsetFromResHeaders(headers){
-    var content_type=headers['content-type']
-    if(content_type.indexOf('charset')==-1)
-        return 'utf8'
-    var charset=content_type.replace(/^.*charset=(.*)$/,'$1')
-    return charset
-}
-function filterForUrl(body,href){
-    var $=cheerio.load(body)
-    var url_set=new Set()
-    $('a').each(function(){
-        url_set.add(url.resolve(href,$(this).attr('href')))
-        console.log(url.resolve(href,$(this).attr('href')),'<-',$(this).attr('href'))
-    })
-    var url_arr=[...url_set]
-    return url_arr
 }
 function filterNovelMessage(body,href){
     if(!body){
@@ -155,10 +106,50 @@ function filterNovelMessage(body,href){
     }
     var obj={}
     var $=cheerio.load(body)
+    if(!$('#list').length){
+        console.log('this is not page of novel',$('#list').length)
+        return {}
+    }
     obj.title=$('.box_con').eq(0).find('h1').eq(0).text()
     obj.author=$('.box_con').eq(0).find('h1').eq(0).next().text().replace(/\s/g,'').replace('作者','').replace(/[:：]/g,'')
+    var category_ele=$('#bdshare').parent()
+
+    category_ele.children().remove()
+    obj.category=category_ele.text().replace(/\s/g,'').replace(/^>([^>]+)>[^>]+$/,'$1')
     obj.introduction=$('#intro').text().replace(/[\n\t\s]/g,'')
-    obj.lastUpdateTime=$('.box_con').eq(0).find('h1').eq(0).next().next().next().text().replace(/\s/g,'').replace('最后更新','').replace(/[:：]/g,'')
-    obj.imgurl=url.resolve(href,$('#fmimg').find('img').attr('src'))
+    obj.lastUpdateTime=new Date($('.box_con').eq(0).find('h1').eq(0).next().next().next().text().trim().replace('最后更新:','').replace('最后更新：',''))
+    obj.year=obj.lastUpdateTime.getFullYear()
+    obj.image=url.resolve(href,$('#fmimg').find('img').attr('src'))
+    //return obj
+    obj.chapters=[]
+    $('#list').find('a').each(function(){
+        var ele=$(this)
+        var chapter={}
+        chapter.title=ele.text().trim()
+        chapter.serial=ele.text().trim().split(' ')[0]
+        chapter.href=url.resolve(origin,ele.attr('href'))
+        obj.chapters.push(chapter)
+    })
     return obj
+}
+
+
+
+
+function filterForUrl(body,href){
+    var $=cheerio.load(body)
+    var url_set=new Set()
+    $('a').each(function(){
+        url_set.add(url.resolve(href,$(this).attr('href')))
+        console.log(url.resolve(href,$(this).attr('href')),'<-',$(this).attr('href'))
+    })
+    var url_arr=[...url_set]
+    return url_arr
+}
+function getCharsetFromResHeaders(headers){
+    var content_type=headers['content-type']
+    if(content_type.indexOf('charset')==-1)
+        return 'utf8'
+    var charset=content_type.replace(/^.*charset=(.*)$/,'$1')
+    return charset
 }

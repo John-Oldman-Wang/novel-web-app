@@ -1,21 +1,11 @@
 var mongoose = require('mongoose');
 mongoose.Promise=Promise
 var Schema = mongoose.Schema;
-
-var novelSchema=new Schema({
+var ObjectId=Schema.Types.ObjectId
+var chapterSchema=new Schema({
     title:String,
-	author: String,
-	category:String,
-    introduction:String,
-    lastUpdateTime:Date,
-    year:Number,
-    image:String,
-    chapters:[{
-        title:String,
-        serial:String,
-		href:String,
-		id: Schema.Types.ObjectId
-    }],
+    paragraphs:[String],
+    novel:ObjectId,
     meta:{
 		createAt:{
 			type:Date,

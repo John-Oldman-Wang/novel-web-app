@@ -7,9 +7,26 @@
     <title>index</title>
 </head>
 <body>
+    <div>
+        <h1>总计:<%= novels.length %></h1>    
+    <div>
     <ul>
         <% novels.forEach(function(novel){%>
-            <li><%= novel.title %></li>
+            <li>
+                <h1><%= novel.title %></h1>
+                <h2><%= novel.author %></h2>
+                <h3><%= novel.introduction %></h2>
+                <h4><%= novel.lastUpdateTime %></h2>
+                <img src="<%= novel.image %>" alt="<%= novel.title %>">
+                <p><%= novel.chapters.length %></p>
+                <!-- <dl>
+                    <% novel.chapters.forEach(function(chapter){ %>
+                        <dd>
+                            <a href="<%= chapter.href %>"><%= chapter.title %></a>
+                        </dd>
+                    <% }) %>
+                </dl> -->
+            </li>
         <% }) %>
     </ul>
 </body>
