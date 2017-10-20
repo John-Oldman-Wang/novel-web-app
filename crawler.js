@@ -44,7 +44,9 @@ req(novel_urls.shift(),function circle_cb(err,res,buffer){
             mongoose.close()
             return
         }
-        req(novel_urls.shift(),circle_cb)
+        setTimeout(function(){
+            req(novel_urls.shift(),circle_cb)
+        },500)
     }else if(res.statusCode!='200'){
         console.log(res.request.uri.href,':',res.statusCode)
         if(novel_urls.length==0){
@@ -52,7 +54,9 @@ req(novel_urls.shift(),function circle_cb(err,res,buffer){
             mongoose.close()
             return
         }
-        req(novel_urls.shift(),circle_cb)
+        setTimeout(function(){
+            req(novel_urls.shift(),circle_cb)
+        },500)
     }else{
         var charset=getCharsetFromResHeaders(res.headers)
         var href=res.request.uri.href
@@ -66,7 +70,9 @@ req(novel_urls.shift(),function circle_cb(err,res,buffer){
                 mongoose.close()
                 return
             }
-            req(novel_urls.shift(),circle_cb)
+            setTimeout(function(){
+                req(novel_urls.shift(),circle_cb)
+            },500)
             return
         }
         Novel.find({title:mes.title}).exec(function(err,novels){
@@ -89,7 +95,7 @@ req(novel_urls.shift(),function circle_cb(err,res,buffer){
                 }
                 setTimeout(function(){
                     req(novel_urls.shift(),circle_cb)
-                },1000)
+                },500)
             })
         })
     }
@@ -97,13 +103,13 @@ req(novel_urls.shift(),function circle_cb(err,res,buffer){
 
 function req(url,callbake){
     request(url,function(err,res,body){
-        if('headers' in res){
+        if(!!res&&'headers' in res){
             var content_type=res.headers['content-type']
             var charset=content_type.replace(/^.*charset=(.*)$/,'$1')
         }else{
             console.log('headers not in res')
         }
-        callbake&&callbake(err,res,res.buffer)
+        callbake&&callbake(err,res,res&&'buffer' in res?res.buffer:res.body)
     }).on('response',function(res){
         var buf=new Buffer('')
         res.on('data',function(chunk){
