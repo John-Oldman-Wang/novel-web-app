@@ -60,6 +60,15 @@ req(novel_urls.shift(),function circle_cb(err,res,buffer){
         console.log(`${href} charset`,charset)
         var body=iconv.decode(buffer,charset)
         var mes=filterNovelMessage(body,res.request.uri.href)
+        if(!mes.title){
+            if(novel_urls.length==0){
+                console.log('爬取完成!')
+                mongoose.close()
+                return
+            }
+            req(novel_urls.shift(),circle_cb)
+            return
+        }
         Novel.find({title:mes.title}).exec(function(err,novels){
             var _novel
             if(err){
