@@ -38,10 +38,20 @@ for(var i=1;i<70651;i++){
 
 req(novel_urls.shift(),function circle_cb(err,res,buffer){
     if(err){
-        console.log(res.request.ui.href,':',err)
+        console.log(res.request.uri.href,':',err)
+        if(novel_urls.length==0){
+            console.log('爬取完成!')
+            mongoose.close()
+            return
+        }
         req(novel_urls.shift(),circle_cb)
     }else if(res.statusCode!='200'){
-        console.log(res.request.ui.href,':',res.statusCode)
+        console.log(res.request.uri.href,':',res.statusCode)
+        if(novel_urls.length==0){
+            console.log('爬取完成!')
+            mongoose.close()
+            return
+        }
         req(novel_urls.shift(),circle_cb)
     }else{
         var charset=getCharsetFromResHeaders(res.headers)
