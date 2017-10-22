@@ -6,9 +6,26 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>index</title>
     <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+        ul{
+            width:900px;
+            padding: 0px;
+            margin: 0 auto;
+        }
         li{
             list-style: none;
             border: 1px solid #999;
+            width: 300px;
+            box-sizing: border-box;
+            display: inline-block;
+            float: left;
+            overflow: hidden;
+        }
+        li > img{
+            float: left;
         }
     </style>
 </head>
@@ -19,12 +36,12 @@
     <ul>
         <% novels.forEach(function(novel){%>
             <li>
-                <h1><%= novel.title %></h1>
-                <h2><%= novel.author %></h2>
-                <h3><%= novel.introduction %></h2>
-                <h4><%= novel.lastUpdateTime %></h2>
                 <img src="<%= novel.image %>" alt="<%= novel.title %>">
-                <p><%= novel.chapters.length %></p>
+                <h2><%= novel.title %></h1>
+                <h3>作者:<%= novel.author %></h2>
+                <h4>简介:<%= novel.introduction %></h2>
+                <h5>最后更新时间:<%= novel.lastUpdateTime %></h2>
+                <p>章节数:<%= novel.chapters.length %></p>
                 <!-- <dl>
                     <% novel.chapters.forEach(function(chapter){ %>
                         <dd>
