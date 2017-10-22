@@ -32,13 +32,18 @@ var Novel=require('./models/m-novel.js')
 var origin='http://www.biqudu.com'
 
 var novel_urls=[];
-for(var i=1;i<70651;i++){
+var interval=0
+for(var i=37373;i<70651;i++){
     novel_urls.push(origin+'/1_'+i)
 }
 
 req(novel_urls.shift(),function circle_cb(err,res,buffer){
     if(err){
-        console.log(res.request.uri.href,':',err)
+        console.log('request wrong',err.code)
+        if(err.code=='ESOCKETTIMEDOUT'){
+            console.log(`get ${this.uri.href} timeout`)
+            novel_urls.unshift(this.uri.href)
+        }
         if(novel_urls.length==0){
             console.log('爬取完成!')
             mongoose.close()
@@ -46,7 +51,8 @@ req(novel_urls.shift(),function circle_cb(err,res,buffer){
         }
         setTimeout(function(){
             req(novel_urls.shift(),circle_cb)
-        },500)
+        },interval)
+        return
     }else if(res.statusCode!='200'){
         console.log(res.request.uri.href,':',res.statusCode)
         if(novel_urls.length==0){
@@ -56,15 +62,15 @@ req(novel_urls.shift(),function circle_cb(err,res,buffer){
         }
         setTimeout(function(){
             req(novel_urls.shift(),circle_cb)
-        },500)
+        },interval)
     }else{
         var charset=getCharsetFromResHeaders(res.headers)
         var href=res.request.uri.href
         console.log(`get ${href} success`)
-        console.log(`${href} charset`,charset)
-        var body=iconv.decode(buffer,charset)
+        var body=Buffer.isBuffer(buffer)?iconv.decode(buffer,charset):buffer
         var mes=filterNovelMessage(body,res.request.uri.href)
         if(!mes.title){
+            console.log('这个地址没有小说信息')
             if(novel_urls.length==0){
                 console.log('爬取完成!')
                 mongoose.close()
@@ -72,7 +78,7 @@ req(novel_urls.shift(),function circle_cb(err,res,buffer){
             }
             setTimeout(function(){
                 req(novel_urls.shift(),circle_cb)
-            },500)
+            },interval)
             return
         }
         Novel.find({title:mes.title}).exec(function(err,novels){
@@ -87,6 +93,8 @@ req(novel_urls.shift(),function circle_cb(err,res,buffer){
             _novel.save(function(err,novel){
                 if(err){
                     console.log('novel save err',err)
+                }else{
+                    console.log(`${novel.title} save ok`)
                 }
                 if(novel_urls.length==0){
                     console.log('爬取完成!')
@@ -95,21 +103,23 @@ req(novel_urls.shift(),function circle_cb(err,res,buffer){
                 }
                 setTimeout(function(){
                     req(novel_urls.shift(),circle_cb)
-                },500)
+                },interval)
             })
         })
     }
 })
 
 function req(url,callbake){
-    request(url,function(err,res,body){
+    console.log(`start get ${url}`)
+    request(url,{timeout:5000},function(err,res,body){
+        console.log('do cb')
         if(!!res&&'headers' in res){
             var content_type=res.headers['content-type']
             var charset=content_type.replace(/^.*charset=(.*)$/,'$1')
         }else{
             console.log('headers not in res')
         }
-        callbake&&callbake(err,res,res&&'buffer' in res?res.buffer:res.body)
+        callbake&&callbake.bind(this)(err,res,res&&'buffer' in res?res.buffer:body)
     }).on('response',function(res){
         var buf=new Buffer('')
         res.on('data',function(chunk){
@@ -141,7 +151,7 @@ function filterNovelMessage(body,href){
 
     category_ele.children().remove()
     obj.category=category_ele.text().replace(/\s/g,'').replace(/^>([^>]+)>[^>]+$/,'$1')
-    obj.introduction=$('#intro').text().replace(/[\n\t\s]/g,'')
+    obj.introduction=$('#intro').text().replace(/\s/g,'')
     obj.lastUpdateTime=new Date($('.box_con').eq(0).find('h1').eq(0).next().next().next().text().trim().replace('最后更新:','').replace('最后更新：',''))
     obj.year=obj.lastUpdateTime.getFullYear()
     obj.image=url.resolve(href,$('#fmimg').find('img').attr('src'))
