@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>index</title>
+    <title><%= title||'index'  %></title>
     <style>
         *{
             margin: 0px;
@@ -41,14 +41,7 @@
                 <h3>作者:<%= novel.author %></h2>
                 <h4>简介:<%= novel.introduction %></h2>
                 <h5>最后更新时间:<%= novel.lastUpdateTime %></h2>
-                <p>章节数:<%= novel.chapters.length %></p>
-                <!-- <dl>
-                    <% novel.chapters.forEach(function(chapter){ %>
-                        <dd>
-                            <a href="<%= chapter.href %>"><%= chapter.title %></a>
-                        </dd>
-                    <% }) %>
-                </dl> -->
+                <p>章节数:<%= novel.chapter_number %></p>
             </li>
         <% }) %>
     </ul>

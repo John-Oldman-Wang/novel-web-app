@@ -33,7 +33,7 @@ var origin='http://www.biqudu.com'
 
 var novel_urls=[];
 var interval=0
-for(var i=37373;i<70651;i++){
+for(var i=1;i<70651;i++){
     novel_urls.push(origin+'/1_'+i)
 }
 
@@ -71,6 +71,17 @@ req(novel_urls.shift(),function circle_cb(err,res,buffer){
         var mes=filterNovelMessage(body,res.request.uri.href)
         if(!mes.title){
             console.log('这个地址没有小说信息')
+            if(novel_urls.length==0){
+                console.log('爬取完成!')
+                mongoose.close()
+                return
+            }
+            setTimeout(function(){
+                req(novel_urls.shift(),circle_cb)
+            },interval)
+            return
+        }else if(mes.chapters.length==0){
+            console.log(`这个地址${href}是个没有章节的小说`)
             if(novel_urls.length==0){
                 console.log('爬取完成!')
                 mongoose.close()
