@@ -9,7 +9,8 @@ var novelSchema=new Schema({
     introduction:String,
     lastUpdateTime:Date,
     year:Number,
-    image:String,
+	image:String,
+	chapter_number:Number,
     chapters:[{
         title:String,
         serial:String,
@@ -35,7 +36,9 @@ novelSchema.pre('save',function(next){
 	else{
 		this.meta.updateAt=Date.now()
 	}
-
+	if('chapters' in this && this.chapters.length!=this.chapter_number){
+		this.chapter_number=this.chapters.length
+	}
 	next()
 })
 
