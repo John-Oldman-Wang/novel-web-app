@@ -1,3 +1,6 @@
+/*
+    专门爬取biquge.com所有小说信息页面，没有每一章节的内容
+*/
 const cheerio = require('cheerio')
 const request = require('request')
 const http = require('http')
@@ -40,7 +43,7 @@ for(var i=1;i<70651;i++){
 req(novel_urls.shift(),function circle_cb(err,res,buffer){
     if(err){
         console.log('request wrong',err.code)
-        if(err.code=='ESOCKETTIMEDOUT'){
+        if(err.code=='ESOCKETTIMEDOUT'||err.code=='ETIMEDOUT'){
             console.log(`get ${this.uri.href} timeout`)
             novel_urls.unshift(this.uri.href)
         }
