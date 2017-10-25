@@ -1,27 +1,32 @@
-const http=require('http')
-const iconv=require('iconv-lite')
-module.exports=function(url,cb){
-    try{
-        http.get(url,function(res){
-            var buf=new Buffer('')
-            res.on('data',function(chunk){
-                buf=Buffer.concat([buf,chunk])
-            })
-            res.on('end',()=>{
-                cb&&cb(buf)
-                buf=null
-            })
+var request=require('request')
+
+
+/*function req(url,callbake){
+    console.log(`start get ${url}`)
+    request(url,{timeout:5000},function(err,res,body){
+        console.log('do cb')
+        if(!!res&&'headers' in res){
+            var content_type=res.headers['content-type']
+            var charset=content_type.replace(/^.*charset=(.*)$/,'$1')
+        }else{
+            console.log('headers not in res')
+        }
+        callbake&&callbake.bind(this)(err,res,res&&'buffer' in res?res.buffer:body)
+    }).on('response',function(res){
+        var buf=new Buffer('')
+        res.on('data',function(chunk){
+            buf=Buffer.concat([buf,chunk])
         })
-    }catch(e){
-        throw e
-    }
-}
+        res.on('end',function(){
+            res.buffer=buf
+        })
+    })
+}*/
 function req(url,callbake){
-    request(url,function(err,res,body){
-        var content_type=res.headers['content-type']
-        var charset=content_type.replace(/^.*charset=(.*)$/,'$1')
-        callbake&&callbake(err,res,res.buffer)
-        //console.log(iconv.decode(res.buffer,'gbk'))
+    console.log(`start get ${url}`)
+    request(url,{timeout:5000},function(err,res,body){
+        console.log('do cb')
+        callbake&&callbake.bind(this)(err,res,!!res&&'buffer' in res?res.buffer:body)
     }).on('response',function(res){
         var buf=new Buffer('')
         res.on('data',function(chunk){
@@ -32,19 +37,5 @@ function req(url,callbake){
         })
     })
 }
-/*
-module.exports=function(url,cb){
-    request('http://www.biquge5200.com/',function(err,res,body){
-        //console.log(Buffer.isBuffer(res.buffer))
-        cb&&cb(err,res,res.buffer)
-    }).on('response',function(res){
-        var buf=new Buffer('')
-        res.on('data',function(chunk){
-            buf=Buffer.concat([buf,chunk])
-        })
-        res.on('end',function(){
-            res.buffer=buf
-        })
-    })
-}
-*/
+
+module.exports=req
