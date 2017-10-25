@@ -18,7 +18,7 @@ var chapterSchema=new Schema({
 	}
 })
 
-novelSchema.pre('save',function(next){
+chapterSchema.pre('save',function(next){
 	if(this.isNew){
 		this.meta.createAt=this.meta.updateAt=Date.now()
 	}
@@ -29,7 +29,7 @@ novelSchema.pre('save',function(next){
 	next()
 })
 
-novelSchema.statics={
+chapterSchema.statics={
 	fetch:function(cb){
 		return this
 		.find({})
@@ -42,5 +42,5 @@ novelSchema.statics={
 		.exec(cb)
 	}
 }
-var novel=mongoose.model('Novel',novelSchema)
-module.exports=novel
+var chapter=mongoose.model('Chpater',chapterSchema)
+module.exports=chapter
