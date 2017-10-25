@@ -29,12 +29,13 @@ app.get('/',function(req,res,next){
 app.get('/novel',function(req,res,next){
     //console.log(next.toString())
     var n=parseInt(req.query.page)
-    Novel.find({},{title:1,author:1,introduction:1,lastUpdateTime:1,chapter_number:1}).skip(n*100).limit(100).exec(function(err,novels){
+    Novel.find({},{title:1,author:1,introduction:1,lastUpdateTime:1,chapter_number:1,image:1}).skip(n*100).limit(100).exec(function(err,novels){
         if(err){
             next&&next(err)
             return
         }
         res.render('index',{
+            title:'novelpage',
             novels:novels
         })
     })
