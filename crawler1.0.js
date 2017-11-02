@@ -38,89 +38,107 @@ mongoose.connect=mongoose.connect.bind(mongoose,dburl,{
 mongoose.connect()
 
 var origin='https://www.qidian.com'
-var path='/free/all'
-var query='?orderId=&vip=hidden&style=1&pageSize=20&siteid=1&pubflag=0&hiddenField=1&page='
+var path='/free/all?page=1&vip=hidden&style=1&pageSize=20&siteid=1&pubflag=0&hiddenField=1'
+var query='?page=1&vip=hidden&style=1&pageSize=20&siteid=1&pubflag=0&hiddenField=1'
 
 var novelList_urls=[];
 var interval=0
-for(var i=1;i<2;i++){
-var novelList_urls=[];
+for(var i=1;i<25000;i++){
     novelList_urls.push(origin+path+query+i)
 }
-
-req(novelList_urls.shift(),function cicle_cb(err,res,buffer){
-    if(err){
-        if(err.code=='ESOCKETTIMEDOUT'||err.code=='ETIMEDOUT'){
-            console.log(`get ${this.uri.href} ${err.code}`)
-            novelList_urls.unshift(this.uri.href)
-        }else{
-            console.log(`get ${this.uri.href} ${err.code}`)
+var novelMessage_urls=[]
+// req(novelList_urls.shift(),function cicle_cb(err,res,buffer){
+//     if(err){
+//         if(err.code=='ESOCKETTIMEDOUT'||err.code=='ETIMEDOUT'){
+//             console.log(`get ${this.uri.href} ${err.code}`)
+//             novelList_urls.unshift(this.uri.href)
+//         }else{
+//             console.log(`get ${this.uri.href} ${err.code}`)
+//         }
+//     }else{
+//         var body=Buffer.isBuffer(buffer)?buffer.toString():res.body
+//         var href=res.request.uri.href
+//         var mes=filterNovelListPage(body,href)
+//         console.log(mes)
+//     }
+//     if(novelList_urls.length==0){
+//         console.log('爬取完成!')
+//         mongoose.cloes()
+//     }else{
+//         req(novelList_urls.shift(),cicle_cb)
+//     }
+// })
+function async(arr,fn,cb,enddo){
+    if(!Array.isArray(arr)||arr.length==0){
+        //console.log(Array.isArray(arr))
+        throw new Error('the first arguments must be array and lenth must over 0!')
+        return
+    }
+    if(typeof fn!='function'||typeof cb!='function'){
+        throw new Error(`the ${typeof fn!='function'?'second':'third'} arguments must be function!`)
+        return
+    }
+    function circle_function(){
+        cb.apply(this,arguments)
+        if(arr.length==0){
+            enddo&&enddo()
+            return
         }
-    }else{
-        var body=Buffer.isBuffer(buffer)?buffer.toString():res.body
-        var href=res.request.uri.href
-        var mes=filterNovelListPage(body,href)
-        console.log(mes)
+        fn(arr.shift(),circle_function)
     }
-    if(novelList_urls.length==0){
-        console.log('爬取完成!')
-        mongoose.cloes()
-    }else{
-        req(novelList_urls.shift(),cicle_cb)
+    fn(arr.shift(),circle_function)
+}
+
+//小说列表展示页，筛选出小说信息页的url
+function filterNovelListPage(err,res,body){
+    if(err){
+        console.log('request wrong',err.code)
+        if(err.code=='ESOCKETTIMEDOUT'||err.code=='ETIMEDOUT'){
+            console.log(`get ${this.uri.href} timeout`)
+            novel_urls.unshift(this.uri.href)
+        }
+        if(novel_urls.length==0){
+            console.log('爬取完成!')
+            mongoose.close()
+            return
+        }
+        setTimeout(function(){
+            req(novel_urls.shift(),circle_cb)
+        },interval)
+        return
     }
-})
+    //console.log(body.toString)
+    var href=''
 
-
-function filterNovelListPage(body,href){
-    if(!body||typeof body!='string'){
+    if(!body||typeof body!='string'&&!Buffer.isBuffer(body)){
         console.log('no body')
         return {}
     }
+    body=Buffer.isBuffer(body)?body.toString():body
+    href=res.request.uri.href
     var $=cheerio.load(body)
     if($('.all-img-list').find('h4').length<1){
         return {}
     }
-    var obj=[]
     $('.all-img-list').find('h4').each(function(i,elem){
         var item=url.resolve(href,$(this).find('a').attr('href'))
-        obj.push(item)
+        console.log(item)
+        novelMessage_urls.push(item)
     })
-    return obj
+
 }
+//小说信息页，筛选出小说基本信息，标题，等等
+function filterNovelMessagePage(err,res,body){
+    var href=''
 
-function get_novel(arr,cb){
-    var arr=arr
-    req(arr.shift(),function circle(err,res,buffer){
-        if(err){
-            if(err.code=='ESOCKETTIMEDOUT'||err.code=='ETIMEDOUT'){
-                arr.unshift(this.uri.href)
-            }
-            console.log(`get ${this.uri.href} ${err.code}`)
-        }else{
-            var body=buffer.toString()
-            var href=res.request.uri.href
-
-        }
-        if(arr.length==0){
-            cb&&cb()
-            return
-        }else{
-            req(arr.shift(),circle)
-        }
-    })
-}
-
-function filterNovelPage(body,href){
-    if(!body||typeof body!='string'){
+    if(!body||typeof body!='string'&&!Buffer.isBuffer(body)){
         console.log('no body')
         return {}
     }
+    body=Buffer.isBuffer(body)?body.toString():body
+    href=res.request.uri.href
     var $=cheerio.load(body)
-    var obj={}
-    obj.title=$('.book-information').find('h1').find('em').text()
-    obj.author=$('.book-information').find('h1').find('a').text()
-    obj.image=url.resolve(href,$('#bookImg').find('img').attr('href'))
-    obj.category=$('.tag').find('a.red').text()
-    obj.shortintroduction=$('.intro ').text()
-    obj.introduction=$('book-intro').find('p').text().trim().replace(/\s+/g,'\n')
+
 }
+
+async(novelList_urls,req,filterNovelListPage)
