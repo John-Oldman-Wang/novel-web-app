@@ -14,7 +14,7 @@ var Novel=require('./models/m-novel.js')
 var req=require('./crawler/httpget.js')
 
 //常量申明
-var dburl="mongodb://localhost:27017/novelApp"
+var dburl="mongodb://localhost:27017/novelAppNew"
 // 再封装mongoose
 mongoose.Promise=Promise
 mongoose.close=function(){
@@ -38,36 +38,15 @@ mongoose.connect=mongoose.connect.bind(mongoose,dburl,{
 mongoose.connect()
 
 var origin='https://www.qidian.com'
-var path='/free/all?page=1&vip=hidden&style=1&pageSize=20&siteid=1&pubflag=0&hiddenField=1'
-var query='?page=1&vip=hidden&style=1&pageSize=20&siteid=1&pubflag=0&hiddenField=1'
+var path='/free/all'
+var search ='?orderId=&vip=hidden&style=1&pageSize=20&siteid=1&pubflag=0&hiddenField=1&page='
 
 var novelList_urls=[];
 var interval=0
-for(var i=1;i<25000;i++){
-    novelList_urls.push(origin+path+query+i)
+for(var i=1;i<2;i++){
+    novelList_urls.push(origin + path + search + i)
 }
 var novelMessage_urls=[]
-// req(novelList_urls.shift(),function cicle_cb(err,res,buffer){
-//     if(err){
-//         if(err.code=='ESOCKETTIMEDOUT'||err.code=='ETIMEDOUT'){
-//             console.log(`get ${this.uri.href} ${err.code}`)
-//             novelList_urls.unshift(this.uri.href)
-//         }else{
-//             console.log(`get ${this.uri.href} ${err.code}`)
-//         }
-//     }else{
-//         var body=Buffer.isBuffer(buffer)?buffer.toString():res.body
-//         var href=res.request.uri.href
-//         var mes=filterNovelListPage(body,href)
-//         console.log(mes)
-//     }
-//     if(novelList_urls.length==0){
-//         console.log('爬取完成!')
-//         mongoose.cloes()
-//     }else{
-//         req(novelList_urls.shift(),cicle_cb)
-//     }
-// })
 function async(arr,fn,cb,enddo){
     if(!Array.isArray(arr)||arr.length==0){
         //console.log(Array.isArray(arr))
@@ -95,19 +74,10 @@ function filterNovelListPage(err,res,body){
         console.log('request wrong',err.code)
         if(err.code=='ESOCKETTIMEDOUT'||err.code=='ETIMEDOUT'){
             console.log(`get ${this.uri.href} timeout`)
-            novel_urls.unshift(this.uri.href)
+            novelList_urls.unshift(this.uri.href)
         }
-        if(novel_urls.length==0){
-            console.log('爬取完成!')
-            mongoose.close()
-            return
-        }
-        setTimeout(function(){
-            req(novel_urls.shift(),circle_cb)
-        },interval)
         return
     }
-    //console.log(body.toString)
     var href=''
 
     if(!body||typeof body!='string'&&!Buffer.isBuffer(body)){
@@ -122,7 +92,7 @@ function filterNovelListPage(err,res,body){
     }
     $('.all-img-list').find('h4').each(function(i,elem){
         var item=url.resolve(href,$(this).find('a').attr('href'))
-        console.log(item)
+        //console.log(item)
         novelMessage_urls.push(item)
     })
 
@@ -130,7 +100,14 @@ function filterNovelListPage(err,res,body){
 //小说信息页，筛选出小说基本信息，标题，等等
 function filterNovelMessagePage(err,res,body){
     var href=''
-
+    if (err) {
+        console.log('request wrong', err.code)
+        if (err.code == 'ESOCKETTIMEDOUT' || err.code == 'ETIMEDOUT') {
+            console.log(`get ${this.uri.href} timeout`)
+            novelMessage_urls.unshift(this.uri.href)
+        }
+        return
+    }
     if(!body||typeof body!='string'&&!Buffer.isBuffer(body)){
         console.log('no body')
         return {}
@@ -139,6 +116,49 @@ function filterNovelMessagePage(err,res,body){
     href=res.request.uri.href
     var $=cheerio.load(body)
 
-}
 
-async(novelList_urls,req,filterNovelListPage)
+    var obj={}
+    obj.title = $('.book-info').find('h1').find('em').text().trim()
+    obj.author = $('.book-info').find('h1').find('a').text().trim()
+    obj.shortintroduction = $('.intro').text().trim()
+    obj.introduction = $('.book-intro').find('p').text().trim()
+    var time = $('.update').find('.time').text()
+    time = time.replace('更新', '')
+    var now=new Date()
+    time = time.replace('今天', now.getFullYear() + '-' + (now + 1) + '-' + now.getDate() + ' ')
+
+    console.log('time',time)
+    obj.lastUpdateTime =new Date(time)
+    obj.year=obj.lastUpdateTime.getFullYear()
+    obj.image = url.resolve(href,$('.book-img').find('img').attr('src').trim())
+    obj.chapters=[]
+    $('.catalog-content-wrap').find('.cf').eq($('.catalog-content-wrap').find('.cf').length - 1).find('li').each(function (idnex, item) {
+        var c={}
+        if ($(this).find('a').text().trim().indexOf('第')<0){
+            c.title = $(this).find('a').text().trim()
+            c.href = url.resolve(href, $(this).find('a').attr('href'))
+            c.serial = '0'
+        }else{
+            c.title = $(this).find('a').text().trim().split(' ')[1]
+            c.href = url.resolve(href, $(this).find('a').attr('href'))
+            c.serial = $(this).find('a').text().trim().split(' ')[0]
+        }
+        obj.chapters.push(c)
+    })
+    var _novel=new Novel(obj)
+    console.log(obj.year,_novel.year)
+    console.log(obj.lastUpdateTime, _novel.lastUpdateTime)
+    //console.log(_novel)
+    // _novel.save(function(err,novel){
+    //     if(err){
+    //         //console.log(err)
+    //     }
+    //     //console.log(novel,'save ok')
+    // })
+}
+async(novelList_urls,req,filterNovelListPage,function(){
+    //console.log(novelMessage_urls)
+    async(novelMessage_urls, req, filterNovelMessagePage,function(){
+        mongoose.close()
+    })
+})
