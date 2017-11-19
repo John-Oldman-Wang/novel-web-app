@@ -125,9 +125,9 @@ function filterNovelMessagePage(err,res,body){
     var time = $('.update').find('.time').text()
     time = time.replace('更新', '')
     var now=new Date()
-    time = time.replace('今天', now.getFullYear() + '-' + (now + 1) + '-' + now.getDate() + ' ')
+    time = time.replace('今天', now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + ' ')
+    time = time.replace('昨日', now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + (now.getDate()-1) + ' ')
 
-    console.log('time',time)
     obj.lastUpdateTime =new Date(time)
     obj.year=obj.lastUpdateTime.getFullYear()
     obj.image = url.resolve(href,$('.book-img').find('img').attr('src').trim())
@@ -146,15 +146,14 @@ function filterNovelMessagePage(err,res,body){
         obj.chapters.push(c)
     })
     var _novel=new Novel(obj)
-    console.log(obj.year,_novel.year)
-    console.log(obj.lastUpdateTime, _novel.lastUpdateTime)
-    //console.log(_novel)
-    // _novel.save(function(err,novel){
-    //     if(err){
-    //         //console.log(err)
-    //     }
-    //     //console.log(novel,'save ok')
-    // })
+    _novel.save(function(err,novel){
+        if(err){
+            console.log(err)
+            console.log(`${_novel.title} save err`)
+            return
+        }
+        console.log(novel.title,'save ok')
+    })
 }
 async(novelList_urls,req,filterNovelListPage,function(){
     //console.log(novelMessage_urls)
