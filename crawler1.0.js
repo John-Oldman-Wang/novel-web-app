@@ -7,7 +7,7 @@ const url=require('url')
 const iconv=require('iconv-lite')
 const mongoose=require('mongoose')
 var _=require('underscore')
-
+var _=require('underscore')
 
 // 自定义模块和model引入
 var Novel=require('./models/m-novel.js')
@@ -30,6 +30,7 @@ mongoose.on('open',function(err){
 mongoose.on('close',function(err){
     if(err) console.log('err',err)
     console.log(`mongoose close`)
+    process.abort()
 })
 mongoose.connect=mongoose.connect.bind(mongoose,dburl,{
     useMongoClient: true
@@ -125,8 +126,11 @@ function filterNovelMessagePage(err,res,body){
     var time = $('.update').find('.time').text()
     time = time.replace('更新', '')
     var now=new Date()
+    if(time.indexOf('昨日')>-1){
+        now.setDate(now.getDate-1)
+    } 
     time = time.replace('今天', now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + ' ')
-    time = time.replace('昨日', now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + (now.getDate()-1) + ' ')
+    time = time.replace('昨日', now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + ' ')
 
     obj.lastUpdateTime =new Date(time)
     obj.year=obj.lastUpdateTime.getFullYear()
@@ -145,7 +149,32 @@ function filterNovelMessagePage(err,res,body){
         }
         obj.chapters.push(c)
     })
-    var _novel=new Novel(obj)
+    Novel.find({title:obj.title}).exec(function(err,novels){
+        var _novel
+        if(err){
+            console.log('err:',err)
+            console.log('查找数据库是否有刚爬到的小说时放生错误')
+            mongoose.close()
+            return
+        }else if(!novels&&!novels.length){
+            _novel=new Novel(obj)
+        }else{
+            _novel=_.extend(novels[0],obj)
+            if(novels.length>1){
+                console.log('查询数据库发现有重复名称的小说,小说名称是:',obj.title)
+            }
+        }
+        _novel.save(function(err,novel){
+            if(err){
+                console.log('novel save err',err)
+
+            }else{
+                console.log(`${novel.title} save ok`)
+            }
+        })
+    })
+    
+    
     _novel.save(function(err,novel){
         if(err){
             console.log(err)
