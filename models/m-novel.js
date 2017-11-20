@@ -12,10 +12,11 @@ var novelSchema=new Schema({
 	state:String,
     year:Number,
 	image:String,
-	chapter_number:Number,
+	chapterNumber:Number,
     chapters:[{
         title:String,
-        serial:String,
+		serialName:String,
+		serial:String,
 		href:String,
 		id: Schema.Types.ObjectId
     }],
@@ -38,8 +39,8 @@ novelSchema.pre('save',function(next){
 	else{
 		this.meta.updateAt=Date.now()
 	}
-	if('chapters' in this && this.chapters.length!=this.chapter_number){
-		this.chapter_number=this.chapters.length
+	if ('chapters' in this && this.chapters.length != this.chapterNumber){
+		this.chapterNumber=this.chapters.length
 	}
 	next()
 })

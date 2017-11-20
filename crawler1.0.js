@@ -7,7 +7,6 @@ const url=require('url')
 const iconv=require('iconv-lite')
 const mongoose=require('mongoose')
 var _=require('underscore')
-var _=require('underscore')
 
 // 自定义模块和model引入
 var Novel=require('./models/m-novel.js')
@@ -44,7 +43,7 @@ var search ='?orderId=&vip=hidden&style=1&pageSize=20&siteid=1&pubflag=0&hiddenF
 
 var novelList_urls=[];
 var interval=0
-for(var i=1;i<2;i++){
+for(var i=1;i<100;i++){
     novelList_urls.push(origin + path + search + i)
 }
 var novelMessage_urls=[]
@@ -109,6 +108,10 @@ function filterNovelMessagePage(err,res,body){
         }
         return
     }
+    if (res.statusCode!='200'){
+        console.log(`此页面无小说信息:${this.uri.href}`)
+        return
+    }
     if(!body||typeof body!='string'&&!Buffer.isBuffer(body)){
         console.log('no body')
         return {}
@@ -120,18 +123,20 @@ function filterNovelMessagePage(err,res,body){
 
     var obj={}
     obj.title = $('.book-info').find('h1').find('em').text().trim()
+    if(obj.title==''){
+        console.log(`此页面无小说信息:${this.uri.href}`)
+    }
     obj.author = $('.book-info').find('h1').find('a').text().trim()
     obj.shortintroduction = $('.intro').text().trim()
-    obj.introduction = $('.book-intro').find('p').text().trim()
+    obj.introduction = $('.book-intro').find('p').text().trim().replace(/\s/g,'\n')
     var time = $('.update').find('.time').text()
     time = time.replace('更新', '')
     var now=new Date()
     if(time.indexOf('昨日')>-1){
-        now.setDate(now.getDate-1)
+        now.setDate(now.getDate()-1)
     } 
     time = time.replace('今天', now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + ' ')
     time = time.replace('昨日', now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + ' ')
-
     obj.lastUpdateTime =new Date(time)
     obj.year=obj.lastUpdateTime.getFullYear()
     obj.image = url.resolve(href,$('.book-img').find('img').attr('src').trim())
@@ -141,11 +146,11 @@ function filterNovelMessagePage(err,res,body){
         if ($(this).find('a').text().trim().indexOf('第')<0){
             c.title = $(this).find('a').text().trim()
             c.href = url.resolve(href, $(this).find('a').attr('href'))
-            c.serial = '0'
+            c.serialName = '0'
         }else{
             c.title = $(this).find('a').text().trim().split(' ')[1]
             c.href = url.resolve(href, $(this).find('a').attr('href'))
-            c.serial = $(this).find('a').text().trim().split(' ')[0]
+            c.serialName = $(this).find('a').text().trim().split(' ')[0]
         }
         obj.chapters.push(c)
     })
@@ -156,9 +161,14 @@ function filterNovelMessagePage(err,res,body){
             console.log('查找数据库是否有刚爬到的小说时放生错误')
             mongoose.close()
             return
-        }else if(!novels&&!novels.length){
+        }else if(!novels||!novels.length){
+            console.log('数据库无此小说，保存此小说：', obj.title)
             _novel=new Novel(obj)
         }else{
+            console.log('数据库有此小说，更新此小说：',novels[0].title)
+            for(var i=0;i<novels[0].chapters.length;i++){
+                obj.chapters[i] = _.extend(novels[0].chapters[i],obj.chapters[i])
+            }
             _novel=_.extend(novels[0],obj)
             if(novels.length>1){
                 console.log('查询数据库发现有重复名称的小说,小说名称是:',obj.title)
@@ -166,27 +176,19 @@ function filterNovelMessagePage(err,res,body){
         }
         _novel.save(function(err,novel){
             if(err){
-                console.log('novel save err',err)
+                console.log(`${_novel.title} save err`,err)
 
             }else{
                 console.log(`${novel.title} save ok`)
             }
         })
     })
-    
-    
-    _novel.save(function(err,novel){
-        if(err){
-            console.log(err)
-            console.log(`${_novel.title} save err`)
-            return
-        }
-        console.log(novel.title,'save ok')
-    })
 }
 async(novelList_urls,req,filterNovelListPage,function(){
-    //console.log(novelMessage_urls)
     async(novelMessage_urls, req, filterNovelMessagePage,function(){
-        mongoose.close()
+        setTimeout(() => {
+            mongoose.close()
+            
+        }, 3000);
     })
 })
