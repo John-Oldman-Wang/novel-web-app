@@ -27,10 +27,6 @@ mongoose.on = function () {
 mongoose.on('open', function (err) {
     if (err) console.log('err', err)
     console.log(`connect ${mongoose.connection.db.s.databaseName} sucess`)
-    // Novel.count({}).exec(function(err,result){
-    //     console.log(result)
-    //     mongoose.close()
-    // })
 })
 mongoose.on('close', function (err) {
     if (err) console.log('err', err)
@@ -46,35 +42,55 @@ mongoose.connect()
 function fetch(cb, endFn){
     var i=0
     var self = this
-    this.count({}).exec(function (err,count) {
-        var count = count
-       
-        self.find({}).skip(i).limit(1).exec(function circle_cb(err, result) {
-            if (result)
-                cb.apply(this, arguments)
-            i++
-            console.log(i, '/', count)
-            if (i == count) {
-                console.log('fetch is complete!')
-                endFn&&endFn()
-                return
-            }
-            self.find({}).skip(i).limit(1).exec(circle_cb)
+    self.find({}).skip(i++).limit(1).exec(function circle_cb(err, result) {
+        cb.call(this, err ,result ,function(){
+            self.find({}).skip(i++).limit(1).exec(circle_cb)
         })
-    })
-    
+    }) 
 }
-fetch.bind(Novel)(function (err, novels){
+fetch.bind(Novel)(function (err, novels ,next){
     if(err){
         console.log(err)
-        return 
+        mongoose.close()
+        return
+    }else if(novels.length==0){
+        console.log(`fetch novels is complete!`)
+        mongoose.close()
+        return
+    }else{
+        console.log(novels[0].title)
+        next&&next()
     }
-    if(!'title' in novels[0]){
-        console.log(novels)
+})
+
+
+
+function filterChapterPage(err,res,body){
+    var href = ''
+    if (err) {
+        console.log('request wrong', err.code)
+        if (err.code == 'ESOCKETTIMEDOUT' || err.code == 'ETIMEDOUT') {
+            console.log(`get ${this.uri.href} timeout`)
+            novelMessage_urls.unshift(this.uri.href)
+        }
         return
     }
-    console.log(novels[0].title)
-    //need more logic code
-},function(){
-    mongoose.close()
-})
+    if (res.statusCode != '200') {
+        console.log(`此页面无章节信息:${this.uri.href}`)
+        return
+    }
+    if (!body || typeof body != 'string' && !Buffer.isBuffer(body)) {
+        console.log('no body')
+        return {}
+    }
+    body = Buffer.isBuffer(body) ? body.toString() : body
+    href = res.request.uri.href
+    var $ = cheerio.load(body)
+    var obj={}
+    obj.paragraphs=[]
+    obj.title = $('.text-head').find('.j_chapterName').text().split(' ')[1]
+    $('.read-content').find('p').each(function(){
+        obj.paragraphs.push($(this).text().trim())
+    })
+    return obj
+}
