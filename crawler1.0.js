@@ -43,7 +43,7 @@ var search ='?orderId=&vip=hidden&style=1&pageSize=20&siteid=1&pubflag=0&hiddenF
 
 var novelList_urls=[];
 var interval=0
-for(var i=1;i<100;i++){
+for(var i=1;i<35000;i++){
     novelList_urls.push(origin + path + search + i)
 }
 var novelMessage_urls=[]
@@ -185,10 +185,21 @@ function filterNovelMessagePage(err,res,body){
     })
 }
 async(novelList_urls,req,filterNovelListPage,function(){
-    async(novelMessage_urls, req, filterNovelMessagePage,function(){
-        setTimeout(() => {
-            mongoose.close()
-            
-        }, 3000);
-    })
-})
+    console.log(`get all of the list page of novels `)
+});
+
+
+(function(){
+    function f(){
+        setTimeout((e) => {
+            if (novelMessage_urls.length > 0) {
+                async(novelMessage_urls, req, filterNovelMessagePage, function () {
+                        mongoose.close()
+                })
+            } else {
+                f()
+            }
+        }, 300);
+    }
+    f()
+})()
