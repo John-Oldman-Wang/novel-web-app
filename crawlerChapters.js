@@ -110,25 +110,10 @@ function getChapters(novel,cb){
             chapter.href=this.uri.href
             chapter.novel_id=novel._id
             chapters.push(chapter)
-            if(typeof chapter!=='object'){
-                console.log(typeof chapter)
-                mongoose.close()
-                return
-                process.abort()
-            }
         }
     },function(){
         async(chapters, function (chapter,cb){
-            var _chapter;
-            try {
-                _chapter= new Chapter(chapter)
-            } catch (error) {
-
-                console.log(error)
-                console.log('new error',chapter)
-                mongoose.close()
-                return
-            }
+            var _chapter = new Chapter(chapter)
             _chapter.save(cb)
         },function(err,chapter){
             if(err){
