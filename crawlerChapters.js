@@ -71,17 +71,18 @@ function filterChapterPage(err,res,body){
         console.log('request wrong', err.code)
         if (err.code == 'ESOCKETTIMEDOUT' || err.code == 'ETIMEDOUT') {
             console.log(`get ${this.uri.href} timeout`)
-            novelMessage_urls.unshift(this.uri.href)
+            if('arr' in arguments.callee)
+                arguments.callee.arr.unshift(this.uri.href)
         }
-        return
+        return false
     }
     if (res.statusCode != '200') {
         console.log(`此页面无章节信息:${this.uri.href}`)
-        return
+        return false
     }
     if (!body || typeof body != 'string' && !Buffer.isBuffer(body)) {
-        console.log('no body')
-        return {}
+        console.log(`this page ${this,uri.href} no body`)
+        return false
     }
     body = Buffer.isBuffer(body) ? body.toString() : body
     href = res.request.uri.href
@@ -93,4 +94,48 @@ function filterChapterPage(err,res,body){
         obj.paragraphs.push($(this).text().trim())
     })
     return obj
+}
+
+function getChapters(novel){
+    var chapters=deepClone(novel.chapters)
+    filterChapterPage.arr=chapters
+    async_another(chapters,req,function(err,res,body){
+        var chapter=filterChapterPage(err,res,body)
+
+    },function(){
+        
+
+    })
+}
+
+function deepClone(object){
+    if(typeof object!='object'){
+        return object
+    }else{
+        var newObj=Array.isArray(object)?[]:{}
+        for(var i in object){
+            newObj[i]=deepClone(object[i])
+        }
+        return newObj
+    }
+}
+function async_another(arr,fn,cb,enddo){
+    if(!Array.isArray(arr)||arr.length==0){
+        //console.log(Array.isArray(arr))
+        throw new Error('the first arguments must be array and lenth must over 0!')
+        return
+    }
+    if(typeof fn!='function'||typeof cb!='function'){
+        throw new Error(`the ${typeof fn!='function'?'second':'third'} arguments must be function!`)
+        return
+    }
+    function circle_function(){
+        cb.apply(this,arguments)
+        if(arr.length==0){
+            enddo&&enddo()
+            return
+        }
+        fn(arr.shift().href,circle_function)
+    }
+    fn(arr.shift().href,circle_function)
 }
