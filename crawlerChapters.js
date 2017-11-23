@@ -105,7 +105,7 @@ function getChapters(novel,cb){
     async(chapter_hrefs,req,function(err,res,body){
         var chapter=filterChapterPage.call(this,err,res,body)
         if(!chapter){
-            chapter_hrefs.push(this.uri.href)
+            //chapter_hrefs.push(this.uri.href)
         }else{
             chapter.href=this.uri.href
             chapter.novel_id=novel._id
