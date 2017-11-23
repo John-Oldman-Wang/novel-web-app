@@ -3,9 +3,10 @@ mongoose.Promise=Promise
 var Schema = mongoose.Schema;
 var ObjectId=Schema.Types.ObjectId
 var chapterSchema=new Schema({
-    title:String,
+	title:String,
+	href:String,
     paragraphs:[String],
-    novel:ObjectId,
+    novel_id:ObjectId,
     meta:{
 		createAt:{
 			type:Date,
@@ -42,5 +43,5 @@ chapterSchema.statics={
 		.exec(cb)
 	}
 }
-var chapter=mongoose.model('Chpater',chapterSchema)
+var chapter=mongoose.model('Chapter',chapterSchema)
 module.exports=chapter
