@@ -18,7 +18,7 @@ var novelSchema=new Schema({
 		serialName:String,
 		serial:String,
 		href:String,
-		id: Schema.Types.ObjectId
+		chapter_id: Schema.Types.ObjectId
     }],
     meta:{
 		createAt:{
