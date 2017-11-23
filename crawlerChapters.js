@@ -59,52 +59,95 @@ fetch.bind(Novel)(function (err, novels ,next){
         return
     }else{
         console.log(novels[0].title)
-        next&&next()
+        getChapters(novels[0],next||function(){})
     }
 })
 
-
-
-function filterChapterPage(err,res,body){
-    var href = ''
-    if (err) {
-        console.log('request wrong', err.code)
-        if (err.code == 'ESOCKETTIMEDOUT' || err.code == 'ETIMEDOUT') {
-            console.log(`get ${this.uri.href} timeout`)
-            if('arr' in arguments.callee)
-                arguments.callee.arr.unshift(this.uri.href)
+function getChapters(novel,cb){
+    function filterChapterPage(err, res, body) {
+        var href = ''
+        if (err) {
+            console.log('request wrong', err.code, this.uri.href)
+            if (err.code == 'ESOCKETTIMEDOUT' || err.code == 'ETIMEDOUT') {
+                console.log(`get ${this.uri.href} timeout`)
+                chapters.push(this.uri.href)
+            }
+            return false
         }
-        return false
+        if (res.statusCode != '200') {
+            console.log(`此页面无章节信息:${this.uri.href}`)
+            return false
+        }
+        if (!body || typeof body != 'string' && !Buffer.isBuffer(body)) {
+            console.log(`this page ${this, uri.href} no body`)
+            return false
+        }
+        body = Buffer.isBuffer(body) ? body.toString() : body
+        href = res.request.uri.href
+        var $ = cheerio.load(body)
+        var obj = {}
+        obj.paragraphs = []
+        obj.title = $('.text-head').find('.j_chapterName').text().split(' ')[1]
+        $('.read-content').find('p').each(function () {
+            obj.paragraphs.push($(this).text().trim())
+        })
+        return obj
     }
-    if (res.statusCode != '200') {
-        console.log(`此页面无章节信息:${this.uri.href}`)
-        return false
-    }
-    if (!body || typeof body != 'string' && !Buffer.isBuffer(body)) {
-        console.log(`this page ${this,uri.href} no body`)
-        return false
-    }
-    body = Buffer.isBuffer(body) ? body.toString() : body
-    href = res.request.uri.href
-    var $ = cheerio.load(body)
-    var obj={}
-    obj.paragraphs=[]
-    obj.title = $('.text-head').find('.j_chapterName').text().split(' ')[1]
-    $('.read-content').find('p').each(function(){
-        obj.paragraphs.push($(this).text().trim())
+    var chapter_hrefs=novel.chapters.filter(function(item){
+        return typeof item=='object'&&(!item.chapter_id)
+    })    
+    chapter_hrefs=chapter_hrefs.map(function(item){
+        return item.href
     })
-    return obj
-}
-
-function getChapters(novel){
-    var chapters=deepClone(novel.chapters)
-    filterChapterPage.arr=chapters
-    async_another(chapters,req,function(err,res,body){
-        var chapter=filterChapterPage(err,res,body)
-
+    // mongoose.close()
+    // return
+    var chapters=[]
+    async(chapter_hrefs,req,function(err,res,body){
+        var chapter=filterChapterPage.call(this,err,res,body)
+        if(!chapter){
+            chapter_hrefs.push(this.uri.href)
+        }else{
+            chapter.href=this.uri.href
+            chapters.push(chapter)
+        }
     },function(){
-        
-
+        async(chapters, function (chapter,cb){
+            var _chapter;
+            try {
+                _chapter= new Chapter(chapter)
+            } catch (error) {
+                console.log(error)
+                mongoose.close()
+                return
+            }
+            _chapter.save(cb)
+        },function(err,chapter){
+            if(err){
+                console.log(`chapter save err`,err)
+                mongoose.close()
+                return
+            }else{
+                novel.chapters.forEach(function(item,index,arr){
+                    if(item.href==chapter.href){
+                        arr[index].chapter_id=chapter._id
+                    }
+                })
+            }
+        },function(){
+            novel.save(function(err,Novel){
+                if(err){
+                    console.log(err)
+                    console.log(`章节爬去完成重新更新小说出错 ${nove.title}`)
+                    mongoose.close()
+                    return
+                }else{
+                    //
+                   
+                    //
+                    cb&&cb()
+                }
+            })
+        })
     })
 }
 
@@ -119,23 +162,60 @@ function deepClone(object){
         return newObj
     }
 }
-function async_another(arr,fn,cb,enddo){
-    if(!Array.isArray(arr)||arr.length==0){
+function async(arr, fn, cb, enddo) {
+    if (!Array.isArray(arr)) {
         //console.log(Array.isArray(arr))
         throw new Error('the first arguments must be array and lenth must over 0!')
         return
-    }
-    if(typeof fn!='function'||typeof cb!='function'){
-        throw new Error(`the ${typeof fn!='function'?'second':'third'} arguments must be function!`)
+    }else if(arr.length==0){
+        enddo && enddo()
         return
     }
-    function circle_function(){
-        cb.apply(this,arguments)
-        if(arr.length==0){
-            enddo&&enddo()
+    if (typeof fn != 'function' || typeof cb != 'function') {
+        throw new Error(`the ${typeof fn != 'function' ? 'second' : 'third'} arguments must be function!`)
+        return
+    }
+    function circle_function() {
+        cb.apply(this, arguments)
+        if (arr.length == 0) {
+            enddo && enddo()
             return
         }
-        fn(arr.shift().href,circle_function)
+        fn(arr.shift(), circle_function)
     }
-    fn(arr.shift().href,circle_function)
+    fn(arr.shift(), circle_function)
 }
+
+
+
+
+// function filterChapterPage(err, res, body) {
+//     var href = ''
+//     if (err) {
+//         console.log('request wrong', err.code)
+//         if (err.code == 'ESOCKETTIMEDOUT' || err.code == 'ETIMEDOUT') {
+//             console.log(`get ${this.uri.href} timeout`)
+//             if ('arr' in arguments.callee)
+//                 arguments.callee.arr.unshift(this.uri.href)
+//         }
+//         return false
+//     }
+//     if (res.statusCode != '200') {
+//         console.log(`此页面无章节信息:${this.uri.href}`)
+//         return false
+//     }
+//     if (!body || typeof body != 'string' && !Buffer.isBuffer(body)) {
+//         console.log(`this page ${this, uri.href} no body`)
+//         return false
+//     }
+//     body = Buffer.isBuffer(body) ? body.toString() : body
+//     href = res.request.uri.href
+//     var $ = cheerio.load(body)
+//     var obj = {}
+//     obj.paragraphs = []
+//     obj.title = $('.text-head').find('.j_chapterName').text().split(' ')[1]
+//     $('.read-content').find('p').each(function () {
+//         obj.paragraphs.push($(this).text().trim())
+//     })
+//     return obj
+// }
