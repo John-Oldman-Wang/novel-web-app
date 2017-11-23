@@ -70,7 +70,7 @@ function getChapters(novel,cb){
             console.log('request wrong', err.code, this.uri.href)
             if (err.code == 'ESOCKETTIMEDOUT' || err.code == 'ETIMEDOUT') {
                 console.log(`get ${this.uri.href} timeout`)
-                chapters.push(this.uri.href)
+                chapter_hrefs.push(this.uri.href)
             }
             return false
         }
@@ -125,7 +125,7 @@ function getChapters(novel,cb){
             } catch (error) {
 
                 console.log(error)
-                console.log(chapter)
+                console.log('new error',chapter)
                 mongoose.close()
                 return
             }
