@@ -43,7 +43,7 @@ var search ='?orderId=&vip=hidden&style=1&pageSize=20&siteid=1&pubflag=0&hiddenF
 
 var novelList_urls=[];
 var interval=0
-for(var i=1;i<1000;i++){
+for(var i=1;i<100;i++){
     novelList_urls.push(origin + path + search + i)
 }
 var novelMessage_urls=[]
@@ -123,7 +123,9 @@ function filterNovelMessagePage(err,res,body){
     obj.title = $('.book-info').find('h1').find('em').text().trim()
     if(obj.title==''){
         console.log(`此页面无小说信息:${this.uri.href}`)
+        return
     }
+    obj.href=href
     var n=$('.book-info').find('.intro').next().find('em').eq(1).text()
     var w=$('.book-info').find('.intro').next().find('em').eq(1).next().text().indexOf('万总点击')>-1?10000:1
     obj.heat=Math.round(parseFloat(n)*w)
@@ -143,39 +145,63 @@ function filterNovelMessagePage(err,res,body){
     obj.image = url.resolve(href,$('.book-img').find('img').attr('src').trim())
     obj.chapters=[]
     if ($('#j-catalogWrap').find('.volume').eq(0).find('h3').text().indexOf('作品相关')>-1){
-        $('#j-catalogWrap').find('.volume').slice(1).find('.cf').find('li').each(function () {
+        $('#j-catalogWrap').find('.volume').slice(1).find('.cf').find('li').each(function (index,ele) {
             var c = {}
-            if ($(this).find('a').text().trim().indexOf('第') < 0) {
-                c.title = $(this).find('a').text().trim()
+            if (/第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章/g.test( $(this).find('a').text().trim() ) || index==0  ){
+                if(index==0 && !/第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章/g.test( $(this).find('a').text().trim()) ){
+                    c.serialName = '0'
+                    c.title=$(this).find('a').text().trim().replace(/【|】/g,'')
+                }else{
+                    var title=$(this).find('a').text().trim()
+                    c.serialName = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/,'$1')
+                    c.title= title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/,'$2').trim().replace(c.serialName,'')
+                }
                 c.href = url.resolve(href, $(this).find('a').attr('href'))
-                c.serialName = '0'
-            } else {
-                c.title = $(this).find('a').text().trim().split('章').slice(1).join('章').replace(/(\:|\;|\,|；|：|，)+/,'').trim()
+                obj.chapters.push(c)
+            }else if( parseInt( $(this).find('a').text().trim().replace(/^[^\d]*(\d*).*/,'$1') ) ==(index+1) || parseInt( $(this).find('a').text().trim().replace(/^[^\d]*(\d*).*/,'$1') ) ==index ){
+                var serial=$(this).find('a').text().trim().replace(/^[^\d]*(\d*).*/,'$1')
+                c.serialName=parseInt(serial)+''
+                c.title = $(this).find('a').text().trim().replace(serial,'').replace(/【|】/g,'')
                 c.href = url.resolve(href, $(this).find('a').attr('href'))
-                c.serialName = $(this).find('a').text().trim().split(' ')[0]
+                obj.chapters.push(c)
             }
-            obj.chapters.push(c)
         })
     }else{
-        $('#j-catalogWrap').find('.volume').find('.cf').find('li').each(function () {
-            var c = {}
-            if ($(this).find('a').text().trim().indexOf('第') < 0) {
-                c.title = $(this).find('a').text().trim()
+        if(parseInt($('#j-catalogWrap').find('.volume').find('.cf').find('li').eq(0).find('a').text().trim().replace(/^[^\d]*(\d*)[^\d]*/,'$1')) ==1 ){
+            $('#j-catalogWrap').find('.volume').find('.cf').find('li').each(function (index,ele) {
+                
+                var c = {}
+                var serial=$(this).find('a').text().trim().replace(/^[^\d]*(\d*).*/,'$1')
+                if( parseInt(serial) != (index+1) ){
+                    return
+                }
+                c.serialName=parseInt(serial)+''
+                c.title=$(this).find('a').text().trim().replace(serial,'').replace(/【|】/g,'')
                 c.href = url.resolve(href, $(this).find('a').attr('href'))
-                c.serialName = '0'
-            } else {
-                c.title = $(this).find('a').text().trim().split('章').slice(1).join('章').replace(/(\:|\;|\,|；|：|，)+/, '').trim()
-                c.href = url.resolve(href, $(this).find('a').attr('href'))
-                c.serialName = $(this).find('a').text().trim().split(' ')[0]
-            }
-            if ($(this).find('a').text().trim().indexOf('第') > -1 && $(this).find('a').text().trim().indexOf('章') < 0) {
-                console.log(`有第无章 ${obj.title}`)
-            }
-            obj.chapters.push(c)
-        })
+                obj.chapters.push(c)
+            })
+        }else{
+            $('#j-catalogWrap').find('.volume').find('.cf').find('li').each(function (index,ele) {
+                if (/第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章/g.test( $(this).find('a').text().trim() ) || index==0  ){
+                    var c = {}
+                    if(index==0 && !/第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章/g.test( $(this).find('a').text().trim()) ){
+                        c.serialName = '0'
+                        c.title=$(this).find('a').text().trim().replace(/【|】/g,'')
+                    }else{
+                        var title=$(this).find('a').text().trim()
+                        c.serialName = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/,'$1')
+                        c.title= title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/,'$2').trim().replace(c.serialName,'')
+                    }
+                    c.href = url.resolve(href, $(this).find('a').attr('href'))
+                    obj.chapters.push(c)
+                }
+            })
+        }
     }
     if (obj.chapters.length==0){
         return
+    }else if(obj.chapters.length<10){
+        console.log(`${obj.title} 章节长度小于10`)
     }
     Novel.find({title:obj.title}).exec(function(err,novels){
         var _novel

@@ -13,6 +13,7 @@ var novelSchema=new Schema({
     year:Number,
 	image:String,
 	heat:Number,
+	href:String,
 	chapterNumber:Number,
     chapters:[{
         title:String,

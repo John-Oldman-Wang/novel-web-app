@@ -23,7 +23,7 @@ var request=require('request')
     })
 }*/
 function req(url,callbake){
-    console.log(`start get ${url}`)
+    //console.log(`start get ${url}`)
     request(url,{timeout:5000},function(err,res,body){
         //console.log('do cb')
         callbake&&callbake.bind(this)(err,res,!!res&&'buffer' in res?res.buffer:body)
