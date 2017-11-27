@@ -10,12 +10,12 @@ var _ = require('underscore')
 
 
 // 自定义模块和model引入
-var Novel = require('./models/m-novel.js')
-var Chapter = require('./models/m-chapter.js')
-var req = require('./crawler/httpget.js')
+var Novel = require('../models/m-novel.js')
+var Chapter = require('../models/m-chapter.js')
+var req = require('./httpget.js')
 
 //常量申明
-var dburl = "mongodb://localhost:27017/novelAppNew"
+var dburl = "mongodb://localhost:27017/novelApp2"
 // 再封装mongoose
 mongoose.Promise = Promise
 mongoose.close = function () {
@@ -70,7 +70,7 @@ function getChapters(novel,cb){
             console.log('request wrong', err.code, this.uri.href)
             if (err.code == 'ESOCKETTIMEDOUT' || err.code == 'ETIMEDOUT') {
                 console.log(`get ${this.uri.href} timeout`)
-                chapter_hrefs.push(this.uri.href)
+                chapter_hrefs.unshift(this.uri.href)
             }
             return false
         }
@@ -99,19 +99,16 @@ function getChapters(novel,cb){
     chapter_hrefs=chapter_hrefs.map(function(item){
         return item.href
     })
-    // mongoose.close()
-    // return
     var chapters=[]
     async(chapter_hrefs,req,function(err,res,body){
         var chapter=filterChapterPage.call(this,err,res,body)
-        if(!chapter){
-            //chapter_hrefs.push(this.uri.href)
-        }else{
+        if(chapter){
             chapter.href=this.uri.href
             chapter.novel_id=novel._id
             chapters.push(chapter)
         }
-    },function(){
+    }, function () {
+        cb&&cb()
         async(chapters, function (chapter,cb){
             var _chapter = new Chapter(chapter)
             _chapter.save(cb)
@@ -137,10 +134,7 @@ function getChapters(novel,cb){
                     mongoose.close()
                     return
                 }else{
-                    //
-                   
-                    //
-                    cb&&cb()
+                    console.log(`小说:${Novel.title} 的章节保存完成！`)
                 }
             })
         })
@@ -160,7 +154,6 @@ function deepClone(object){
 }
 function async(arr, fn, cb, enddo) {
     if (!Array.isArray(arr)) {
-        //console.log(Array.isArray(arr))
         throw new Error('the first arguments must be array and lenth must over 0!')
         return
     }else if(arr.length==0){
@@ -181,37 +174,3 @@ function async(arr, fn, cb, enddo) {
     }
     fn(arr.shift(), circle_function)
 }
-
-
-
-
-// function filterChapterPage(err, res, body) {
-//     var href = ''
-//     if (err) {
-//         console.log('request wrong', err.code)
-//         if (err.code == 'ESOCKETTIMEDOUT' || err.code == 'ETIMEDOUT') {
-//             console.log(`get ${this.uri.href} timeout`)
-//             if ('arr' in arguments.callee)
-//                 arguments.callee.arr.unshift(this.uri.href)
-//         }
-//         return false
-//     }
-//     if (res.statusCode != '200') {
-//         console.log(`此页面无章节信息:${this.uri.href}`)
-//         return false
-//     }
-//     if (!body || typeof body != 'string' && !Buffer.isBuffer(body)) {
-//         console.log(`this page ${this, uri.href} no body`)
-//         return false
-//     }
-//     body = Buffer.isBuffer(body) ? body.toString() : body
-//     href = res.request.uri.href
-//     var $ = cheerio.load(body)
-//     var obj = {}
-//     obj.paragraphs = []
-//     obj.title = $('.text-head').find('.j_chapterName').text().split(' ')[1]
-//     $('.read-content').find('p').each(function () {
-//         obj.paragraphs.push($(this).text().trim())
-//     })
-//     return obj
-// }

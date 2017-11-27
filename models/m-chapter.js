@@ -6,7 +6,7 @@ var chapterSchema=new Schema({
 	title:String,
 	href:String,
     paragraphs:[String],
-    novel_id:ObjectId,
+	novel_id:ObjectId,
     meta:{
 		createAt:{
 			type:Date,

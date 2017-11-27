@@ -9,11 +9,11 @@ const mongoose=require('mongoose')
 var _=require('underscore')
 
 // 自定义模块和model引入
-var Novel=require('./models/m-novel.js')
-var req=require('./crawler/httpget.js')
+var Novel=require('../models/m-novel.js')
+var req=require('./httpget.js')
 
 //常量申明
-var dburl="mongodb://localhost:27017/novelAppNew"
+var dburl="mongodb://localhost:27017/novelApp2"
 // 再封装mongoose
 mongoose.Promise=Promise
 mongoose.close=function(){
@@ -43,13 +43,12 @@ var search ='?orderId=&vip=hidden&style=1&pageSize=20&siteid=1&pubflag=0&hiddenF
 
 var novelList_urls=[];
 var interval=0
-for(var i=1;i<35000;i++){
+for(var i=1;i<1000;i++){
     novelList_urls.push(origin + path + search + i)
 }
 var novelMessage_urls=[]
 function async(arr,fn,cb,enddo){
     if(!Array.isArray(arr)||arr.length==0){
-        //console.log(Array.isArray(arr))
         throw new Error('the first arguments must be array and lenth must over 0!')
         return
     }
@@ -92,7 +91,6 @@ function filterNovelListPage(err,res,body){
     }
     $('.all-img-list').find('h4').each(function(i,elem){
         var item=url.resolve(href,$(this).find('a').attr('href'))
-        //console.log(item)
         novelMessage_urls.push(item)
     })
 
@@ -126,6 +124,9 @@ function filterNovelMessagePage(err,res,body){
     if(obj.title==''){
         console.log(`此页面无小说信息:${this.uri.href}`)
     }
+    var n=$('.book-info').find('.intro').next().find('em').eq(1).text()
+    var w=$('.book-info').find('.intro').next().find('em').eq(1).next().text().indexOf('万总点击')>-1?10000:1
+    obj.heat=Math.round(parseFloat(n)*w)
     obj.author = $('.book-info').find('h1').find('a').text().trim()
     obj.shortintroduction = $('.intro').text().trim()
     obj.introduction = $('.book-intro').find('p').text().trim().replace(/\s/g,'\n')
@@ -141,19 +142,41 @@ function filterNovelMessagePage(err,res,body){
     obj.year=obj.lastUpdateTime.getFullYear()
     obj.image = url.resolve(href,$('.book-img').find('img').attr('src').trim())
     obj.chapters=[]
-    $('.catalog-content-wrap').find('.cf').eq($('.catalog-content-wrap').find('.cf').length - 1).find('li').each(function (idnex, item) {
-        var c={}
-        if ($(this).find('a').text().trim().indexOf('第')<0){
-            c.title = $(this).find('a').text().trim()
-            c.href = url.resolve(href, $(this).find('a').attr('href'))
-            c.serialName = '0'
-        }else{
-            c.title = $(this).find('a').text().trim().split(' ')[1]
-            c.href = url.resolve(href, $(this).find('a').attr('href'))
-            c.serialName = $(this).find('a').text().trim().split(' ')[0]
-        }
-        obj.chapters.push(c)
-    })
+    if ($('#j-catalogWrap').find('.volume').eq(0).find('h3').text().indexOf('作品相关')>-1){
+        $('#j-catalogWrap').find('.volume').slice(1).find('.cf').find('li').each(function () {
+            var c = {}
+            if ($(this).find('a').text().trim().indexOf('第') < 0) {
+                c.title = $(this).find('a').text().trim()
+                c.href = url.resolve(href, $(this).find('a').attr('href'))
+                c.serialName = '0'
+            } else {
+                c.title = $(this).find('a').text().trim().split('章').slice(1).join('章').replace(/(\:|\;|\,|；|：|，)+/,'').trim()
+                c.href = url.resolve(href, $(this).find('a').attr('href'))
+                c.serialName = $(this).find('a').text().trim().split(' ')[0]
+            }
+            obj.chapters.push(c)
+        })
+    }else{
+        $('#j-catalogWrap').find('.volume').find('.cf').find('li').each(function () {
+            var c = {}
+            if ($(this).find('a').text().trim().indexOf('第') < 0) {
+                c.title = $(this).find('a').text().trim()
+                c.href = url.resolve(href, $(this).find('a').attr('href'))
+                c.serialName = '0'
+            } else {
+                c.title = $(this).find('a').text().trim().split('章').slice(1).join('章').replace(/(\:|\;|\,|；|：|，)+/, '').trim()
+                c.href = url.resolve(href, $(this).find('a').attr('href'))
+                c.serialName = $(this).find('a').text().trim().split(' ')[0]
+            }
+            if ($(this).find('a').text().trim().indexOf('第') > -1 && $(this).find('a').text().trim().indexOf('章') < 0) {
+                console.log(`有第无章 ${obj.title}`)
+            }
+            obj.chapters.push(c)
+        })
+    }
+    if (obj.chapters.length==0){
+        return
+    }
     Novel.find({title:obj.title}).exec(function(err,novels){
         var _novel
         if(err){
@@ -177,7 +200,6 @@ function filterNovelMessagePage(err,res,body){
         _novel.save(function(err,novel){
             if(err){
                 console.log(`${_novel.title} save err`,err)
-
             }else{
                 console.log(`${novel.title} save ok`)
             }
