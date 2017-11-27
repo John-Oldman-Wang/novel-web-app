@@ -99,10 +99,11 @@ function filterNovelListPage(err,res,body){
 function filterNovelMessagePage(err,res,body){
     var href=''
     if (err) {
-        console.log('request wrong', err.code)
         if (err.code == 'ESOCKETTIMEDOUT' || err.code == 'ETIMEDOUT') {
             console.log(`get ${this.uri.href} timeout`)
             novelMessage_urls.unshift(this.uri.href)
+        }else{
+            console.log('request wrong', err.code)
         }
         return
     }
