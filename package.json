@@ -23,6 +23,8 @@
     "ejs": "^2.5.7",
     "express": "^4.16.1",
     "mongoose": "^4.11.13",
+    "react": "^16.2.0",
+    "react-router-dom": "^4.2.2",
     "underscore": "^1.8.3"
   }
 }
