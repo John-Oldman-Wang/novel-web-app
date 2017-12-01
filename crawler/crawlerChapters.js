@@ -87,7 +87,17 @@ function getChapters(novel,cb){
         var $ = cheerio.load(body)
         var obj = {}
         obj.paragraphs = []
-        obj.title = $('.text-head').find('.j_chapterName').text().split(' ')[1]
+        //obj.title = $('.text-head').find('.j_chapterName').text().split(' ')[1]
+        if (/^第[十|百|千|万|一|二|三|四|五|六|七|八|九|零|\d]+章/g.test($('.text-head').find('.j_chapterName').text().trim())) {
+            var title = $('.text-head').find('.j_chapterName').text().trim()
+            serialName = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/, '$1')
+            obj.title = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/, '$2').trim().replace(serialName, '')
+        } else if ($('.text-head').find('.j_chapterName').text().trim().replace(/^[^\d]*(\d*).*/, '$1') !='') {
+            var serial = $('.text-head').find('.j_chapterName').text().trim().replace(/^[^\d]*(\d*).*/, '$1')
+            obj.title = $('.text-head').find('.j_chapterName').text().trim().replace(serial, '').replace(/【|】|(第章)/g, '')
+        } else {
+            obj.title = $('.text-head').find('.j_chapterName').text().trim().replace(/【|】|(第章)/g, '')
+        }
         $('.read-content').find('p').each(function () {
             obj.paragraphs.push($(this).text().trim())
         })

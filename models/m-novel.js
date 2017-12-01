@@ -60,5 +60,11 @@ novelSchema.statics={
 		.exec(cb)
 	}
 }
+
+
+novelSchema.virtual('base64id').get(function(){
+	var base=new Buffer(this._id.toString())
+	return base.toString('base64')
+})
 var novel=mongoose.model('Novel',novelSchema)
 module.exports=novel

@@ -2,11 +2,11 @@
 const cheerio = require('cheerio')
 const request = require('request')
 const http = require('http')
-var path = require('path')
+const path = require('path')
 const url=require('url')
 const iconv=require('iconv-lite')
 const mongoose=require('mongoose')
-var _=require('underscore')
+const _=require('underscore')
 
 // 自定义模块和model引入
 var Novel=require('../models/m-novel.js')
@@ -43,7 +43,7 @@ var search ='?orderId=&vip=hidden&style=1&pageSize=20&siteid=1&pubflag=0&hiddenF
 
 var novelList_urls=[];
 var interval=0
-for(var i=1;i<100;i++){
+for(var i=1;i<8;i++){
     novelList_urls.push(origin + path + search + i)
 }
 var novelMessage_urls=[]
@@ -119,7 +119,6 @@ function filterNovelMessagePage(err,res,body){
     href=res.request.uri.href
     var $=cheerio.load(body)
 
-
     var obj={}
     obj.title = $('.book-info').find('h1').find('em').text().trim()
     if(obj.title==''){
@@ -145,61 +144,39 @@ function filterNovelMessagePage(err,res,body){
     obj.year=obj.lastUpdateTime.getFullYear()
     obj.image = url.resolve(href,$('.book-img').find('img').attr('src').trim())
     obj.chapters=[]
-    if ($('#j-catalogWrap').find('.volume').eq(0).find('h3').text().indexOf('作品相关')>-1){
-        $('#j-catalogWrap').find('.volume').slice(1).find('.cf').find('li').each(function (index,ele) {
-            var c = {}
-            if (/第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章/g.test( $(this).find('a').text().trim() ) || index==0  ){
-                if(index==0 && !/第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章/g.test( $(this).find('a').text().trim()) ){
-                    c.serialName = '0'
-                    c.title=$(this).find('a').text().trim().replace(/【|】/g,'')
-                }else{
-                    var title=$(this).find('a').text().trim()
-                    c.serialName = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/,'$1')
-                    c.title= title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/,'$2').trim().replace(c.serialName,'')
-                }
-                c.href = url.resolve(href, $(this).find('a').attr('href'))
-                obj.chapters.push(c)
-            }else if( parseInt( $(this).find('a').text().trim().replace(/^[^\d]*(\d*).*/,'$1') ) ==(index+1) || parseInt( $(this).find('a').text().trim().replace(/^[^\d]*(\d*).*/,'$1') ) ==index ){
-                var serial=$(this).find('a').text().trim().replace(/^[^\d]*(\d*).*/,'$1')
-                c.serialName=parseInt(serial)+''
-                c.title = $(this).find('a').text().trim().replace(serial,'').replace(/【|】/g,'')
-                c.href = url.resolve(href, $(this).find('a').attr('href'))
-                obj.chapters.push(c)
-            }
-        })
-    }else{
-        if(parseInt($('#j-catalogWrap').find('.volume').find('.cf').find('li').eq(0).find('a').text().trim().replace(/^[^\d]*(\d*)[^\d]*/,'$1')) ==1 ){
-            $('#j-catalogWrap').find('.volume').find('.cf').find('li').each(function (index,ele) {
-                
-                var c = {}
-                var serial=$(this).find('a').text().trim().replace(/^[^\d]*(\d*).*/,'$1')
-                if( parseInt(serial) != (index+1) ){
-                    return
-                }
-                c.serialName=parseInt(serial)+''
-                c.title=$(this).find('a').text().trim().replace(serial,'').replace(/【|】/g,'')
-                c.href = url.resolve(href, $(this).find('a').attr('href'))
-                obj.chapters.push(c)
-            })
-        }else{
-            $('#j-catalogWrap').find('.volume').find('.cf').find('li').each(function (index,ele) {
-                if (/第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章/g.test( $(this).find('a').text().trim() ) || index==0  ){
-                    var c = {}
-                    if(index==0 && !/第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章/g.test( $(this).find('a').text().trim()) ){
-                        c.serialName = '0'
-                        c.title=$(this).find('a').text().trim().replace(/【|】/g,'')
-                    }else{
-                        var title=$(this).find('a').text().trim()
-                        c.serialName = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/,'$1')
-                        c.title= title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/,'$2').trim().replace(c.serialName,'')
-                    }
-                    c.href = url.resolve(href, $(this).find('a').attr('href'))
-                    obj.chapters.push(c)
-                }
-            })
-        }
+    var eleList
+    if ($('#j-catalogWrap').find('.volume').eq(0).find('h3').text().indexOf('作品相关') > -1) {
+        eleList=$('#j-catalogWrap').find('.volume').slice(1).find('.cf').find('li')
+    }else {
+        eleList=$('#j-catalogWrap').find('.volume').find('.cf').find('li')
     }
+
+    eleList.each(function (index, ele) {
+        var c = {}
+        if (/^第[十|百|千|万|一|二|三|四|五|六|七|八|九|零|\d]+章/g.test($(this).find('a').text().trim()) ) {
+            var title = $(this).find('a').text().trim()
+            c.serialName = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/, '$1')
+            c.title = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/, '$2').trim().replace(c.serialName, '')
+            c.href = url.resolve(href, $(this).find('a').attr('href'))
+            obj.chapters.push(c)
+        } else if (parseInt($(this).find('a').text().trim().replace(/^[^\d]*(\d*).*/, '$1')) == (index + 1) || parseInt($(this).find('a').text().trim().replace(/^[^\d]*(\d*).*/, '$1')) == index) {
+            var serial = $(this).find('a').text().trim().replace(/^[^\d]*(\d*).*/, '$1')
+            c.serial = parseInt(serial)+''
+            c.serialName = serial
+            c.title = $(this).find('a').text().trim().replace(serial, '').replace(/【|】|(第章)/g, '')
+            c.href = url.resolve(href, $(this).find('a').attr('href'))
+            obj.chapters.push(c)
+        }else {
+            c.title = $(this).find('a').text().trim().replace(/【|】|(第章)/g, '')
+            c.serial = index+1+''
+            c.serialName = c.serial
+            c.href = url.resolve(href, $(this).find('a').attr('href'))
+            obj.chapters.push(c)
+        }
+    })
+    console.log('do function filterNovelMessagePage')
     if (obj.chapters.length==0){
+        console.log('无章节')
         return
     }else if(obj.chapters.length<10){
         console.log(`${obj.title} 章节长度小于10`)
@@ -212,12 +189,17 @@ function filterNovelMessagePage(err,res,body){
             mongoose.close()
             return
         }else if(!novels||!novels.length){
-            console.log('数据库无此小说，保存此小说：', obj.title)
+            //console.log('数据库无此小说，保存此小说：', obj.title)
             _novel=new Novel(obj)
         }else{
-            console.log('数据库有此小说，更新此小说：',novels[0].title)
+            //console.log('数据库有此小说，更新此小说：',novels[0].title)
             for(var i=0;i<novels[0].chapters.length;i++){
-                obj.chapters[i] = _.extend(novels[0].chapters[i],obj.chapters[i])
+                for(var j=0;j<obj.chapters.length;j++){
+                    if(novels[0].chapters[i].href==obj.chapters[j].href){
+                        obj.chapters[j] = _.extend(novels[0].chapters[i], obj.chapters[j])
+                        break;
+                    }
+                }  
             }
             _novel=_.extend(novels[0],obj)
             if(novels.length>1){
@@ -228,22 +210,26 @@ function filterNovelMessagePage(err,res,body){
             if(err){
                 console.log(`${_novel.title} save err`,err)
             }else{
-                console.log(`${novel.title} save ok`)
+                console.log(!!_novel._id ? '有此小说，更新此小说' : '无此小说，保存此小说',`${novel.title} save ok`)
             }
         })
     })
 }
-async(novelList_urls,req,filterNovelListPage,function(){
-    console.log(`get all of the list page of novels `)
-});
+// async(novelList_urls,req,filterNovelListPage,function(){
+//     console.log(`get all of the list page of novels `)
+// });
 
-
+//https://book.qidian.com/ajax/book/category?_csrfToken=p6fgbWEiGCIZIiBI7fiacujAPNjJW3PBxNV3Pogr&bookId=1316859
+novelMessage_urls = ["https://book.qidian.com/info/2837186"];
 (function(){
     function f(){
         setTimeout((e) => {
             if (novelMessage_urls.length > 0) {
                 async(novelMessage_urls, req, filterNovelMessagePage, function () {
+                    console.log('3 second close database')
+                    setTimeout(() => {
                         mongoose.close()
+                    }, 3000);
                 })
             } else {
                 f()
