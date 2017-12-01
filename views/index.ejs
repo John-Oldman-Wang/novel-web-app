@@ -35,14 +35,16 @@
     <div>
     <ul>
         <% novels.forEach(function(novel){%>
-            <li>
-                <img src="<%= novel.image %>" alt="<%= novel.title %>">
-                <h2><%= novel.title %></h1>
-                <h3>作者:<%= novel.author %></h2>
-                <h4>简介:<%= novel.introduction %></h2>
-                <h5>最后更新时间:<%= novel.lastUpdateTime %></h2>
-                <p>章节数:<%= novel.chapter_number %></p>
-            </li>
+            <a href="/novel?n=<%= novel.base64id %>">
+                <li>
+                    <img src="<%= novel.image %>" alt="<%= novel.title %>">
+                    <h2><%= novel.title %></h1>
+                    <h3>作者:<%= novel.author %></h2>
+                    <h4>简介:<%= novel.introduction %></h2>
+                    <h5>最后更新时间:<%= novel.lastUpdateTime %></h2>
+                    <p>章节数:<%= novel.chapterNumber %></p>
+                </li>
+            </a>
         <% }) %>
     </ul>
 </body>
