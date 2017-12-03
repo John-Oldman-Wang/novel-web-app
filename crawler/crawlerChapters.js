@@ -7,13 +7,13 @@ const iconv = require('iconv-lite')
 const mongoose = require('mongoose')
 var _ = require('underscore')
 
-
+var ObjectId = mongoose.Types.ObjectId
 
 // 自定义模块和model引入
 var Novel = require('../models/m-novel.js')
 var Chapter = require('../models/m-chapter.js')
 var req = require('./httpget.js')
-
+var async=require('./async.js')
 //常量申明
 var dburl = "mongodb://localhost:27017/novelApp2"
 // 再封装mongoose
@@ -42,9 +42,9 @@ mongoose.connect()
 function fetch(cb, endFn){
     var i=0
     var self = this
-    self.find({}).skip(i++).limit(1).exec(function circle_cb(err, result) {
+    self.find({ "chapters.chapter_id": null }).skip(i++).limit(1).exec(function circle_cb(err, result) {
         cb.call(this, err ,result ,function(){
-            self.find({}).skip(i++).limit(1).exec(circle_cb)
+            self.find({ "chapters.chapter_id": null }).skip(i++).limit(1).exec(circle_cb)
         })
     }) 
 }
@@ -55,16 +55,18 @@ fetch.bind(Novel)(function (err, novels ,next){
         return
     }else if(novels.length==0){
         console.log(`fetch novels is complete!`)
-        mongoose.close()
+        console.log(`close mongo after 3 second `)
+        setTimeout(() => {
+            mongoose.close()
+        }, 3000);
         return
     }else{
-        console.log(novels[0].title)
         getChapters(novels[0],next||function(){})
     }
 })
 
 function getChapters(novel,cb){
-    function filterChapterPage(err, res, body) {
+    function filterChapterPage(err, res, body ,serial) {
         var href = ''
         if (err) {
             console.log('request wrong', err.code, this.uri.href)
@@ -87,16 +89,15 @@ function getChapters(novel,cb){
         var $ = cheerio.load(body)
         var obj = {}
         obj.paragraphs = []
-        //obj.title = $('.text-head').find('.j_chapterName').text().split(' ')[1]
-        if (/^第[十|百|千|万|一|二|三|四|五|六|七|八|九|零|\d]+章/g.test($('.text-head').find('.j_chapterName').text().trim())) {
-            var title = $('.text-head').find('.j_chapterName').text().trim()
-            serialName = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/, '$1')
-            obj.title = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/, '$2').trim().replace(serialName, '')
-        } else if ($('.text-head').find('.j_chapterName').text().trim().replace(/^[^\d]*(\d*).*/, '$1') !='') {
-            var serial = $('.text-head').find('.j_chapterName').text().trim().replace(/^[^\d]*(\d*).*/, '$1')
-            obj.title = $('.text-head').find('.j_chapterName').text().trim().replace(serial, '').replace(/【|】|(第章)/g, '')
+        var title = $('.text-head').find('.j_chapterName').text().trim()
+        if (/^第[十|百|千|万|一|二|三|四|五|六|七|八|九|零|\d]+章/g.test(title)) {
+            var serialName = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/, '$1')
+            obj.title = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/, '$2').trim().replace(serialName, '').trim()
+        } else if (parseInt(title.replace(/^[^\d]*(\d*).*/, '$1')) == serial) {
+            var serialName = title.replace(/^[^\d]*(\d*).*/, '$1')
+            obj.title = title.replace(serialName, '').replace(/【|】|(第章)/g, '').replace(/^章/,'').trim()
         } else {
-            obj.title = $('.text-head').find('.j_chapterName').text().trim().replace(/【|】|(第章)/g, '')
+            obj.title = title.trim()
         }
         $('.read-content').find('p').each(function () {
             obj.paragraphs.push($(this).text().trim())
@@ -109,78 +110,91 @@ function getChapters(novel,cb){
     chapter_hrefs=chapter_hrefs.map(function(item){
         return item.href
     })
-    var chapters=[]
+    console.log(novel.title, chapter_hrefs.length)
+    var flag=chapter_hrefs.length
     async(chapter_hrefs,req,function(err,res,body){
-        var chapter=filterChapterPage.call(this,err,res,body)
+        var chapter
+        for(var i=0;i<novel.chapters.length;i++){
+            if (this.uri.href == novel.chapters[i].href){
+                chapter=filterChapterPage.call(this, err, res, body, novel.chapters[i].serial) 
+                break;
+            }
+        }
+        
         if(chapter){
+            //准备好新抓取来的chapter
             chapter.href=this.uri.href
             chapter.novel_id=novel._id
-            chapters.push(chapter)
-        }
-    }, function () {
-        cb&&cb()
-        async(chapters, function (chapter,cb){
-            var _chapter = new Chapter(chapter)
-            _chapter.save(cb)
-        },function(err,chapter){
-            if(err){
-                console.log(`chapter save err`,err)
-                novel.save(function(){
+            //开始查询数据库
+            Chapter.find({title:chapter.title,novel_id:novel._id}).exec(function(err,chapters){
+                var _chapter = ''
+                if(err){
+                    console.log('查找数据库是否有刚爬到的章节时放生错误',err)
                     mongoose.close()
-                })
-                return
-            }else{
-                novel.chapters.forEach(function(item,index,arr){
-                    if(item.href==chapter.href){
-                        arr[index].chapter_id=chapter._id
+                    return
+                }else if (!chapters || !chapters.length){
+                    _chapter = new Chapter(chapter)
+                    _chapter.save(function (err, chapter) {
+                        if (err) {
+                            console.log(`chapter save err`, err)
+                            novel.save(function () {
+                                mongoose.close()
+                            })
+                            return
+                        } else {
+                            novel.chapters.forEach(function (item, index, arr) {
+                                if (item.href == chapter.href) {
+                                    arr[index].chapter_id = chapter._id
+                                }
+                            })
+                            flag-=1
+                            if(flag==0){
+                                novel.save(function(err,Novel){
+                                    if(err){
+                                        console.log(`抓取玩章节保存小说 \x1B[34m ${Novel.title}\x1B[39m 出错`,err)
+                                        mongoose.close()
+                                        return
+                                    }else{
+                                        console.log(`小说:\x1B[34m ${Novel.title}\x1B[39m的章节保存完成!`)
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }else{
+                    console.log('数据库有重复的章节!')
+                    flag-=1
+                    if(flag==0){
+                        novel.save(function(err,Novel){
+                            if(err){
+                                console.log(`抓取玩章节保存小说 \x1B[34m ${Novel.title}\x1B[39m 出错`,err)
+                                mongoose.close()
+                                return
+                            }else{
+                                console.log(`小说:\x1B[34m ${Novel.title}\x1B[39m的章节保存完成!`)
+                            }
+                        })
+                    }
+                }
+            })
+        }else{
+            console.log(`筛选章节信息出错 \x1B[34m ${this.uri.href}\x1B[39m`)
+            flag-=1
+            if(flag==0){
+                novel.save(function(err,Novel){
+                    if(err){
+                        console.log(`抓取玩章节保存小说 \x1B[34m ${Novel.title}\x1B[39m 出错`,err)
+                        mongoose.close()
+                        return
+                    }else{
+                        console.log(`小说:\x1B[34m ${Novel.title}\x1B[39m的章节保存完成!`)
                     }
                 })
             }
-        },function(){
-            novel.save(function(err,Novel){
-                if(err){
-                    console.log(err)
-                    console.log(`章节爬去完成重新更新小说出错 ${nove.title}`)
-                    mongoose.close()
-                    return
-                }else{
-                    console.log(`小说:${Novel.title} 的章节保存完成！`)
-                }
-            })
-        })
+        }
+    }, function () {
+        cb&&cb()
     })
 }
 
-function deepClone(object){
-    if(typeof object!='object'){
-        return object
-    }else{
-        var newObj=Array.isArray(object)?[]:{}
-        for(var i in object){
-            newObj[i]=deepClone(object[i])
-        }
-        return newObj
-    }
-}
-function async(arr, fn, cb, enddo) {
-    if (!Array.isArray(arr)) {
-        throw new Error('the first arguments must be array and lenth must over 0!')
-        return
-    }else if(arr.length==0){
-        enddo && enddo()
-        return
-    }
-    if (typeof fn != 'function' || typeof cb != 'function') {
-        throw new Error(`the ${typeof fn != 'function' ? 'second' : 'third'} arguments must be function!`)
-        return
-    }
-    function circle_function() {
-        cb.apply(this, arguments)
-        if (arr.length == 0) {
-            enddo && enddo()
-            return
-        }
-        fn(arr.shift(), circle_function)
-    }
-    fn(arr.shift(), circle_function)
-}
+
