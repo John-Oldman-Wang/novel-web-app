@@ -34,7 +34,6 @@ mongoose.connect=mongoose.connect.bind(mongoose,dburl,{
     useMongoClient: true
 })
 // 
-mongoose.connect()
 
 var origin='https://www.qidian.com'
 var path='/free/all'
@@ -202,7 +201,7 @@ function saveNovel(href,body,arr) {
             })
         }
     });
-    Novel.find({ title: obj.title }).exec(function (err, novels) {
+    Novel.find({ title: obj.title,href:obj.href }).exec(function (err, novels) {
         var _novel
         if (err) {
             console.log('err:', err)
@@ -216,6 +215,7 @@ function saveNovel(href,body,arr) {
                 console.log(`和数据小说信息一样，章节长度一样 ${obj.title}`)
                 //return
             }
+            //爬去到的信息覆盖数据库的信息
             for (var i = 0; i < novels[0].chapters.length; i++) {
                 for (var j = 0; j < obj.chapters.length; j++) {
                     if (novels[0].chapters[i].href == obj.chapters[j].href) {
@@ -225,21 +225,21 @@ function saveNovel(href,body,arr) {
                 }
             }
             _novel = _.extend(novels[0], obj)
-            if (novels.length > 1) {
-                console.log('查询数据库发现有重复名称的小说,小说名称是:', obj.title)
-            }
         }
+        var flag=_novel.isNew
         _novel.save(function (err, novel) {
             if (err) {
                 console.log(`${_novel.title} save err`, err)
             } else {
-                console.log(!_novel.isNew? '有此小说，更新此小说' : '无此小说，保存此小说', `${novel.title} save ok`)
+                console.log(!flag? '有此小说，更新此小说' : '无此小说，保存此小说', `${novel.title} save ok`)
             }
         })
     })
 }
 function crawlerNewNovels(){
-    for (var i = 30; i < 100; i++) {
+
+    mongoose.connect()
+    for (var i = 1; i < 30; i++) {
         novelList_urls.push(origin + path + search + i)
     }
     async(novelList_urls, req, filterNovelListPage, function () {
@@ -263,8 +263,11 @@ function crawlerNewNovels(){
 }
 
 
+crawlerNewNovels()
+
 
 function updateNovelInDB(){
+    mongoose.connect()
     Novel.find({}, { title: 1, href: 1 }).exec(function (err, novels) {
         if (err) {
             console.log(err)
@@ -292,4 +295,99 @@ function updateNovelInDB(){
             f()
         })()
     });
-}
+};
+
+
+
+(function(){
+    var index={
+        init:function(){
+
+        },
+        novelList_urls:[],
+        novelMessage_urls:[],
+        reqForNovel: function (u, cb) {
+            var bookid = u.replace(/^[^\r\n\d]*(\d+)/, '$1')
+            var option = {
+                url: "https://book.qidian.com/ajax/book/category?_csrfToken=SB3A0L5JCXjyhGwoim8V4vHEVoXTL06Af7ZHcJt1&bookId=" + bookid,
+                timeout: 5000,
+                headers: {
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6',
+                    'Connection': 'keep-alive',
+                    'Host': 'book.qidian.com',
+                    'Upgrade-Insecure-Requests': '1',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
+                }
+            }
+            request(u, { timeout: 5000 }, function (err, res, body) {
+                var me=this
+                if (err) {
+                    cb && cb.call(this, new Error(`${this.uri.href} err.code`), me,res,body)
+                    return
+                }
+                if (res.statusCode != '200') {
+                    cb && cb.call(this, new Error(`${this.uri.href} statusCode !=200`), me,res,body)
+                    return
+                }
+                if (!body || typeof body != 'string' && !Buffer.isBuffer(body)) {
+                    cb && cb.call(this, new Error(`${this.uri.href} no body`), me,res, body)
+                    return
+                }
+                var Body = Buffer.isBuffer(body) ? body.toString() : body
+                var href = res.request.uri.href
+                request(option, function (err, res, body) {
+                    if (err) {
+                        cb && cb.call(this, new Error(`${this.uri.href} err.code`) ,me,res, body)
+                        return
+                    }
+                    if (res.statusCode != '200') {
+                        cb && cb.call(this, new Error(`${this.uri.href} statusCode !=200`), me, res, body)
+                        return
+                    }
+                    if (!body || typeof body != 'string' && !Buffer.isBuffer(body)) {
+                        cb && cb.call(this, new Error(`${this.uri.href} no body`), me, res, body)
+                        return
+                    }
+                    var json = JSON.parse(Buffer.isBuffer(body) ? body.toString() : body)
+                    if (!'data' in json || typeof json.data != 'object' || ! 'vs' in json.data) {
+                        cb && cb.call(this, new Error(`${this.uri.href} no "vs" in json.data`), me, res, body)
+                        return
+                    }
+                    var arr = json.data.vs
+                    cb && cb.call(this, null, me, res, Body, arr)
+                })
+            })
+        },
+        filterNovelListPage: function(err, res, body) {
+            var me
+            if (err) {
+                console.log('request wrong', err.code)
+                if (err.code == 'ESOCKETTIMEDOUT' || err.code == 'ETIMEDOUT') {
+                    console.log(`get ${this.uri.href} timeout`)
+                    novelList_urls.unshift(this.uri.href)
+                }
+                return
+            }
+            var href = ''
+
+            if (!body || typeof body != 'string' && !Buffer.isBuffer(body)) {
+                console.log('no body')
+                return {}
+            }
+            body = Buffer.isBuffer(body) ? body.toString() : body
+            href = res.request.uri.href
+            var $ = cheerio.load(body)
+            if ($('.all-img-list').find('h4').length < 1) {
+                return {}
+            }
+            $('.all-img-list').find('h4').each(function (i, elem) {
+                var item = url.resolve(href, $(this).find('a').attr('href'))
+                novelMessage_urls.push(item)
+            })
+        }
+    };
+    
+    index.init();
+})
