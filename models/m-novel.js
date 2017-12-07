@@ -65,7 +65,7 @@ novelSchema.statics={
 			count=10
 		}
 		return this.find({},{href:0,chapters:0,meta:0})
-		.sort('lastUpdateTime')
+		.sort({'lastUpdateTime':-1})
 		.limit(count).exec(cb)
 	}
 }
