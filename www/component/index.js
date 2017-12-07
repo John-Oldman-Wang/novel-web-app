@@ -47,6 +47,7 @@ class Index extends Component {
                                     <Link  to={'/novel?v='+novel._id}>  
                                     <h1>{novel.title}</h1>
                                     <img src={novel.image} />
+                                    <p>{novel.lastUpdateTime}</p>
                                     </Link>
                                 </li>
                             );

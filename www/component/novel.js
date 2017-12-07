@@ -1,7 +1,7 @@
 const React = require('react');
 const { Component } = require('react')
 const formSearch = require('../plugin/formSearch.js')
-const moment = require()
+const moment = require("moment")
 class Novel extends Component {
     constructor(props) {
         super(props)
@@ -47,7 +47,7 @@ class Novel extends Component {
                     <img src={novel.image} alt={novel.title}/>
                     <h3>作者:&nbsp;&nbsp;{novel.author}</h3>
                     <p>{novel.introduction}</p>
-                    <p>最后更新时间:&nbsp;&nbsp;{novel.lastUpdateTime}</p>
+                    <p>最后更新时间:&nbsp;&nbsp;{moment(novel.lastUpdateTime).format('YYYY年MM月DD日, h:mm:ss a')}</p>
                 </div>
             );
         }else{
