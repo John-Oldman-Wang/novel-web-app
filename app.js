@@ -19,6 +19,31 @@ app.set('views','./views')
 app.get('/',function(req,res){
     fs.createReadStream('./build/index.html').pipe(res)
 })
+app.get('/index',function(req,res,next){
+    if(req.headers){
+        if (req.headers['x-response-type'] =='multipart'){
+            Novel.findLast(20,function(err,novels){
+                res.json({
+                    novels:novels
+                })
+            })
+        }
+    }else{
+        next&&next()
+    }
+})
+app.get('/novel',function(req,res,next){
+    
+    if (req.headers['x-response-type'] == 'multipart') {
+        Novel.findById(req.query.v, function (err, novel) {
+            res.json({
+                novel: novel
+            })
+        })
+    } else {
+        next && next()
+    }
+})
 app.get('/bundle.js',function(req,res){
     fs.createReadStream('./build/bundle.js').pipe(res)
 })
