@@ -58,6 +58,15 @@ novelSchema.statics={
 		return this
 		.findOne({_id:id})
 		.exec(cb)
+	},
+	findLast:function(count,cb){
+		if(typeof count=='function'){
+			cb=count
+			count=10
+		}
+		return this.find({},{href:0,chapters:0,meta:0})
+		.sort('lastUpdateTime')
+		.limit(count).exec(cb)
 	}
 }
 
