@@ -7,6 +7,7 @@ const { BrowserRouter, Route, Link } = require('react-router-dom')
 const Index=require('./component/index.js')
 const About=require('./component/about.js')
 const Novel=require('./component/novel.js')
+const Chapter=require('./component/chapter.js')
 const Search=require('./component/search.js')
 const Progress=require('./component/progress.js')
 
@@ -27,6 +28,7 @@ ReactDom.render(<BrowserRouter>
         <Route exact  path='/' component={Index}></Route>
         <Route path='/novel' component={Novel}></Route>
         <Route path='/search' component={Search}></Route>
+        <Route path='/chapter' component={Chapter}></Route>
         <Route path='/about' component={About}></Route>
     </App>
 </BrowserRouter>,document.getElementById('content'))

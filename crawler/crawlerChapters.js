@@ -42,7 +42,7 @@ mongoose.connect()
 function fetch(cb, endFn){
     var i=0
     var self = this
-    self.find({ "chapters.chapter_id": null }).skip(i++).limit(1).exec(function circle_cb(err, result) {
+    self.find({ "chapters.chapter_id": null }).sort({ "lastUpdateTime": -1 }).skip(i++).limit(1).exec(function circle_cb(err, result) {
         cb.call(this, err ,result ,function(){
             self.find({ "chapters.chapter_id": null }).skip(i++).limit(1).exec(circle_cb)
         })

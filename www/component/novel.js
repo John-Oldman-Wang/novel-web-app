@@ -1,15 +1,15 @@
 const React = require('react');
 const { Component } = require('react')
+const { Link } = require('react-router-dom')
 const formSearch = require('../plugin/formSearch.js')
 const moment = require("moment")
 class Novel extends Component {
     constructor(props) {
         super(props)
-        console.log(this)
-        var query=(formSearch(this.props.location.search))
+        var query=formSearch(this.props.location.search)
         this.state = {
             novel:{
-                _id: formSearch(this.props.location.search)
+                _id: formSearch(this.props.location.search).v
             }
         }
         var xhr = new XMLHttpRequest()
@@ -21,7 +21,7 @@ class Novel extends Component {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 var json = JSON.parse(xhr.responseText)
                 this.setState({
-                    novel: json.novel
+                    novel: json
                 })
                 this.props.history.action == "POP" ||window.p1.goto(100)
             }else{
@@ -48,6 +48,17 @@ class Novel extends Component {
                     <h3>作者:&nbsp;&nbsp;{novel.author}</h3>
                     <p>{novel.introduction}</p>
                     <p>最后更新时间:&nbsp;&nbsp;{moment(novel.lastUpdateTime).format('YYYY年MM月DD日, h:mm:ss a')}</p>
+                    <ul>
+                        {novel.chapters.map((chapter)=>{
+                            return(<li key={chapter._id} style={{float:"left",width:"25%",height:"200px"}}>
+                                <Link to={"/chapter?c=" + chapter.chapter_id}>
+                                    <h4>{chapter.title}</h4>
+                                    <p>serialName:{chapter.serialName}</p>
+                                    <p>serial:{chapter.serial}</p>
+                                </Link>
+                            </li>)
+                        })}
+                    </ul>
                 </div>
             );
         }else{

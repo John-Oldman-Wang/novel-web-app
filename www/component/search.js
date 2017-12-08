@@ -6,7 +6,7 @@ const url=require('url-parse')
 class Search extends Component {
     constructor(props) {
         super(props)
-        console.log(this)
+        console.log('Search constructor')
         if(!!this.props.location){
             var location = this.props.location
             var u = new url(location.pathname + location.search)
@@ -23,6 +23,32 @@ class Search extends Component {
         })
     }
     componentWillMount() {
+        console.log("Search componentWillMount");
+    }
+
+    componentDidMount() {
+        console.log("Search componentDidMount");
+    }
+
+    componentWillReceiveProps(nextProps) {
+        console.log("Search componentWillReceiveProps");
+    }
+
+    shouldComponentUpdate() {
+        console.log("Search shouldComponentUpdate");
+        return true;
+    }
+
+    componentWillUpdate() {
+        console.log("Search componentWillUpdate");
+    }
+
+    componentDidUpdate() {
+        console.log("Search componentDidUpdate");
+    }
+
+    componentWillUnmount() {
+        console.log("Search componentWillUnmount");
     }
 
     render() {
@@ -33,8 +59,6 @@ class Search extends Component {
                 }}/><Link to={"search?key="+this.state.key}>搜&nbsp;索</Link>
             </div>
         );
-    }
-    componentDidMount() {
     }
 }
 

@@ -5,6 +5,7 @@ var app=express()
 var dburl="mongodb://localhost:27017/novelApp2"
 var mongoose=require('mongoose')
 var Novel=require('./models/m-novel.js')
+var Chapter=require('./models/m-chapter.js')
 
 var port=3000
 var webName=''
@@ -12,7 +13,15 @@ var hostName=''
 mongoose.connect(dburl,{
     useMongoClient: true,
 })
-
+app.use(function(req,res,next){
+    
+    if (req.headers['x-response-type'] == 'multipart') {
+        console.log('multipart:%s %s %s', req.method, req.url, req.path);
+    } else {
+        console.log('not multipart:%s %s %s', req.method, req.url, req.path);
+    }
+    next();
+})
 app.set('view engine','ejs')
 app.set('views','./views')
 
@@ -33,12 +42,18 @@ app.get('/index',function(req,res,next){
     }
 })
 app.get('/novel',function(req,res,next){
-    
     if (req.headers['x-response-type'] == 'multipart') {
         Novel.findById(req.query.v, function (err, novel) {
-            res.json({
-                novel: novel
-            })
+            res.json(novel)
+        })
+    } else {
+        next && next()
+    }
+})
+app.get('/chapter', function (req, res, next) {
+    if (req.headers['x-response-type'] == 'multipart') {
+        Chapter.findById(req.query.c, function (err, chapter) {
+            res.json(chapter)
         })
     } else {
         next && next()
