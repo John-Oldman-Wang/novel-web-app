@@ -5,11 +5,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: {
-        app:[path.resolve(__dirname, './www/main.js')]
+        app:[path.resolve(__dirname, './www/entry/main.js')]
     },
     output: {
         publicPath: "",
-        path: path.resolve(__dirname, './build'),
+        path: path.resolve(__dirname, './www/output'),
         filename: 'bundle.js',
     },
     module:{
@@ -18,23 +18,24 @@ module.exports = {
         ]
     },
     plugins: [
-        new HtmlWebpackPlugin({ template: './www/index.html' }),
-        //new webpack.HotModuleReplacementPlugin(),
+        new HtmlWebpackPlugin({ template: './www/entry/index.html' }),
         new webpack.optimize.UglifyJsPlugin({
-            uglifyOptions: {
-                ie8: false,
-                ecma: 8,
-                mangle: {
-                    properties: {
-                        // mangle property options
-                    }
-                },
-                output: {
-                    comments: false,
-                    beautify: false,
-                },
-                warnings: false
-            }
+            // uglifyOptions: {
+            //     ie8: false,
+            //     ecma: 8,
+            //     mangle: {
+            //         properties: {
+            //             // mangle property options
+            //         }
+            //     },
+            //     output: {
+            //         comments: false,
+            //         beautify: false,
+            //     },
+            //     warnings: false
+            // },
+            warnings: true,
+            minimize: true
         }),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': '"production"'

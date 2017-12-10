@@ -4,12 +4,10 @@ const fs=require('fs')
 var app=express()
 var dburl="mongodb://localhost:27017/novelApp2"
 var mongoose=require('mongoose')
-var Novel=require('./models/m-novel.js')
-var Chapter=require('./models/m-chapter.js')
+var Novel=require('./config/models/m-novel.js')
+var Chapter=require('./config/models/m-chapter.js')
 
 var port=3000
-var webName=''
-var hostName=''
 mongoose.connect(dburl,{
     useMongoClient: true,
 })
@@ -22,10 +20,10 @@ app.use(function(req,res,next){
     next();
 })
 app.set('view engine','ejs')
-app.set('views','./views')
+app.set('views','./config/views')
 
 app.get('/',function(req,res){
-    fs.createReadStream('./build/index.html').pipe(res)
+    fs.createReadStream('./www/output/index.html').pipe(res)
 })
 app.get('/index',function(req,res,next){
     if(req.headers){
@@ -58,13 +56,12 @@ app.get('/chapter', function (req, res, next) {
         next && next()
     }
 })
-
 app.get('/bundle.js',function(req,res){
-    fs.createReadStream('./build/bundle.js').pipe(res)
+    fs.createReadStream('./www/output//bundle.js').pipe(res)
 })
 
 app.get('/test',function(req,res){
-    fs.createReadStream('./www/test.html').pipe(res)
+    fs.createReadStream('./www/entry/test.html').pipe(res)
 })
 app.get('/search',function(req,res,next){
     if (req.headers['x-response-type'] == 'multipart') {
@@ -76,13 +73,13 @@ app.get('/search',function(req,res,next){
     }
 })
 app.get('/test1',function(req,res){
-    fs.createReadStream('./www/test1.html').pipe(res)
+    fs.createReadStream('./www/entry/test1.html').pipe(res)
 })
 
 app.use(function(req,res){
-    fs.createReadStream('./build/index.html').pipe(res)
+    fs.createReadStream('./www/output/index.html').pipe(res)
 })
-//require('./config/router.js')(app)
+//require('./config/router/router.js')(app)
 
 app.listen(port,function(err){
     if(err)
