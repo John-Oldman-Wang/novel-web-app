@@ -1,5 +1,5 @@
 const React = require('react');
-const { Component } = require('react')
+const Component = React.Component
 class About extends Component {
     render() {
         return (

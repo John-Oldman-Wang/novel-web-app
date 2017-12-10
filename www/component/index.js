@@ -1,7 +1,8 @@
 const React = require('react');
-const { Component } = require('react')
+const Component = React.Component
 const { Link } =require('react-router-dom')
 const Search = require('./search.js')
+var xhr = new XMLHttpRequest()
 class Index extends Component {
     constructor(props){
         super(props)
@@ -10,7 +11,6 @@ class Index extends Component {
            novels:[] 
         }
         window.p1.goto(50)
-        var xhr = new XMLHttpRequest()
         xhr.open('GET', '/index', true)
         xhr.setRequestHeader('x-response-type', 'multipart')
         xhr.onreadystatechange = () => {
@@ -43,13 +43,33 @@ class Index extends Component {
                     <ul>
                         {this.state.novels.map(novel=>{
                             return (
-                                <li key={novel._id}>
-                                    <Link  to={'/novel?v='+novel._id}>  
-                                    <h1>{novel.title}</h1>
-                                    <h3>{novel.category}</h3>
-                                    <img src={novel.image} alt={novel.title}/>
-                                    <p>{novel.lastUpdateTime}</p>
-                                    </Link>
+                                <li
+                                    style={{
+                                        float:'left',
+                                        width:'25%',
+                                        padding:'0px 10px'
+                                    }}
+                                    key={novel._id}>
+                                    <div
+                                        style={{
+                                            overflow: 'hidden',
+                                            width:'250px',
+                                            margin: '0px auto'
+                                        }}
+                                    >
+                                        <Link  to={'/novel?v='+novel._id} rel={novel.title}>
+                                            <h1
+                                                style={{
+                                                    overflow:'hidden',
+                                                    textOverflow:'ellipsis',
+                                                    whiteSpace:'nowrap',
+                                                }}
+                                            >{novel.title}</h1>
+                                            <h3>{novel.category}</h3>
+                                            <img src={novel.image} alt={novel.title}/>
+                                            <p>{novel.lastUpdateTime}</p>
+                                        </Link>
+                                    </div>
                                 </li>
                             );
                         })}

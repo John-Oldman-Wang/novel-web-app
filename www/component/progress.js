@@ -1,5 +1,5 @@
 const React = require('react');
-const { Component } = require('react')
+const Component = React.Component
 class Progrees extends Component {
     constructor(props) {
         super(props)
@@ -10,15 +10,23 @@ class Progrees extends Component {
         },props)
         this.state.show=this.state.pro!=1
     }
+    componentDidMount(){
+        console.log('pro componentDidMount')
+    }
     goto(value){
         if(value>1){
             value=(value%101)/100
         }
         if(!this.state.show){
             this.setState({
-                show:!!1,
-                pro:value
+                show:!!1
             })
+            setTimeout(() => {
+                this.setState({
+                    pro: value
+                }) 
+            }, 0);
+            
         }else{
             this.setState({
                 pro:value

@@ -39,12 +39,14 @@ mongoose.connect = mongoose.connect.bind(mongoose, dburl, {
 // 
 mongoose.connect()
 
+
+var errNovel = 0
 function fetch(cb, endFn){
-    var i=0
+    //var i=0
     var self = this
-    self.find({ "chapters.chapter_id": null }).sort({ "lastUpdateTime": -1 }).skip(i++).limit(1).exec(function circle_cb(err, result) {
-        cb.call(this, err ,result ,function(){
-            self.find({ "chapters.chapter_id": null }).skip(i++).limit(1).exec(circle_cb)
+    self.find({ "chapters.chapter_id": null}).limit(1).exec(function circle_cb(err, result) {
+        cb.call(this, err ,result ,function(skipNumber=errNovel){
+            self.find({ "chapters.chapter_id": null }).skip(skipNumber).limit(1).exec(circle_cb)
         })
     }) 
 }
@@ -64,7 +66,6 @@ fetch.bind(Novel)(function (err, novels ,next){
         getChapters(novels[0],next||function(){})
     }
 })
-
 function getChapters(novel,cb){
     function filterChapterPage(err, res, body ,serial) {
         var href = ''
@@ -73,8 +74,11 @@ function getChapters(novel,cb){
             if (err.code == 'ESOCKETTIMEDOUT' || err.code == 'ETIMEDOUT') {
                 console.log(`get ${this.uri.href} timeout`)
                 chapter_hrefs.unshift(this.uri.href)
+                return 'ETIMEOUT'
+            }else{
+                return false
             }
-            return false
+            
         }
         if (res.statusCode != '200') {
             console.log(`此页面无章节信息:${this.uri.href}`)
@@ -104,7 +108,7 @@ function getChapters(novel,cb){
         })
         return obj
     }
-    var chapter_hrefs=novel.chapters.filter(function(item){
+    var chapter_hrefs=novel.chapters.filter(function(item,index){
         return typeof item=='object'&&(!item.chapter_id)
     })    
     chapter_hrefs=chapter_hrefs.map(function(item){
@@ -121,12 +125,12 @@ function getChapters(novel,cb){
             }
         }
         
-        if(chapter){
+        if(typeof chapter=='object'){
             //准备好新抓取来的chapter
             chapter.href=this.uri.href
             chapter.novel_id=novel._id
             //开始查询数据库
-            Chapter.find({title:chapter.title,novel_id:novel._id}).exec(function(err,chapters){
+            Chapter.find({title:chapter.title,novel_id:novel._id,href:chapter.href}).exec(function(err,chapters){
                 var _chapter = ''
                 if(err){
                     console.log('查找数据库是否有刚爬到的章节时放生错误',err)
@@ -156,13 +160,21 @@ function getChapters(novel,cb){
                                         return
                                     }else{
                                         console.log(`小说:\x1B[34m ${Novel.title}\x1B[39m的章节保存完成!`)
+                                        cb&&cb()
                                     }
                                 })
                             }
                         }
                     })
                 }else{
-                    console.log('数据库有重复的章节!')
+                    console.log('数据库有重复的章节!',chapter.title)
+                    for(var c=0;c<novel.chapters.length;c++){
+                        if (novel.chapters[c].href == chapters[0].href) {
+                            novel.chapters[c].chapter_id = chapters[0]._id
+                            console.log('数据库有重复的章节!,已经更新入小说',c, chapters[0]._id)
+                            break;
+                        }
+                    }
                     flag-=1
                     if(flag==0){
                         novel.save(function(err,Novel){
@@ -172,28 +184,23 @@ function getChapters(novel,cb){
                                 return
                             }else{
                                 console.log(`小说:\x1B[34m ${Novel.title}\x1B[39m的章节保存完成!`)
+                                cb&&cb()
                             }
                         })
                     }
                 }
             })
+        }else if(chapter=='ETIMEOUT'){
+            console.log(`筛选章节信息超时 \x1B[34m ${this.uri.href}\x1B[39m`)
         }else{
             console.log(`筛选章节信息出错 \x1B[34m ${this.uri.href}\x1B[39m`)
-            flag-=1
-            if(flag==0){
-                novel.save(function(err,Novel){
-                    if(err){
-                        console.log(`抓取玩章节保存小说 \x1B[34m ${Novel.title}\x1B[39m 出错`,err)
-                        mongoose.close()
-                        return
-                    }else{
-                        console.log(`小说:\x1B[34m ${Novel.title}\x1B[39m的章节保存完成!`)
-                    }
-                })
-            }
+            flag+=1000000
+            cb && cb(++errNovel)
+            return 'stop'
         }
     }, function () {
-        cb&&cb()
+        //cb&&cb()
+        console.log(`${novel.title} all of http request is complete!`)
     })
 }
 

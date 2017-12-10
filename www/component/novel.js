@@ -1,8 +1,9 @@
 const React = require('react');
-const { Component } = require('react')
+const Component = React.Component
 const { Link } = require('react-router-dom')
 const formSearch = require('../plugin/formSearch.js')
 const moment = require("moment")
+var xhr = new XMLHttpRequest()
 class Novel extends Component {
     constructor(props) {
         super(props)
@@ -13,7 +14,6 @@ class Novel extends Component {
             }
         }
         var xhr = new XMLHttpRequest()
-        var xhr = new XMLHttpRequest()
         xhr.open('GET', '/novel' + this.props.location.search, true)
         xhr.setRequestHeader('x-response-type', 'multipart')
         this.props.history.action=="POP"||window.p1.goto(50)
@@ -21,7 +21,7 @@ class Novel extends Component {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 var json = JSON.parse(xhr.responseText)
                 this.setState({
-                    novel: json
+                    novel: Object.assign(this.state.novel,json||{})
                 })
                 this.props.history.action == "POP" ||window.p1.goto(100)
             }else{
@@ -40,6 +40,7 @@ class Novel extends Component {
 
     render() {
         var novel=this.state.novel
+        console.log(novel)
         if(!!novel.title){
             return (
                 <div>
@@ -49,9 +50,9 @@ class Novel extends Component {
                     <p>{novel.introduction}</p>
                     <p>最后更新时间:&nbsp;&nbsp;{moment(novel.lastUpdateTime).format('YYYY年MM月DD日, h:mm:ss a')}</p>
                     <ul>
-                        {novel.chapters.map((chapter)=>{
+                        {novel.chapters.map((chapter,index)=>{
                             return(<li key={chapter._id} style={{float:"left",width:"25%",height:"200px"}}>
-                                <Link to={"/chapter?c=" + chapter.chapter_id}>
+                                <Link to={{pathname:`/chapter`,hash:'',search:`?c=${chapter.chapter_id}`,state:novel}}>
                                     <h4>{chapter.title}</h4>
                                     <p>serialName:{chapter.serialName}</p>
                                     <p>serial:{chapter.serial}</p>

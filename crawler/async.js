@@ -11,7 +11,12 @@ function async(arr, fn, cb, enddo) {
         return
     }
     function circle_function() {
-        cb.apply(this, arguments)
+        var mes=typeof cb=='function'&&cb.apply(this, arguments)
+        if(mes=='stop'){
+            console.log('the callback function of async function let circle stop!')
+            enddo && enddo()
+            return
+        }
         if (arr.length == 0) {
             enddo && enddo()
             return

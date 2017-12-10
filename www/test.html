@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Test</title>
+    <link rel="import" href="/test1">
+    <script>
+        // Standard custom element that Extends HTMLElement
+        class MyElement extends HTMLElement {
+            constructor() {
+                super();
+                console.log('my-element was created!');
+            }
+        }
+
+        // Register custom element class with browser
+        customElements.define('my-element', MyElement);
+    </script>
+</head>
+<body>
+    <my-element>my</my-element>
+    <my>else</my>
+</body>
+<script>
+    var link = document.querySelector('link[rel="import"]');
+    console.log(link.import)
+    link.import.body.childNodes.forEach(function (item) {
+        // console.log(document.body)
+        // return
+        document.body.append(item)
+    });
+</script>
+<script id='test'>
+    window.k='asdasd'
+</script>
+</html>

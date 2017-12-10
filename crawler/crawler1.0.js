@@ -180,18 +180,22 @@ function saveNovel(href,body,arr) {
     arr.forEach(item => {
         if (item.vN.indexOf("作品相关") == -1) {
             item.cs.forEach(function (chapter, index) {
+                //检查是不是作者写的通知之类的短文字告知读者的信息
+                if(chapter.cnt-0<30){
+                    return
+                }
                 var c = {}
                 var title = chapter.cN
                 c.href = "https://read.qidian.com/chapter/" + chapter.cU
                 if (/^第[十|百|千|万|一|二|三|四|五|六|七|八|九|零|\d]+章/g.test(title)) {
                     c.serialName = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/, '$1')
-                    c.title = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/, '$2').trim().replace(c.serialName, '').trim()
+                    c.title = title.replace(/^(第[十|百|千|一|二|三|四|五|六|七|八|九|零|\d]+章)([^/r/n]+)/, '$2').trim().replace(c.serialName, '').replace(/^(:|：)/,'').trim()
                     c.href = "https://read.qidian.com/chapter/" + chapter.cU
                 } else if (parseInt(title.replace(/^[^\d]*(\d*).*/, '$1')) == (index + 1) || parseInt(title.replace(/^[^\d]*(\d*).*/, '$1')) == index) {
                     var serial = title.replace(/^[^\d]*(\d*).*/, '$1')
                     c.serial = parseInt(serial) + ''
                     c.serialName = serial
-                    c.title = title.replace(serial, '').replace(/【|】|(第章)/g, '').replace(/^章/, '').trim()
+                    c.title = title.replace(serial, '').replace(/【|】|(第章)/g, '').replace(/^章/, '').replace(/^(:|：)/, '').trim()
                 } else {
                     c.title = title.trim()
                     c.serial = index + 1 + ''

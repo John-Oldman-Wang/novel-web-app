@@ -1,5 +1,6 @@
+console.time('first')
 const React = require('react');
-const { Component } = require('react')
+const Component=React.Component
 const ReactDom=require('react-dom')
 
 const { BrowserRouter, Route, Link } = require('react-router-dom') 
@@ -19,9 +20,12 @@ class App extends Component{
             </div>
         )
     }
+    componentDidMount() {
+        console.timeEnd('first')
+    }
 }
 
-
+console.time(new Date())
 window.p1 = ReactDom.render(<Progress pro={0} />, document.getElementById("progressBar"))
 ReactDom.render(<BrowserRouter>
     <App>
@@ -29,6 +33,6 @@ ReactDom.render(<BrowserRouter>
         <Route path='/novel' component={Novel}></Route>
         <Route path='/search' component={Search}></Route>
         <Route path='/chapter' component={Chapter}></Route>
-        <Route path='/about' component={About}></Route>
+        {/* <Route path='/*' component={About}></Route> */}
     </App>
 </BrowserRouter>,document.getElementById('content'))

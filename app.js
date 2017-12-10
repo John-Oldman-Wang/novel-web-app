@@ -14,11 +14,10 @@ mongoose.connect(dburl,{
     useMongoClient: true,
 })
 app.use(function(req,res,next){
-    
     if (req.headers['x-response-type'] == 'multipart') {
-        console.log('multipart:%s %s %s', req.method, req.url, req.path);
+        console.log('multipart:%s %s %s', req.method, req.url);
     } else {
-        console.log('not multipart:%s %s %s', req.method, req.url, req.path);
+        console.log('not multipart:%s %s %s', req.method, req.url);
     }
     next();
 })
@@ -59,9 +58,27 @@ app.get('/chapter', function (req, res, next) {
         next && next()
     }
 })
+
 app.get('/bundle.js',function(req,res){
     fs.createReadStream('./build/bundle.js').pipe(res)
 })
+
+app.get('/test',function(req,res){
+    fs.createReadStream('./www/test.html').pipe(res)
+})
+app.get('/search',function(req,res,next){
+    if (req.headers['x-response-type'] == 'multipart') {
+        Novel.find({title:req.query.key}, function (err, novels) {
+            res.json(novels)
+        })
+    } else {
+        next && next()
+    }
+})
+app.get('/test1',function(req,res){
+    fs.createReadStream('./www/test1.html').pipe(res)
+})
+
 app.use(function(req,res){
     fs.createReadStream('./build/index.html').pipe(res)
 })
