@@ -10,8 +10,8 @@ var _ = require('underscore')
 var ObjectId = mongoose.Types.ObjectId
 
 // 自定义模块和model引入
-var Novel = require('../models/m-novel.js')
-var Chapter = require('../models/m-chapter.js')
+var Novel = require('../config/models/m-novel.js')
+var Chapter = require('../config/models/m-chapter.js')
 var req = require('./httpget.js')
 var async=require('./async.js')
 //常量申明

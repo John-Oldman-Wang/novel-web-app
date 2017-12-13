@@ -81,7 +81,7 @@ app.use(function(req,res){
 })
 //require('./config/router/router.js')(app)
 
-app.listen(port,function(err){
+app.listen(port,'localhost',function(err){
     if(err)
         return console.log(err)
     console.log(`service start at ${port}`)
