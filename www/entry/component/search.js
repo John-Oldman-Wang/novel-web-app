@@ -96,33 +96,61 @@ class Search extends Component {
     render() {
         if(!!this.props.location){
             return (
-                <div>
+                <div style={{padding:"10px 5px 0px 5px"}}>
                     <div>
                         <input type="text" value={this.state.key} onChange={(e) => {
                             this.hanld(e.target.value)
-                        }} /><Link to={"search?key=" + this.state.key}>搜&nbsp;索</Link>
+                        }} /><button style={{
+                            border:"1px solid black",
+                            verticalAlign:"bottom"
+                            }}><Link to={"search?key=" + this.state.key}>搜&nbsp;索</Link>
+                        </button>
                     </div>
-                    <ul>
+                    <ul style={{width:"100%",paddingTop:"5px"}}>
                         {this.state.novels.map((novel, index) => {
-                            return (<li key={novel._id} style={{ float: "left", width: "25%", height: "200px" }}>
-                                <Link to={{ pathname: `/novel`, hash: '', search: `?v=${novel._id}`, state: novel }}>
-                                    <h4>{novel.title}</h4>
-                                    <p>serialName:{novel.author}</p>
-                                    <p>serial:{novel.chaptersNumber}</p>
-                                </Link>
-                            </li>)
+                            return (
+                                <Link to={'/novel?v=' + novel._id} rel={novel.title}>
+                                    <li style={{
+                                        width: "100%",
+                                        marginBottom: "5px",
+
+                                    }} key={novel._id}>
+                                        <div style={{ height: "100%", width: "33%", display: "inline-block" }}>
+                                            <img style={{ width: '100%' }} src={novel.image} alt={novel.title} />
+                                        </div>
+                                        <div style={{
+                                            height: "100%",
+                                            width: "66%",
+                                            display: "inline-block",
+                                            verticalAlign: "top"
+                                        }}>
+                                            <h1
+                                                style={{
+                                                    fontSize: "1.2em",
+                                                    fontWeight: "bold",
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap',
+                                                }}
+                                            >&nbsp;{novel.title}</h1>
+                                            <h3>{novel.category}</h3>
+                                            <p>简介:{novel.shortintroduction}</p>
+                                        </div>
+                                    </li>
+                                </Link>)
                         })}   
                     </ul>
                 </div>
             );
         }else{
-            return (
-                <div>
+            return (<div>
                     <input type="text" value={this.state.key} onChange={(e) => {
                         this.hanld(e.target.value)
-                    }} /><Link to={"search?key=" + this.state.key}>搜&nbsp;索</Link>
-                </div>
-            );
+                    }} />
+                    <button style={{ border: "1px solid black", verticalAlign: "bottom"}}>
+                        <Link to={"search?key=" + this.state.key}>搜&nbsp;索</Link>
+                    </button>
+                </div>);
         } 
     }
 }

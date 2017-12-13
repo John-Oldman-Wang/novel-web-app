@@ -43,19 +43,46 @@ class Novel extends Component {
         console.log(novel)
         if(!!novel.title){
             return (
-                <div>
-                    <h2 style={{display:'inline-block'}}>{novel.title}</h2><span>{novel.shortintroduction}</span>
-                    <img src={novel.image} alt={novel.title}/>
-                    <h3>作者:&nbsp;&nbsp;{novel.author}</h3>
-                    <p>{novel.introduction}</p>
-                    <p>最后更新时间:&nbsp;&nbsp;{moment(novel.lastUpdateTime).format('YYYY年MM月DD日, h:mm:ss a')}</p>
+                <div style={{padding:"5px 5px 0px"}}>
+                    <div style={{ height: "100%", width: "33%", display: "inline-block" }}>
+                        <img style={{ width: '100%' }} src={novel.image} alt={novel.title} />
+                    </div>
+                    <div style={{
+                        height: "100%",
+                        width: "66%",
+                        display: "inline-block",
+                        paddingLeft:"5px",
+                        verticalAlign: "top"
+                    }}>
+                        <h1
+                            style={{
+                                fontSize: "1.2em",
+                                fontWeight: "bold",
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                            }}
+                        >&nbsp;{novel.title}</h1>
+                        <h3>作者:&nbsp;&nbsp;{novel.author}</h3>
+                        <h3>{novel.category}</h3>
+                        <p>简介:{novel.shortintroduction}</p>
+                        <p>最后更新时间:&nbsp;&nbsp;{moment(novel.lastUpdateTime).format('YYYY年MM月DD日, h:mm:ss a')}</p>
+                    </div>
+                    <p style={{
+                        paddingTop: "10px",
+                        paddingBottom: "5px",
+                        textAlign:"center",
+                        fontSize:"1.3em",
+                        fontWeight:"blod",
+                        borderBottom:"1px solid red"
+                    }}>目&nbsp;&nbsp;录</p>
                     <ul>
                         {novel.chapters.map((chapter,index)=>{
-                            return(<li key={chapter._id} style={{float:"left",width:"25%",height:"200px"}}>
+                            return(<li key={chapter._id} style={{width:"100%",lineHeight:"1.5",padding:"5px 0px",borderBottom:"1px solid RGBA(153,153,153,0.6)"}}>
                                 <Link to={{pathname:`/chapter`,hash:'',search:`?c=${chapter.chapter_id}`,state:novel}}>
-                                    <h4>{chapter.title}</h4>
-                                    <p>serialName:{chapter.serialName}</p>
-                                    <p>serial:{chapter.serial}</p>
+                                    <h4 style={{paddingLeft:"5px"}}>{(chapter.serialName||chapter.serial)+"  "+chapter.title}</h4>
+                                    {/* <p>serialName:{chapter.serialName}</p>
+                                    <p>serial:{chapter.serial}</p> */}
                                 </Link>
                             </li>)
                         })}

@@ -6,7 +6,7 @@ var chapterSchema=new Schema({
 	title:String,
 	href:String,
     paragraphs:[String],
-	novel_id:ObjectId,
+	novel_id:{type:ObjectId,ref:'novel'},
     meta:{
 		createAt:{
 			type:Date,
@@ -43,5 +43,5 @@ chapterSchema.statics={
 		.exec(cb)
 	}
 }
-var chapter=mongoose.model('Chapter',chapterSchema)
+var chapter=mongoose.model('chapter',chapterSchema)
 module.exports=chapter

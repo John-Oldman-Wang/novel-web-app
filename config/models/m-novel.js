@@ -20,7 +20,7 @@ var novelSchema=new Schema({
 		serialName:String,
 		serial:String,
 		href:String,
-		chapter_id: Schema.Types.ObjectId
+		chapter_id: {type:Schema.Types.ObjectId,ref:'chapter'}
     }],
     meta:{
 		createAt:{
@@ -75,5 +75,5 @@ novelSchema.virtual('base64id').get(function(){
 	var base=new Buffer(this._id.toString())
 	return base.toString('base64')
 })
-var novel=mongoose.model('Novel',novelSchema)
+var novel=mongoose.model('novel',novelSchema)
 module.exports=novel

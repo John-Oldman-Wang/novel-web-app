@@ -38,39 +38,40 @@ class Index extends Component {
             );
         }else{
             return(
-                <div>
+                <div style={{padding:"10px 5px 0px 5px"}}>
                     <Search />
-                    <ul>
+                    <ul style={{width:"100%",paddingTop:"5px"}}>
                         {this.state.novels.map(novel=>{
                             return (
-                                <li
-                                    style={{
-                                        float:'left',
-                                        width:'25%',
-                                        padding:'0px 10px'
-                                    }}
-                                    key={novel._id}>
-                                    <div
-                                        style={{
-                                            overflow: 'hidden',
-                                            width:'250px',
-                                            margin: '0px auto'
-                                        }}
-                                    >
-                                        <Link  to={'/novel?v='+novel._id} rel={novel.title}>
+                                <Link to={'/novel?v=' + novel._id} rel={novel.title}>
+                                    <li style={{
+                                            width:"100%",
+                                            marginBottom:"5px",
+                                            
+                                        }} key={novel._id}>
+                                        <div style={{height:"100%",width:"33%",display:"inline-block"}}>
+                                            <img style={{width:'100%'}} src={novel.image} alt={novel.title}/>
+                                        </div>
+                                        <div style={{
+                                            height:"100%",
+                                            width:"66%",
+                                            display:"inline-block",
+                                            verticalAlign: "top"
+                                        }}>
                                             <h1
                                                 style={{
-                                                    overflow:'hidden',
-                                                    textOverflow:'ellipsis',
-                                                    whiteSpace:'nowrap',
+                                                    fontSize:"1.2em",
+                                                    fontWeight:"bold",
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap',
                                                 }}
-                                            >{novel.title}</h1>
+                                            >&nbsp;{novel.title}</h1>
                                             <h3>{novel.category}</h3>
-                                            <img src={novel.image} alt={novel.title}/>
-                                            <p>{novel.lastUpdateTime}</p>
-                                        </Link>
-                                    </div>
-                                </li>
+                                            <p>简介:{novel.shortintroduction}</p>
+                                        </div>
+                                    </li>
+                                </Link>
                             );
                         })}
                     </ul>
