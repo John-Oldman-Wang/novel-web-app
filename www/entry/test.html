@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Test</title>
-    <link rel="import" href="/test1">
+    <!-- <link rel="import" href="/test1"> -->
     <script>
         // Standard custom element that Extends HTMLElement
         class MyElement extends HTMLElement {
@@ -20,17 +20,25 @@
     </script>
 </head>
 <body>
-    <my-element>my</my-element>
-    <my id="useragent">else</my>
-</body>
+    <my-element>useragent:</my-element>
+    <my id="useragent"></my>
+    <input id="range" type="range" min="0" max="50000" value="5" step="10" oninput="change()" onchange="change()">
+    <span id="value">0</span>
+    <script type='text/javascript'>
+        function change() {
+            var value = document.getElementById('range').value;
+            document.getElementById('value').innerHTML = value;
+        }
+    </script>
+    </body>
 <script>
-    var link = document.querySelector('link[rel="import"]');
-    console.log(link.import)
-    link.import.body.childNodes.forEach(function (item) {
-        // console.log(document.body)
-        // return
-        document.body.append(item)
-    });
+    // var link = document.querySelector('link[rel="import"]');
+    // console.log(link.import)
+    // link.import.body.childNodes.forEach(function (item) {
+    //     // console.log(document.body)
+    //     // return
+    //     document.body.append(item)
+    // });
 </script>
 <script id='test'>
     document.getElementById("useragent").innerHTML=window.navigator.userAgent
