@@ -21,7 +21,7 @@
 </head>
 <body>
     <my-element>my</my-element>
-    <my>else</my>
+    <my id="useragent">else</my>
 </body>
 <script>
     var link = document.querySelector('link[rel="import"]');
@@ -33,6 +33,6 @@
     });
 </script>
 <script id='test'>
-    window.k='asdasd'
+    document.getElementById("useragent").innerHTML=window.navigator.userAgent
 </script>
 </html>
