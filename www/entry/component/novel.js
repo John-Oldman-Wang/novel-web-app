@@ -8,11 +8,18 @@ class Novel extends Component {
     constructor(props) {
         super(props)
         var query=formSearch(this.props.location.search)
+        if (this.props.location.state) {
+            this.state = {
+                novel: this.props.location.state
+            }
+            return
+        }
         this.state = {
             novel:{
                 _id: formSearch(this.props.location.search).v
             }
         }
+        
         var xhr = new XMLHttpRequest()
         xhr.open('GET', '/novel' + this.props.location.search +"&pbj=1", true)
         xhr.setRequestHeader('x-response-type', 'multipart')

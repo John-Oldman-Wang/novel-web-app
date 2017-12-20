@@ -27,7 +27,9 @@ class Chapter extends Component {
             chapter: chapter,
             fontSize: 22
         }
-        console.log(this)
+        if ('paragraphs' in this.state.chapter){
+            return
+        }
         xhr.open('GET', '/chapter' + this.props.location.search + "&pbj=1", true)
         xhr.setRequestHeader('x-response-type', 'multipart')
         this.props.history.action == "POP" || window.p1.goto(50)
@@ -97,6 +99,9 @@ class Chapter extends Component {
         this.setState({
             chapter: chapter
         })
+        if ('paragraphs' in chapter && chapter.paragraphs.length>0) {
+            return
+        }
         this.props.history.action == "POP" || window.p1.goto(50)
         xhr.abort()
         xhr.open('GET', '/chapter' + nextProps.location.search + "&pbj=1", true)
@@ -134,6 +139,7 @@ class Chapter extends Component {
     }
 
     render() {
+        window.t=this
         var chapter = this.state.chapter
         chapter.paragraphs = chapter.paragraphs || []
         var chapters = this.state.novel.chapters || []
