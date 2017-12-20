@@ -3,4 +3,7 @@ module.exports={
     domain:'',
     siteName:'',
     port: 3000,
+    versionOfMainjs:'',
+    versionOfMain:'',
+    
 }

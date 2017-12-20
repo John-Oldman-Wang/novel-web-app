@@ -2,7 +2,7 @@ const React = require('react');
 const Component = React.Component
 const { Link } = require('react-router-dom')
 const formSearch = require('../plugin/formSearch.js')
-const moment = require("moment")
+const formDate = require('../plugin/formDate.js')
 var xhr = new XMLHttpRequest()
 class Novel extends Component {
     constructor(props) {
@@ -14,7 +14,7 @@ class Novel extends Component {
             }
         }
         var xhr = new XMLHttpRequest()
-        xhr.open('GET', '/novel' + this.props.location.search, true)
+        xhr.open('GET', '/novel' + this.props.location.search +"&pbj=1", true)
         xhr.setRequestHeader('x-response-type', 'multipart')
         this.props.history.action=="POP"||window.p1.goto(50)
         xhr.onreadystatechange = () => {
@@ -40,33 +40,18 @@ class Novel extends Component {
 
     render() {
         var novel=this.state.novel
-        console.log(novel)
         if(!!novel.title){
             return (
-                <div style={{padding:"5px 5px 0px"}}>
-                    <div style={{ height: "100%", width: "33%", display: "inline-block" }}>
-                        <img style={{ width: '100%' }} src={novel.image} alt={novel.title} />
-                    </div>
-                    <div style={{
-                        height: "100%",
-                        width: "66%",
-                        display: "inline-block",
-                        paddingLeft:"5px",
-                        verticalAlign: "top"
-                    }}>
-                        <h1
-                            style={{
-                                fontSize: "1.2em",
-                                fontWeight: "bold",
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                            }}
-                        >&nbsp;{novel.title}</h1>
-                        <h3>作者:&nbsp;&nbsp;{novel.author}</h3>
-                        <h3>{novel.category}</h3>
-                        <p>简介:{novel.shortintroduction}</p>
-                        <p>最后更新时间:&nbsp;&nbsp;{moment(novel.lastUpdateTime).format('YYYY年MM月DD日, h:mm:ss a')}</p>
+                <div >
+                    <div className="novel-header">    
+                        <img className="search-novel-img" src={novel.image} alt={novel.title} />
+                        <div className="search-novel-mes-wrap">
+                            <h2 className="novel-title">{novel.title}</h2>
+                            <h3 className="novel-author">作者:&nbsp;&nbsp;{novel.author}</h3>
+                            {/* <h3>{novel.category}</h3> */}
+                            <p className="novel-intro">简介:{novel.introduction}</p>
+                            <p >最后更新时间:&nbsp;&nbsp;{formDate(novel.lastUpdateTime)}</p>
+                        </div>
                     </div>
                     <p style={{
                         paddingTop: "10px",
@@ -81,8 +66,6 @@ class Novel extends Component {
                             return(<li key={chapter._id} style={{width:"100%",lineHeight:"1.5",padding:"5px 0px",borderBottom:"1px solid RGBA(153,153,153,0.6)"}}>
                                 <Link to={{pathname:`/chapter`,hash:'',search:`?c=${chapter.chapter_id}`,state:novel}}>
                                     <h4 style={{paddingLeft:"5px"}}>{(chapter.serialName||chapter.serial)+"  "+chapter.title}</h4>
-                                    {/* <p>serialName:{chapter.serialName}</p>
-                                    <p>serial:{chapter.serial}</p> */}
                                 </Link>
                             </li>)
                         })}

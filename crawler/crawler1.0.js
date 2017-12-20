@@ -267,7 +267,7 @@ function crawlerNewNovels(){
 }
 
 
-crawlerNewNovels()
+updateNovelInDB()
 
 
 function updateNovelInDB(){

@@ -2,44 +2,44 @@ const React = require('react');
 const Component = React.Component
 const { Link } = require('react-router-dom')
 const formSearch = require('../plugin/formSearch.js')
-const moment = require("moment")
 var xhr = new XMLHttpRequest()
+var timer;
 class Chapter extends Component {
     constructor(props) {
         super(props)
-        var obj=formSearch(this.props.location.search)
-        var novel=this.props.location.state||{}
+        var obj = formSearch(this.props.location.search)
+        var novel = this.props.location.state || {}
         var chapter
-        if("chapters" in novel){
-            for(var i=0;i<novel.chapters.length;i++){
-                if(novel.chapters[i].chapter_id==obj.c){
-                    chapter=novel.chapters[i]
+        if ("chapters" in novel) {
+            for (var i = 0; i < novel.chapters.length; i++) {
+                if (novel.chapters[i].chapter_id == obj.c) {
+                    chapter = novel.chapters[i]
                     break;
                 }
             }
-        }else{
-            chapter={
-                _id:obj.c
+        } else {
+            chapter = {
+                _id: obj.c
             }
         }
         this.state = {
             novel: novel,
             chapter: chapter,
-            fontSize:22
+            fontSize: 22
         }
         console.log(this)
-        xhr.open('GET', '/chapter' + this.props.location.search, true)
+        xhr.open('GET', '/chapter' + this.props.location.search + "&pbj=1", true)
         xhr.setRequestHeader('x-response-type', 'multipart')
         this.props.history.action == "POP" || window.p1.goto(50)
         xhr.onreadystatechange = () => {
-            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 var json = JSON.parse(xhr.responseText)
                 this.setState({
-                    chapter: Object.assign({},this.state.chapter,json)||{}
+                    chapter: Object.assign({}, this.state.chapter, json) || {}
                 })
                 this.props.history.action == "POP" || window.p1.goto(100)
                 xhr.abort()
-                xhr.open('GET', '/novel?v=' + this.state.chapter.novel_id, true)
+                xhr.open('GET', '/novel?v=' + this.state.chapter.novel_id + "&pbj=1", true)
                 xhr.setRequestHeader('x-response-type', 'multipart')
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
@@ -50,15 +50,31 @@ class Chapter extends Component {
                     }
                 }
                 xhr.send()
-            }else{
+            } else {
                 this.props.history.action == "POP" || window.p1.goto(80)
             }
         }
         xhr.send()
     }
+    handle(e) {
+        if (this.refs.header.style.display == "none") {
+            // clearTimeout(timer)
+            this.refs.header.style.display = "flex";
+            this.refs.content.style.paddingTop = "55px";
+            this.refs.menu.style.display = "flex";
+            // timer = setTimeout(() => {
+            //     if(this.refs.header) this.refs.header.style.display="none";
+            //     if (this.refs.menu) this.refs.menu.style.display="none";
+            //     this.refs.content.style.paddingTop = "0px";
+            // }, 3000)
+            //alert(this.refs.header.style.display)
+        } else {
+            // clearTimeout(timer)
+            this.refs.content.style.paddingTop = "0px";
+            this.refs.header.style.display = "none";
+            this.refs.menu.style.display = "none";
+        }
 
-    handle(e){
-        this.setState({fontSize:e.target.value})
     }
     componentWillMount() {
         console.log("chapter componentWillMount");
@@ -83,7 +99,7 @@ class Chapter extends Component {
         })
         this.props.history.action == "POP" || window.p1.goto(50)
         xhr.abort()
-        xhr.open('GET', '/chapter' + nextProps.location.search, true)
+        xhr.open('GET', '/chapter' + nextProps.location.search + "&pbj=1", true)
         xhr.setRequestHeader('x-response-type', 'multipart')
         xhr.onreadystatechange = () => {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
@@ -119,80 +135,75 @@ class Chapter extends Component {
 
     render() {
         var chapter = this.state.chapter
-        chapter.paragraphs = chapter.paragraphs||[]
-        var chapters = this.state.novel.chapters||[]
+        chapter.paragraphs = chapter.paragraphs || []
+        var chapters = this.state.novel.chapters || []
         var provChapter
         var nextChapter
-        if(chapters.length!=0){
-            for(var i=0;i<chapters.length;i++){
-                if(chapter._id==chapters[i].chapter_id){
-                    chapter=Object.assign(chapters[i],chapter)
+        if (chapters.length != 0) {
+            for (var i = 0; i < chapters.length; i++) {
+                if (chapter._id == chapters[i].chapter_id) {
+                    chapter = Object.assign(chapters[i], chapter)
                     break;
                 }
             }
-            provChapter=chapters[(chapters.indexOf(chapter)+chapters.length-1)%chapters.length]||{}
-            nextChapter=chapters[(chapters.indexOf(chapter)+1)%chapters.length]||{}
-        }else{
-            provChapter={}
-            nextChapter={}
+            provChapter = chapters[(chapters.indexOf(chapter) + chapters.length - 1) % chapters.length] || {}
+            nextChapter = chapters[(chapters.indexOf(chapter) + 1) % chapters.length] || {}
+        } else {
+            provChapter = {}
+            nextChapter = {}
         }
-        window.t=this
         return (
-            <div>
-                <div style={{padding: "5px 10px 0px"}}>
-                    <button><Link to={'/novel?v=' + this.state.novel._id}>
-                        &nbsp;返回&nbsp;
-                    </Link></button>
-                    <button><Link to={{
-                            pathname: '/chapter',
-                            search: `?c=${provChapter.chapter_id || ''}`,
-                            state: this.state.novel
-                        }}>&nbsp;上一章;&nbsp;
-                    </Link></button>
-                    <button><Link to={{
-                            pathname: '/chapter',
-                            search: `?c=${nextChapter.chapter_id || ''}`,
-                            state: this.state.novel
-                        }}>&nbsp;下一章;&nbsp;
-                    </Link></button>
-                    <input style={{
-                        verticalAlign: "bottom",
-                        margin: "0px 5px",
-                        padding: "1px 0px"
-                    }} type="range" value={this.state.fontSize} max="44" min="10" step="1" onInput={(e)=>{this.handle(e)} }/>
+            <div className="chapter-page">
+                <div className="chapter-header" ref="header" style={{ display: "none" }}>
+                    <Link className="chapter-title" to={{
+                        pathname: '/novel',
+                        search: `?v=${this.state.novel._id}`,
+                        state: this.state.novel
+                    }}><svg xmlns="http://www.w3.org/2000/svg" style={{ margin: "3px 5px 0px 10px" }} width="20px" height="35px" version="1.1">
+                            <polyline points="20,0 0,17.5 20,35" style={{ fill: "transparent", stroke: "#aaa", strokeWidth: 2 }} /></svg></Link>
+                    <Link className="chapter-title" to={{
+                        pathname: '/novel',
+                        search: `?v=${this.state.novel._id}`,
+                        state: this.state.novel
+                    }}>{this.state.novel.title}</Link>
                 </div>
-                <div style={{padding:"5px 10px 0px"}}>
-                    <h3 style={{ display: 'inline-block' }}>{chapter.serialName || chapter.serial}&nbsp;&nbsp;&nbsp;&nbsp;{chapter.title}</h3>
-                    {!chapter.paragraphs.length?'加载中...':chapter.paragraphs.map((paragraph,index) => {
-                        return (<p style={{
-                            fontSize: this.state.fontSize+'px',
-                            textIndent:"2em",
-                            lineHeight:"120%",
-                            margin:'5px'
-                        }} key={index}>{paragraph}</p>)
-                    })}
+                <div className="chapter-content" ref="content" style={{paddingTop: "0px"}} onClick={(e) => {
+                    this.handle(e)
+                }}>
+                    <h2 className="chapter-title">{chapter.serialName || chapter.serial}&nbsp;{chapter.title}</h2>
+                    <div className="chapter-paragraphs" ref="paragraphs">
+                        {!chapter.paragraphs.length ? (<p className="chapter-paragraph">加载中...</p>) : chapter.paragraphs.map((paragraph, index) => {
+                            return (<p className="chapter-paragraph" key={index}>{paragraph}</p>)
+                        })}
+                    </div>
                 </div>
-                {!chapter.paragraphs.length?'':<div style={{padding: "5px 10px 0px"}}>
-                    <button><Link to={'/novel?v=' + this.state.novel._id}>
-                        &nbsp;返回&nbsp;
-                    </Link></button>
-                    <button><Link to={{
+                <div className="chapter-menu" ref="menu" style={{ display: "none" }}>
+                    <Link className="chapter-pre" to={{
                         pathname: '/chapter',
                         search: `?c=${provChapter.chapter_id || ''}`,
                         state: this.state.novel
-                    }}>&nbsp;上一章;&nbsp;</Link></button>
-                    <button><Link to={{
-                            pathname: '/chapter',
-                            search: `?c=${nextChapter.chapter_id || ''}`,
-                            state: this.state.novel
-                        }}>&nbsp;下一章;&nbsp;
-                    </Link></button>
-                    <input style={{
+                    }}>上一章</Link>
+                    <span className="chapter-progress">
+                        {`${chapters.indexOf(chapter) + 1}/${chapters.length}`}
+                    </span>
+                    {/* <Link to={{
+                        pathname: '/novel',
+                        search: `?v=${this.state.novel._id}`,
+                        state: this.state.novel
+                    }}>
+                        &nbsp;{this.state.novel.title}&nbsp;
+                    </Link> */}
+                    <Link className="chapter-next" to={{
+                        pathname: '/chapter',
+                        search: `?c=${nextChapter.chapter_id || ''}`,
+                        state: this.state.novel
+                    }}>下一章</Link>
+                    {/* <input style={{
                         verticalAlign: "bottom",
                         margin: "0px 5px",
                         padding: "1px 0px"
-                    }} type="range" value={this.state.fontSize} max="44" min="10" step="1" onInput={(e)=>{this.handle(e)}}/>
-                </div>}
+                    }} type="range" value={this.state.fontSize} max="44" min="10" step="1" onInput={(e) => { this.handle(e) }} onChange={(e) => { this.handle(e) }}/> */}
+                </div>
             </div>
         );
     }

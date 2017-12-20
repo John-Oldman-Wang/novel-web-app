@@ -6,13 +6,12 @@ var xhr = new XMLHttpRequest()
 class Search extends Component {
     constructor(props) {
         super(props)
-        console.log(this)
         var obj
         if(!!this.props.location){
             obj =formSearch(decodeURI(this.props.location.search))
             console.log(obj)
             var xhr = new XMLHttpRequest()
-            xhr.open('GET', '/search' + this.props.location.search, true)
+            xhr.open('GET', '/search' + this.props.location.search+'&pbj=1', true)
             xhr.setRequestHeader('x-response-type', 'multipart')
             this.props.history.action == "POP" || window.p1.goto(50)
             xhr.onreadystatechange = () => {
@@ -46,10 +45,8 @@ class Search extends Component {
     componentDidMount() {
         console.log("Search componentDidMount");
     }
-
     componentWillReceiveProps(nextProps) {
         console.log("Search componentWillReceiveProps");
-        console.log(this)
         if (!!nextProps.location) {
             var obj = formSearch(decodeURI(nextProps.location.search))
             console.log('receive set state')
@@ -75,83 +72,46 @@ class Search extends Component {
             xhr.send()
         }
     }
-
     shouldComponentUpdate() {
         console.log("Search shouldComponentUpdate");
         return true;
     }
-
     componentWillUpdate() {
         console.log("Search componentWillUpdate");
     }
-
     componentDidUpdate() {
         console.log("Search componentDidUpdate");
     }
-
     componentWillUnmount() {
         console.log("Search componentWillUnmount");
     }
-
     render() {
-        if(!!this.props.location){
-            return (
-                <div style={{padding:"10px 5px 0px 5px"}}>
-                    <div>
-                        <input type="text" value={this.state.key} onChange={(e) => {
-                            this.hanld(e.target.value)
-                        }} /><button style={{
-                            border:"1px solid black",
-                            verticalAlign:"bottom"
-                            }}><Link to={"search?key=" + this.state.key}>搜&nbsp;索</Link>
-                        </button>
-                    </div>
-                    <ul style={{width:"100%",paddingTop:"5px"}}>
-                        {this.state.novels.map((novel, index) => {
-                            return (
-                                <Link to={'/novel?v=' + novel._id} rel={novel.title}>
-                                    <li style={{
-                                        width: "100%",
-                                        marginBottom: "5px",
-
-                                    }} key={novel._id}>
-                                        <div style={{ height: "100%", width: "33%", display: "inline-block" }}>
-                                            <img style={{ width: '100%' }} src={novel.image} alt={novel.title} />
-                                        </div>
-                                        <div style={{
-                                            height: "100%",
-                                            width: "66%",
-                                            display: "inline-block",
-                                            verticalAlign: "top"
-                                        }}>
-                                            <h1
-                                                style={{
-                                                    fontSize: "1.2em",
-                                                    fontWeight: "bold",
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis',
-                                                    whiteSpace: 'nowrap',
-                                                }}
-                                            >&nbsp;{novel.title}</h1>
-                                            <h3>{novel.category}</h3>
-                                            <p>简介:{novel.shortintroduction}</p>
-                                        </div>
-                                    </li>
-                                </Link>)
-                        })}   
-                    </ul>
-                </div>
-            );
-        }else{
-            return (<div>
-                    <input type="text" value={this.state.key} onChange={(e) => {
+        return (
+            <div className="search">
+                <div className="search-form">
+                    <input className="search-input" type="text" value={this.state.key} onChange={(e) => {
                         this.hanld(e.target.value)
                     }} />
-                    <button style={{ border: "1px solid black", verticalAlign: "bottom"}}>
-                        <Link to={"search?key=" + this.state.key}>搜&nbsp;索</Link>
-                    </button>
-                </div>);
-        } 
+                    <button className="search-button"><Link to={"search?key=" + this.state.key}>搜&nbsp;索</Link></button>
+                </div>
+                <ul className="search-result">
+                    {this.state.novels.map((novel, index) => {
+                        return (
+                            <li key={novel._id}>
+                                <Link to={'/novel?v=' + novel._id} rel={novel.title}>
+                                    <img className="search-novel-img" src={novel.image} alt={novel.title} />
+                                    <div className="search-novel-mes-wrap">
+                                        <h2 className="novel-title">{novel.title}</h2>
+                                        <h3 className="novel-author">{novel.author}</h3>
+                                        <p className="novel-intro">{novel.introduction}</p>
+                                    </div>
+                                </Link>
+                            </li>
+                        )
+                    })}   
+                </ul>
+            </div>
+        );
     }
 }
 
