@@ -2,9 +2,10 @@ const React = require('react');
 const Component=React.Component
 const ReactDom=require('react-dom')
 
-const { BrowserRouter, Route, Link } = require('react-router-dom') 
+const { Switch, Redirect ,BrowserRouter, Route, Link } = require('react-router-dom') 
+window.a=require('react-router-dom')
+console.log( a )
 
-Object.assign = Object.assign
 
 const Index=require('./component/index.js')
 const About=require('./component/about.js')
@@ -54,10 +55,12 @@ if (typeof Object.assign != 'function') {
 window.p1 = ReactDom.render(<Progress pro={0} ></Progress>, document.getElementById("progressBar"))
 ReactDom.render(<BrowserRouter>
     <App>
-        <Route exact path='/' component={Index}></Route>
-        <Route path='/novel' component={Novel}></Route>
-        <Route path='/search' component={Search}></Route>
-        <Route path='/chapter' component={Chapter}></Route>
-        {/* <Route path='/*' component={About}></Route> */}
+        <Switch>
+            <Route exact path='/' component={Index}></Route>
+            <Route path='/novel' component={Novel}></Route>
+            <Route path='/search' component={Search}></Route>
+            <Route path='/chapter' component={Chapter}></Route>
+            <Redirect from="/*" to="/" />
+        </Switch>
     </App>
 </BrowserRouter>, document.getElementById('content'))
