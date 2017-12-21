@@ -16,25 +16,29 @@ mongoose.connect(dburl, {
 app.set('view engine', 'ejs')
 app.set('views', './config/views')
 app.use(function (req, res, next) {
-    if (req.url != '/favicon.ico' && req.url.indexOf('css')==-1) {
-        var obj=Object.assign({},req.headers)
+    if (["/favicon.ico", "/reset.css", "/main.css", "/vendor.js", "/bundle.js"].indexOf(req.url) > -1) {
+        next()
+        return
+    } else if (req.headers["user-agent"].indexOf('python') > -1) {
+        res.end('404')
+        return
+    } else {
+        var obj = Object.assign({}, req.headers)
         obj.method = req.method
         obj.url = req.url
         var _logger = new Logger(obj)
-        _logger.save(function(err,log){
-            if(err){
+        _logger.save(function (err, log) {
+            if (err) {
                 console.log(err)
-            }else{
+            } else {
                 console.log(`save log ok`)
             }
         })
-        console.log(_logger)
+        // console.log(_logger)
+        next();
     }
-    next();
 })
-
 require('./config/router/router.js')(app)
-
 app.listen(port, function (err) {
     if (err)
         return console.log(err)
