@@ -17,10 +17,18 @@ app.set('view engine', 'ejs')
 app.set('views', './config/views')
 app.use(function (req, res, next) {
     if (req.url != '/favicon.ico' && req.url.indexOf('css')==-1) {
-        req.headers.method = req.method
-        req.headers.url = req.url
-        var _logger = new Logger(req.headers)
-        //console.log(_logger)
+        var obj=Object.assign({},req.headers)
+        obj.method = req.method
+        obj.url = req.url
+        var _logger = new Logger(obj)
+        _logger.save(function(err,log){
+            if(err){
+                console.log(err)
+            }else{
+                console.log(`save log ok`)
+            }
+        })
+        console.log(_logger)
     }
     next();
 })
