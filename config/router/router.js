@@ -48,7 +48,10 @@ module.exports = function (app) {
             //处理无参数传入
             if(req.query.c==""){}
             Chapter.findOne({_id:req.query.c},{href:0,meta:0}).exec(function (err, chapter) {
-                res.json(chapter)
+                setTimeout(() => {
+                    res.json(chapter)
+                }, 10000);
+                
             })
         } else {
             next && next()

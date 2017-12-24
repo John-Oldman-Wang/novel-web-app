@@ -89,7 +89,7 @@ class Search extends Component {
         return (
             <div className="search">
                 <div className="search-form">
-                    <input className="search-input" type="text" value={this.state.key} onChange={(e) => {
+                    <input className="search-input" placeholder="可以搜索书名,可少字" type="text" value={this.state.key} onChange={(e) => {
                         this.hanld(e.target.value)
                     }} />
                     <button className="search-button"><Link to={"search?key=" + this.state.key}>搜&nbsp;索</Link></button>

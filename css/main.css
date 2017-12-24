@@ -8,8 +8,12 @@
     overflow-y:visible;
 } */
 .content{
+    min-height: 800px;
     margin: 0px;
-    padding: 10px 5px 0px;
+    padding: 0px;
+}
+.novel-page{
+    padding: 15px 10px 0px;
 }
 .novel-list{
     margin: 10px -5px 0px;
@@ -126,53 +130,70 @@
     display: flex;
 }
 .chapter-page{
-    padding: 5px 5px 0px;
+    min-height: 800px;
+    /* padding: 15px 10px 0px; */
 }
 .chapter-content{
+    min-height: 800px;
+    border-top: 15px solid transparent;
+    border-left: 10px solid transparent; 
+    border-right: 10px solid transparent; 
     padding: 55px 0px;
     transition: all ease-out 0.2s;
 }
+.white-bgc{
+    background-color: #fff;
+    color: #000;
+}
+.yellow-bgc{
+    background-color: rgb(240, 235, 215);
+    color:rgb(75,48,27);
+}
 .chapter-title{
-    font-family: "宋体";
-    font-weight: 700;
-    font-size: 28px;
-    margin-bottom: 10px;
+    font-family: Palatino, Georgia, Times, "Times New Roman", serif;
+    font-size: 170%;
+    font-weight: bolder;
+    line-height: 1.3em;
+    margin: 0 8px 8px;
+}
+.chapter-paragraph{
+    font-family: "苹方";
+    font-size: 100%;
+    letter-spacing: 0.2em;
+    /* text-indent: 2em; */
+    line-height: 1.5em;
+    margin: 0.8em 8px;;
 }
 .chapter-header{
     position: fixed;
     top:0px;
     left:0px;
     right: 0px;
-    height:55px;
-    padding: 5px 0px;
+    height:40px;
+    padding: 0px;
     font-size: 28px;
     line-height: 45px;
-    background: rgba(255,255,255,.9);
+    /* background: rgba(255,255,255,.9); */
+    opacity: 0.8;
     /* border-bottom: 1px solid #001; */
     box-shadow: 0 -0.03rem 0.1rem #999
 }
 .chapter-header a{
     display: inline-block;
-    line-height: 45px;
-    height:45px;
+    font-size: 28px;
+    line-height: 40px;
+    height:40px;
     margin: 0px;
     vertical-align: middle;
-}
-.chapter-paragraph{
-    font-family: inherit;
-    font-size: 22px;
-    text-indent: 2em;
-    line-height: 120%;
-    margin: 5px;
 }
 .chapter-menu{
     position: fixed;
     bottom:0px;
     left:0px;
     right: 0px;
-    background: #789;
     height:45px;
-    background: rgba(255,255,255,.9);
+    /* background: rgba(255,255,255,.9); */
+    opacity: 0.8;
     box-shadow: 0 0.03rem 0.1rem #999;
     line-height: 45px;
     display: flex;
@@ -194,7 +215,7 @@ a,a:visited {
     text-decoration: none;
 }
 a:hover {
-    color: #00;
+    color: #000;
 }
 p {
     user-select: none;

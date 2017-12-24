@@ -49,7 +49,7 @@ class Novel extends Component {
         var novel=this.state.novel
         if(!!novel.title){
             return (
-                <div >
+                <div className="novel-page">
                     <div className="novel-header">    
                         <img className="search-novel-img" src={novel.image} alt={novel.title} />
                         <div className="search-novel-mes-wrap">

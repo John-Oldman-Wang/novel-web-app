@@ -62,7 +62,7 @@ class Chapter extends Component {
         if (this.refs.header.style.display == "none") {
             // clearTimeout(timer)
             this.refs.header.style.display = "flex";
-            this.refs.content.style.paddingTop = "55px";
+            this.refs.content.style.paddingTop = "40px";
             this.refs.menu.style.display = "flex";
             // timer = setTimeout(() => {
             //     if(this.refs.header) this.refs.header.style.display="none";
@@ -160,30 +160,30 @@ class Chapter extends Component {
         }
         return (
             <div className="chapter-page">
-                <div className="chapter-header" ref="header" style={{ display: "none" }}>
+                <div className="chapter-header yellow-bgc" ref="header" style={{ display: "none" }}>
                     <Link className="chapter-title" to={{
                         pathname: '/novel',
                         search: `?v=${this.state.novel._id}`,
                         state: this.state.novel
-                    }}><svg xmlns="http://www.w3.org/2000/svg" style={{ margin: "3px 5px 0px 10px" }} width="20px" height="35px" version="1.1">
-                            <polyline points="20,0 0,17.5 20,35" style={{ fill: "transparent", stroke: "#aaa", strokeWidth: 2 }} /></svg></Link>
+                    }}><svg xmlns="http://www.w3.org/2000/svg" style={{ margin: "5px 5px 0px 5px" }} width="20px" height="35px" version="1.1">
+                            <polyline points="20,0 0,15 20,30" style={{ fill: "transparent", stroke: "#aaa", strokeWidth: 2 }} /></svg></Link>
                     <Link className="chapter-title" to={{
                         pathname: '/novel',
                         search: `?v=${this.state.novel._id}`,
                         state: this.state.novel
                     }}>{this.state.novel.title}</Link>
                 </div>
-                <div className="chapter-content" ref="content" style={{paddingTop: "0px"}} onClick={(e) => {
+                <div style={{ fontSize: "14px" }} className="chapter-content yellow-bgc" ref="content" style={{paddingTop: "0px"}} onClick={(e) => {
                     this.handle(e)
                 }}>
-                    <h2 className="chapter-title">{chapter.serialName || chapter.serial}&nbsp;{chapter.title}</h2>
+                    <h2 className="chapter-title ">{chapter.title}</h2>
                     <div className="chapter-paragraphs" ref="paragraphs">
                         {!chapter.paragraphs.length ? (<p className="chapter-paragraph">加载中...</p>) : chapter.paragraphs.map((paragraph, index) => {
                             return (<p className="chapter-paragraph" key={index}>{paragraph}</p>)
                         })}
                     </div>
                 </div>
-                <div className="chapter-menu" ref="menu" style={{ display: "none" }}>
+                <div className="chapter-menu yellow-bgc" ref="menu" style={{ display: "none" }}>
                     <Link className="chapter-pre" to={{
                         pathname: '/chapter',
                         search: `?c=${provChapter.chapter_id || ''}`,
@@ -192,23 +192,11 @@ class Chapter extends Component {
                     <span className="chapter-progress">
                         {`${chapters.indexOf(chapter) + 1}/${chapters.length}`}
                     </span>
-                    {/* <Link to={{
-                        pathname: '/novel',
-                        search: `?v=${this.state.novel._id}`,
-                        state: this.state.novel
-                    }}>
-                        &nbsp;{this.state.novel.title}&nbsp;
-                    </Link> */}
                     <Link className="chapter-next" to={{
                         pathname: '/chapter',
                         search: `?c=${nextChapter.chapter_id || ''}`,
                         state: this.state.novel
                     }}>下一章</Link>
-                    {/* <input style={{
-                        verticalAlign: "bottom",
-                        margin: "0px 5px",
-                        padding: "1px 0px"
-                    }} type="range" value={this.state.fontSize} max="44" min="10" step="1" onInput={(e) => { this.handle(e) }} onChange={(e) => { this.handle(e) }}/> */}
                 </div>
             </div>
         );
