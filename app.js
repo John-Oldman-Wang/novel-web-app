@@ -25,7 +25,7 @@ app.use(function (req, res, next) {
     } else {
         var obj = Object.assign({}, req.headers)
         obj.method = req.method
-        obj.url = req.url
+        obj.url = decodeURI(req.url)
         var _logger = new Logger(obj)
         _logger.save(function (err, log) {
             if (err) {
