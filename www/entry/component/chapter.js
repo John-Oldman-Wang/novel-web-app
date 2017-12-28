@@ -7,8 +7,14 @@ var timer;
 class Chapter extends Component {
     constructor(props) {
         super(props)
-        var obj = formSearch(this.props.location.search)
-        var novel = this.props.location.state || {}
+        if (this.props.location.search){
+            var obj = formSearch(this.props.location.search)
+            var novel = this.props.location.state || {}
+        }else{
+            this.props.history.push('/')
+            this.state = {}
+            return
+        }
         var chapter
         if ("chapters" in novel) {
             for (var i = 0; i < novel.chapters.length; i++) {
@@ -140,6 +146,11 @@ class Chapter extends Component {
 
     render() {
         window.t=this
+        console.log(this)
+        if(!("chapter" in this.state)){
+            return (<p></p>)
+        }
+        
         var chapter = this.state.chapter
         chapter.paragraphs = chapter.paragraphs || []
         var chapters = this.state.novel.chapters || []

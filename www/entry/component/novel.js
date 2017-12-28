@@ -7,11 +7,14 @@ var xhr = new XMLHttpRequest()
 class Novel extends Component {
     constructor(props) {
         super(props)
-        var query=formSearch(this.props.location.search)
-        if (this.props.location.state) {
+        if (this.props.location.search) {
+            var query=formSearch(this.props.location.search)
             this.state = {
                 novel: this.props.location.state
             }
+        }else{
+            this.props.history.push('/')
+            this.state={}
             return
         }
         this.state = {
@@ -46,7 +49,8 @@ class Novel extends Component {
     }
 
     render() {
-        var novel=this.state.novel
+        console.log('novel render')
+        var novel=this.state.novel||{}
         if(!!novel.title){
             return (
                 <div className="novel-page">
