@@ -31,7 +31,7 @@ app.use(function (req, res, next) {
             if (err) {
                 console.log(err)
             } else {
-                console.log(`save log ok`)
+                // console.log(`save log ok`)
             }
         })
         // console.log(_logger)
