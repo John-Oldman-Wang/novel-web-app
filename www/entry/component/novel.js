@@ -30,6 +30,10 @@ class Novel extends Component {
         xhr.onreadystatechange = () => {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 var json = JSON.parse(xhr.responseText)
+                if(json==null){
+                    this.props.history.push('/')
+                    return
+                }
                 this.setState({
                     novel: Object.assign(this.state.novel,json||{})
                 })
