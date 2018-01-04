@@ -33,6 +33,26 @@
     padding: 0px 15px;
     margin-bottom: 10px;
 }
+.novel-img {
+    position: relative;
+    overflow: hidden;
+    max-width: 180px;
+}
+.novel-img > .imgbox{
+    margin-top: 133.33%;
+}
+.novel-img > .img{
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+.novel-img  img{
+    width: 100%;
+    height: 100%;
+}
 .novel-title{
     padding: 1px 0px;
     font-size: 1.1em;
@@ -115,6 +135,7 @@
 }
 .search-novel-img{
     height: 150px;
+    max-width: 112.5px;
 }
 .search-novel-mes-wrap{
     flex: 1;

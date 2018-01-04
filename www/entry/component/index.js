@@ -45,7 +45,10 @@ class Index extends Component {
                                 <li key={novel._id}>
                                     <Link to={'/novel?v=' + novel._id} rel={novel.title}>
                                         <div className="novel-img">
+                                            <div className="imgbox"></div>
+                                            <div className="img">
                                             <img  src={novel.image} alt={novel.title}/>
+                                            </div>
                                         </div>
                                         <div className="novel-message">
                                             <h1 className="novel-title">{novel.title}</h1>
