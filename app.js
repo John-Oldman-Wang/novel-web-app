@@ -2,7 +2,7 @@ var express = require('express')
 const fs = require('fs')
 
 var app = express()
-var dburl = "mongodb://localhost:27017/novelApp2"
+var dburl = "mongodb://localhost:27017/novelApp1"
 var mongoose = require('mongoose')
 var Novel = require('./config/models/m-novel.js')
 var Chapter = require('./config/models/m-chapter.js')

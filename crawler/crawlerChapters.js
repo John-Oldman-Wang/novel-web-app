@@ -15,7 +15,7 @@ var Chapter = require('../config/models/m-chapter.js')
 var req = require('./httpget.js')
 var async=require('./async.js')
 //常量申明
-var dburl = "mongodb://localhost:27017/novelApp2"
+var dburl = "mongodb://localhost:27017/novelApp1"
 // 再封装mongoose
 mongoose.Promise = Promise
 mongoose.close = function () {
