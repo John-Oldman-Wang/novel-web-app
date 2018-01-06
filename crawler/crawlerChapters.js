@@ -196,6 +196,16 @@ function getChapters(novel,cb){
             console.log(`筛选章节信息出错 \x1B[34m ${this.uri.href}\x1B[39m`)
             flag+=1000000
             cb && cb(++errNovel)
+            novel.save(function (err, Novel) {
+                if (err) {
+                    console.log(`抓取玩章节保存小说 \x1B[34m ${Novel.title}\x1B[39m 出错`, err)
+                    mongoose.close()
+                    return
+                } else {
+                    console.log(`小说:\x1B[34m ${Novel.title}\x1B[39m的章节保存完成!`)
+                    //cb && cb()
+                }
+            })
             return 'stop'
         }
     }, function () {
