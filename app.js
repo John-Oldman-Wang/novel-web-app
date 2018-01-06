@@ -23,9 +23,10 @@ app.use(function (req, res, next) {
         res.end('404')
         return
     } else {
-        var obj = Object.assign({}, req.headers)
-        obj.method = req.method
-        obj.url = decodeURI(req.url)
+        var obj = Object.assign({ 
+            method: req.method,
+            url: decodeURI(req.url)
+        }, req.headers)
         var _logger = new Logger(obj)
         _logger.save(function (err, log) {
             if (err) {
