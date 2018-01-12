@@ -10,11 +10,10 @@ var _ = require('underscore')
 var ObjectId = mongoose.Types.ObjectId
 
 // 自定义模块和model引入
-var Novel = require('../config/models/m-novel.js')
-var Chapter = require('../config/models/m-chapter.js')
-var req = require('./httpget.js')
+var Novel = require('../../config/models/m-novel.js')
+var Chapter = require('../../config/models/m-chapter.js')
+var req = require('../httpget.js')
 req.setMax(20)
-var async = require('./async.js')
 //常量申明
 var dburl = "mongodb://localhost:27017/novelApp1"
 // 再封装mongoose
@@ -75,7 +74,7 @@ function filterChapterPage(err, res, body) {
 function getMore() {
     Novel.find(query, config).then(function (novels) {
         var Count = novels.length
-        if (Count==0){
+        if (Count == 0) {
             console.log(`没有需要爬去章节的小说!`)
             console.log(`all chapters of all novel save ok!3 seconds close database!`)
             setTimeout(function () {
@@ -83,6 +82,7 @@ function getMore() {
             }, 3000)
             return
         }
+        // novels.reverse()
         console.log(`总共 \x1B[34m ${Count}\x1B[39m本小说需要爬去章节`)
         Novel.findOne({ _id: novels.shift()._id }).then(function circle(_novel) {
             console.log('-------------------------------------')
@@ -93,68 +93,37 @@ function getMore() {
             chapter_hrefs = chapter_hrefs.map(function (item) {
                 return item.href
             })
-            console.log(`初步分析还需要${chapter_hrefs.length}章节`)
-            Chapter.find({ novel_id: _novel._id, href: { $in: chapter_hrefs } }, { href: 1 }).then(function (chapters) {
-                console.log(`拿到小说\x1B[34m ${_novel.title}\x1B[39m的已经保存的${chapters.length}章节`)
-                var chapters = chapters.map(function (item) { return item.href })
-                var set = new Set(chapters)
-                chapters = null
-                chapter_hrefs = chapter_hrefs.filter(function (item) {
-                    return set.size !== set.add(item).size
-                })
-                var flag = chapter_hrefs.length
-                console.log(`小说:\x1B[34m ${_novel.title}\x1B[39m需要爬去${flag}章`)
+            console.log(`初步分析还需要${chapter_hrefs.length}章节,update 语句加速更新`)
+            var flag = chapter_hrefs.length
+            function chapterReqCb(err, res, body) {
+                flag--
                 if (flag == 0) {
+                    console.log(`\x1B[34m ${_novel.title}\x1B[39m all chpaters save ok`)
                     Count--
                     if (Count == 0) {
                         console.log(`all chapters of all novel save ok!3 seconds close database!`)
                         setTimeout(function () {
                             mongoose.close()
                         }, 3000)
-                        return
+                    } else {
+                        Novel.findOne({ _id: novels.shift()._id }).then(circle)
                     }
-                    Novel.findOne({ _id: novels.shift()._id }).then(circle)
                 }
-                chapter_hrefs.forEach(function (href) {
-                    req(href, function (err, res, body) {
-                        var chapterObj = filterChapterPage.call(this, err, res, body)
-                        if (typeof chapterObj == "object") {
-                            chapterObj.href = this.uri.href
-                            chapterObj.novel_id = _novel._id
-                            _chapter = new Chapter(chapterObj)
-                            _chapter.save().then(function () {
-                                flag--
-                                if (flag == 0) {
-                                    console.log(`\x1B[34m ${_novel.title}\x1B[39m all chpaters save ok`)
-                                    Count--
-                                    if (Count == 0) {
-                                        console.log(`all chapters of all novel save ok!3 seconds close database!`)
-                                        setTimeout(function () {
-                                            mongoose.close()
-                                        }, 3000)
-                                    } else {
-                                        Novel.findOne({ _id: novels.shift()._id }).then(circle)
-                                    }
-                                }
-                            })
-                        } else {
-                            flag--
-                            if (flag == 0) {
-                                console.log(`\x1B[34m ${_novel.title}\x1B[39m all chpaters save ok`)
-                                Count--
-                                if (Count == 0) {
-                                    console.log(`all chapters of all novel save ok!3 seconds close database!`)
-                                    setTimeout(function () {
-                                        mongoose.close()
-                                    }, 3000)
-                                } else {
-                                    Novel.findOne({ _id: novels.shift()._id }).then(circle)
-                                }
-                            }
-                            console.log(`${this.uri.href} ${chapterObj || "error"}`)
-                        }
-                    })
-                })
+                var chapterObj = filterChapterPage.call(this, err, res, body)
+                if (typeof chapterObj == "object") {
+                    chapterObj.href = this.uri.href
+                    chapterObj.novel_id = _novel._id
+                    _chapter = new Chapter(chapterObj)
+                    var obj = Object.assign({}, _chapter._doc)
+                    //console.log(obj)
+                    delete obj._id
+                    Chapter.update({ novel_id: _novel._id, href: obj.href }, obj, {upsert: true, multi: false })
+                } else {
+                    console.log(`${this.uri.href} ${chapterObj || "error"}`)
+                }
+            }
+            chapter_hrefs.forEach(function (href) {
+                req(href, chapterReqCb)
             })
         })
     })
@@ -170,6 +139,7 @@ function updateNovelInDB() {
             }, 3000)
             return
         }
+        // novels.reverse()
         console.log(`总共${Count}本小说需要更新章节的信息`)
         Novel.findOne({ _id: novels.shift()._id }).then(function circle(_novel) {
             var chapter_hrefs = _novel.chapters.filter(function (item, index) {
@@ -185,9 +155,11 @@ function updateNovelInDB() {
                     Count--
                     console.log(`\x1B[34m ${_novel.title}\x1B[39m has no chapters in db!`)
                     console.log(`stop update novel message!3 seconds start get more chapters`)
-                    setTimeout(function(){
+                    // mongoose.close()
+                    // return
+                    setTimeout(function () {
                         getMore()
-                    },3000)
+                    }, 3000)
                     return
                 }
                 var firstDate = new Date()
