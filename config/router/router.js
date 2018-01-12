@@ -4,20 +4,20 @@ var Chapter = require('../models/m-chapter.js')
 module.exports = function (app) {
     app.get('/reset.css', function (req, res) {
         res.setHeader('Accept','text/plain')
-        fs.createReadStream('./css/reset.css').pipe(res)
+        fs.createReadStream('./dist/css/reset.css').pipe(res)
     })
     app.get('/main.css', function (req, res) {
-        fs.createReadStream('./css/main.css').pipe(res)
+        fs.createReadStream('./dist/css/main.css').pipe(res)
     })
     app.get('/favicon.ico', function (req, res) {
         res.end('404')
     })
-    app.get('/bundle.js', function (req, res) {
-        fs.createReadStream('./www/output//bundle.js').pipe(res)
+    app.get('/main.js', function (req, res) {
+        fs.createReadStream('./dist/main.js').pipe(res)
     })
-    app.get('/vendor.js', function (req, res) {
-        fs.createReadStream('./www/output/vendor.js').pipe(res)
-    })
+    // app.get('/vendor.js', function (req, res) {
+    //     fs.createReadStream('./www/output/vendor.js').pipe(res)
+    // })
     app.get('/', function (req, res) {
         res.render('index', {
             title: '无限中文小说'
