@@ -4,3 +4,4 @@ test.js
 build
 www/output
 yarn.lock
+dist
