@@ -6,6 +6,7 @@ var novelSchema = new Schema({
 	title: String,
 	author: String,
 	category: String,
+	smallCategory:String,
 	shortintroduction: String,
 	introduction: String,
 	lastUpdateTime: Date,
@@ -14,7 +15,7 @@ var novelSchema = new Schema({
 	image: String,
 	heat: Number,
 	href: String,
-	chapterNumber: Number,
+	isMale:Boolean,
 	chapters: [{
 		title: String,
 		serialName: String,
@@ -71,6 +72,9 @@ novelSchema.statics = {
 }
 
 
+novelSchema.virtual('chapterNumber').get(function () {
+	return this.chapters.length
+})
 novelSchema.virtual('base64id').get(function () {
 	var base = new Buffer(this._id.toString())
 	return base.toString('base64')
