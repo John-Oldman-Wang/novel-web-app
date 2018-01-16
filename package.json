@@ -35,12 +35,12 @@
     "express": "^4.16.1",
     "express-session": "^1.15.6",
     "html-loader": "^0.5.1",
-    "material-ui": "^1.0.0-beta.28",
     "moment": "^2.19.3",
     "mongoose": "^4.11.13",
     "postcss-modules": "^1.1.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "react-materialize": "^1.1.2",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "underscore": "^1.8.3"
