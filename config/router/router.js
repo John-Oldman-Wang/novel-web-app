@@ -1,28 +1,32 @@
 const fs = require('fs')
 var Novel = require('../models/m-novel.js')
 var Chapter = require('../models/m-chapter.js')
+var express = require("express")
 module.exports = function (app) {
-    app.get('/reset.css', function (req, res) {
-        res.setHeader('Accept','text/plain')
-        fs.createReadStream('./dist/css/reset.css').pipe(res)
-    })
-    app.get('/main.css', function (req, res) {
-        fs.createReadStream('./dist/css/main.css').pipe(res)
-    })
-    app.get('/favicon.ico', function (req, res) {
-        res.end('404')
-    })
-    app.get('/main.js', function (req, res) {
-        fs.createReadStream('./dist/main.js').pipe(res)
-    })
-    // app.get('/vendor.js', function (req, res) {
-    //     fs.createReadStream('./www/output/vendor.js').pipe(res)
-    // })
     app.get('/', function (req, res) {
         res.render('index', {
             title: '无限中文小说'
         })
     })
+
+    app.use(express.static('dist'))
+    // app.get('/reset.css', function (req, res) {
+    //     res.setHeader('Accept', 'text/plain')
+    //     fs.createReadStream('./dist/css/reset.css').pipe(res)
+    // })
+    // app.get('/main.css', function (req, res) {
+    //     fs.createReadStream('./dist/css/main.css').pipe(res)
+    // })
+    app.get('/favicon.ico', function (req, res) {
+        res.end('404')
+    })
+    // app.get('/main.js', function (req, res) {
+    //     fs.createReadStream('./dist/main.js').pipe(res)
+    // })
+    // app.get('/vendor.js', function (req, res) {
+    //     fs.createReadStream('./www/output/vendor.js').pipe(res)
+    // })
+
     app.get('/index', function (req, res, next) {
         if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
             Novel.findLast(20, function (err, novels) {
@@ -36,7 +40,7 @@ module.exports = function (app) {
     })
     app.get('/novel', function (req, res, next) {
         if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
-            Novel.findOne({_id:req.query.v},{href:0,meta:0,"chapters.href":0}).exec(function (err, novel) {
+            Novel.findOne({ _id: req.query.v }, { href: 0, meta: 0, "chapters.href": 0 }).exec(function (err, novel) {
                 res.json(novel)
             })
         } else {
@@ -46,8 +50,8 @@ module.exports = function (app) {
     app.get('/chapter', function (req, res, next) {
         if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
             //处理无参数传入
-            if(req.query.c==""){}
-            Chapter.findOne({_id:req.query.c},{href:0,meta:0}).exec(function (err, chapter) {
+            if (req.query.c == "") { }
+            Chapter.findOne({ _id: req.query.c }, { href: 0, meta: 0 }).exec(function (err, chapter) {
                 res.json(chapter)
             })
         } else {
@@ -65,7 +69,7 @@ module.exports = function (app) {
             next && next()
         }
     })
-
+    //for test
     app.get('/test', function (req, res) {
         fs.createReadStream('./www/entry/test.html').pipe(res)
     })
