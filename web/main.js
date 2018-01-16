@@ -1,20 +1,14 @@
-const React = require('react');
-const Component=React.Component
-const ReactDom=require('react-dom')
-
-const { Switch, Redirect ,BrowserRouter, Route, Link } = require('react-router-dom') 
-window.a=require('react-router-dom')
-console.log( a )
+import React from 'react'
+const Component = React.Component
+import ReactDom from 'react-dom'
+import { Switch, Redirect, BrowserRouter, Route, Link } from 'react-router-dom'
 
 
-const Index=require('./component/index.js')
-const About=require('./component/about.js')
-const Novel=require('./component/novel.js')
-const Chapter=require('./component/chapter.js')
-const Search=require('./component/search.js')
-const Progress=require('./component/progress.js')
-class App extends Component{
-    render(){
+import Loader from './component/loader.js'
+import Progress from './component/progress.js'
+
+class App extends Component {
+    render() {
         return (
             <div id="app">
                 {this.props.children}
@@ -26,19 +20,17 @@ class App extends Component{
     }
 }
 if (typeof Object.assign != 'function') {
-    // Must be writable: true, enumerable: false, configurable: true
-    Object.defineProperty(Object, "assign", {
-        value: function assign(target, varArgs) { // .length of function is 2
+    Object.defineProperty(Object, 'assign', {
+        value: function assign(target, varArgs) {
             'use strict';
-            if (target == null) { // TypeError if undefined or null
-                throw new TypeError('Cannot convert undefined or null to object');
+            if (target == null) {
+                throw new TypeError('Cannot convert undefined or null to object')
             }
-            var to = Object(target);
+            var to = Object(target)
             for (var index = 1; index < arguments.length; index++) {
                 var nextSource = arguments[index];
-                if (nextSource != null) { // Skip over if undefined or null
+                if (nextSource != null) {
                     for (var nextKey in nextSource) {
-                        // Avoid bugs when hasOwnProperty is shadowed
                         if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
                             to[nextKey] = nextSource[nextKey];
                         }
@@ -51,47 +43,21 @@ if (typeof Object.assign != 'function') {
         configurable: true
     });
 }
-
+const AppBarExampleIcon = (props) => (
+    <AppBar
+        title={<span>HHHH</span>}
+    >{props.children}
+    </AppBar>
+);
 window.p1 = ReactDom.render(<Progress pro={0} ></Progress>, document.getElementById("progressBar"))
 ReactDom.render(<BrowserRouter>
     <App>
         <Switch>
-            <Route exact path='/' component={Index}></Route>
-            <Route path='/novel' component={Novel}></Route>
-            <Route path='/search' component={Search}></Route>
-            <Route path='/chapter' component={Chapter}></Route>
+            <Route exact path='/' component={Loader('Index')}></Route>
+            <Route path='/novel' component={Loader('Novel')}></Route>
+            <Route path='/search' component={Loader('Search')}></Route>
+            <Route path='/chapter' component={Loader('Chapter')}></Route>
             <Redirect from="/*" to="/" />
         </Switch>
     </App>
 </BrowserRouter>, document.getElementById('content'))
-class Clock extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { date: new Date() };
-    }
-
-    componentDidMount() {
-        this.timerID = setInterval(() => this.tick(),
-            1000);
-    }
-    tick() {
-        this.setState({
-            date: new Date()
-        });
-    }
-    componentWillUnmount() {
-
-    }
-    componentWillUnmount() {
-        clearInterval(this.timerID);
-    }
-    render() {
-        return (
-            <div>
-                <h1>Hello, world!</h1>
-                <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
-            </div>
-        );
-    }
-}
-// ReactDom.render(<Clock />,document.getElementById("footer"))

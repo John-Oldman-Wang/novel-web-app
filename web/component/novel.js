@@ -1,12 +1,12 @@
-const React = require('react');
-const Component = React.Component
-const { Link } = require('react-router-dom')
-const formSearch = require('../plugin/formSearch.js')
-const formDate = require('../plugin/formDate.js')
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
+import formSearch from '../plugin/formSearch.js'
+import formDate from '../plugin/formDate.js'
 var xhr = new XMLHttpRequest()
-class Novel extends Component {
+export class Novel extends Component {
     constructor(props) {
         super(props)
+        console.log(this.props)
         if (this.props.location.search) {
             var query=formSearch(this.props.location.search)
             this.state = {
@@ -58,6 +58,7 @@ class Novel extends Component {
         if(!!novel.title){
             return (
                 <div className="novel-page">
+                    
                     <div className="novel-header">    
                         <img className="search-novel-img" src={novel.image} alt={novel.title} />
                         <div className="search-novel-mes-wrap">
@@ -96,4 +97,3 @@ class Novel extends Component {
         }
     }
 }
-module.exports = Novel

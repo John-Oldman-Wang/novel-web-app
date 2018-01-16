@@ -1,5 +1,4 @@
-const React = require('react');
-const Component = React.Component
+import React, { Component } from 'react'
 class Progrees extends Component {
     constructor(props) {
         super(props)

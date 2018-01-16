@@ -1,9 +1,8 @@
-const React = require('react');
-const Component = React.Component
-const { Link } = require('react-router-dom')
-const formSearch = require('../plugin/formSearch.js')
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
+import formSearch from '../plugin/formSearch.js'
 var xhr = new XMLHttpRequest()
-class Search extends Component {
+export class Search extends Component {
     constructor(props) {
         super(props)
         var obj
@@ -115,4 +114,4 @@ class Search extends Component {
     }
 }
 
-module.exports = Search
+// module.exports = Search

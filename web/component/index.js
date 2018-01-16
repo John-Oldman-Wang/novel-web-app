@@ -1,9 +1,8 @@
-const React = require('react');
-const Component = React.Component
-const { Link } =require('react-router-dom')
-const Search = require('./search.js')
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 var xhr = new XMLHttpRequest()
-class Index extends Component {
+import Search from './searchHeader.js'
+export class Index extends Component {
     constructor(props){
         super(props)
         this.state={
@@ -31,7 +30,6 @@ class Index extends Component {
         if(this.state.novels.length==0){
             return (
                 <div>
-                    <Search/>
                     加载中
                 </div>
             );
@@ -66,4 +64,3 @@ class Index extends Component {
     componentDidMount(){
     }
 }
-module.exports = Index

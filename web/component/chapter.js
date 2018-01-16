@@ -1,10 +1,9 @@
-const React = require('react');
-const Component = React.Component
-const { Link } = require('react-router-dom')
-const formSearch = require('../plugin/formSearch.js')
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
+import formSearch from '../plugin/formSearch.js'
 var xhr = new XMLHttpRequest()
 var timer;
-class Chapter extends Component {
+export class Chapter extends Component {
     constructor(props) {
         super(props)
         if (this.props.location.search){
@@ -217,4 +216,4 @@ class Chapter extends Component {
         );
     }
 }
-module.exports = Chapter
+// module.exports = Chapter
