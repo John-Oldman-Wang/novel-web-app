@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { ProgressBar } from 'react-materialize'
 class Progrees extends Component {
     constructor(props) {
         super(props)
@@ -42,20 +43,28 @@ class Progrees extends Component {
     }
     render() {
         return (
-            <div
-                style={{width:"100%",display:"block"}}
-            >
-                <div
+            <div className="progress lighten-5" style={{ margin: '0px', display: this.state.show ? 'block' : 'none'}}>
+                <div className="indeterminate"
                     style={{
-                        height:this.state.height,
-                        width: this.state.pro*100 +"%",
-                        backgroundColor:this.state.color,
-                        transition:this.state.show?'all 0.5s ease-in':'none',
-                        display: this.state.show ?'block':'none'
+                        width: this.state.pro * 100 + "%",
                     }}
-                >
-                </div>
+                ></div>
             </div>
+            // <ProgressBar style={{margin: '0px'}} progress={70}/>
+            // <div
+            //     style={{width:"100%",display:"block"}}
+            // >
+            //     <div
+            //         style={{
+            //             height:this.state.height,
+            //             width: this.state.pro*100 +"%",
+            //             backgroundColor:this.state.color,
+            //             transition:this.state.show?'all 0.5s ease-in':'none',
+            //             display: this.state.show ?'block':'none'
+            //         }}
+            //     >
+            //     </div>
+            // </div>
         );
     }
 }
