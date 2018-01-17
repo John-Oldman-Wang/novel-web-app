@@ -231,14 +231,3 @@
 .chapter-progress{
     font-size: 20px;
 }
-
-a,a:visited {
-    color: #000;
-    text-decoration: none;
-}
-a:hover {
-    color: #000;
-}
-p {
-    user-select: none;
-}
