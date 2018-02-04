@@ -1,12 +1,20 @@
 {
-  "name": "serials",
-  "version": "1.0.0",
-  "description": "serials web app",
+  "name": "novelApp",
+  "version": "1.3.2",
+  "description": "novel web app",
   "main": "app.js",
   "scripts": {
     "test": "nodemon app.js",
     "build": "parcel build ./web/main.js --no-minify --no-cache",
-    "dev": "parcel ./web/main.js --no-cache"
+    "dev": "parcel ./web/main.js --no-cache",
+    "pro": "parcel build ./web/main.js --no-cache"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "web/*",
+      "dist/*"
+    ],
+    "delay": "2500"
   },
   "keywords": [
     "novel",
@@ -28,6 +36,7 @@
     "webpack-dev-server": "^2.9.5"
   },
   "dependencies": {
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-polyfill": "^6.26.0",
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.7",
@@ -42,6 +51,8 @@
     "react-materialize": "^1.1.2",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
+    "material-ui": "^1.0.0-beta.29",
+    "material-ui-icons": "^1.0.0-beta.17",
     "underscore": "^1.8.3"
   }
 }

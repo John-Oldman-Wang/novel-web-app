@@ -2,5 +2,8 @@
     "presets": [
         "env",
         "react"
+    ],
+    "plugins": [
+        "syntax-dynamic-import"
     ]
 }

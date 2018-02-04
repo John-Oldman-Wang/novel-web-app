@@ -5,13 +5,22 @@ import { Switch, Redirect, BrowserRouter, Route, Link } from 'react-router-dom'
 
 
 import Loader from './component/loader.js'
+
 import Progress from './component/progress.js'
 
 class App extends Component {
     render() {
         return (
             <div id="app">
-                {this.props.children}
+            <BrowserRouter ref='br'>
+                <Switch>
+                    <Route exact path='/' component={Loader('Index')}></Route>
+                    <Route path='/novel' component={Loader('Novel')}></Route>
+                    <Route path='/search' component={Loader('Search')}></Route>
+                    <Route path='/chapter' component={Loader('Chapter')}></Route>
+                    <Redirect from="/*" to="/" />
+                </Switch>
+            </BrowserRouter>
             </div>
         )
     }
@@ -43,21 +52,6 @@ if (typeof Object.assign != 'function') {
         configurable: true
     });
 }
-const AppBarExampleIcon = (props) => (
-    <AppBar
-        title={<span>HHHH</span>}
-    >{props.children}
-    </AppBar>
-);
+
 window.p1 = ReactDom.render(<Progress pro={0} ></Progress>, document.getElementById("progressBar"))
-ReactDom.render(<BrowserRouter>
-    <App>
-        <Switch>
-            <Route exact path='/' component={Loader('Index')}></Route>
-            <Route path='/novel' component={Loader('Novel')}></Route>
-            <Route path='/search' component={Loader('Search')}></Route>
-            <Route path='/chapter' component={Loader('Chapter')}></Route>
-            <Redirect from="/*" to="/" />
-        </Switch>
-    </App>
-</BrowserRouter>, document.getElementById('content'))
+ReactDom.render(<App/>, document.getElementById('root'))

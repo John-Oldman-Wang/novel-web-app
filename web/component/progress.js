@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { ProgressBar } from 'react-materialize'
+var timer
 class Progrees extends Component {
     constructor(props) {
         super(props)
@@ -12,6 +12,13 @@ class Progrees extends Component {
     }
     componentDidMount(){
         console.log('pro componentDidMount')
+        if(this.state.show){
+            timer = setTimeout(()=>{
+                this.goto(1)
+            },3000)
+        }else{
+            clearTimeout(timer)
+        }
     }
     goto(value){
         if(value>1){
@@ -26,7 +33,6 @@ class Progrees extends Component {
                     pro: value
                 }) 
             }, 0);
-            
         }else{
             this.setState({
                 pro:value
@@ -43,28 +49,13 @@ class Progrees extends Component {
     }
     render() {
         return (
-            <div className="progress lighten-5" style={{ margin: '0px', display: this.state.show ? 'block' : 'none'}}>
-                <div className="indeterminate"
+            <div className='progress lighten-5' style={{ margin: '0px', display: this.state.show ? 'block' : 'none'}}>
+                <div className='indeterminate'
                     style={{
-                        width: this.state.pro * 100 + "%",
+                        width: this.state.pro * 100 + '%',
                     }}
                 ></div>
             </div>
-            // <ProgressBar style={{margin: '0px'}} progress={70}/>
-            // <div
-            //     style={{width:"100%",display:"block"}}
-            // >
-            //     <div
-            //         style={{
-            //             height:this.state.height,
-            //             width: this.state.pro*100 +"%",
-            //             backgroundColor:this.state.color,
-            //             transition:this.state.show?'all 0.5s ease-in':'none',
-            //             display: this.state.show ?'block':'none'
-            //         }}
-            //     >
-            //     </div>
-            // </div>
         );
     }
 }

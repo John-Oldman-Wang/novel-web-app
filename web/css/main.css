@@ -1,13 +1,55 @@
 @charset "utf-8";
-.main-progress-Bar{
+#root{
+    max-width: 900px;
+    margin: 0 auto;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12), 0 3px 1px -2px rgba(0,0,0,.2);
+}
+
+#index nav{
+    background-color: #ffab40;
+}
+#app .novel-title{
+    display: block;
+    padding: 1px 0px;
+    font-size: 1.1em;
+    font-family: "楷体";
+    margin: 0.5em 0px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin: 0px;
+    padding: 0px;
+}
+#app .novel-header{
+    padding: 0px 5px;
+}
+.novel-img {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    overflow: hidden;
+    max-width: 180px;
+    /* width: 100%; */
+    /* padding-bottom: 133.33%; */
+    margin: 0.5em 0 1em;
+    border-radius: 2px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12), 0 3px 1px -2px rgba(0,0,0,.2);
+}
+.novel-img > .imgbox{
+    margin-top: 133.33%;
+}
+.novel-img > .img{
+    display: block;
     position: absolute;
     top: 0px;
     left: 0px;
     right: 0px;
+    bottom: 0px;
 }
-/* body{
-    overflow-y:visible;
-} */
+.novel-img  img{
+    width: 100%;
+    height: 100%;
+}
 .content{
     min-height: 800px;
     margin: 0px;
@@ -33,26 +75,6 @@
     width: 33.33333333%;
     padding: 0px 15px;
     margin-bottom: 10px;
-}
-.novel-img {
-    position: relative;
-    overflow: hidden;
-    max-width: 180px;
-}
-.novel-img > .imgbox{
-    margin-top: 133.33%;
-}
-.novel-img > .img{
-    display: block;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-}
-.novel-img  img{
-    width: 100%;
-    height: 100%;
 }
 .novel-title{
     padding: 1px 0px;

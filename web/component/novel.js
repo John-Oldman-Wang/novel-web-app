@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+
+import {CardPanel , CardTitle , Card, Autocomplete, Col, Row, Input, Navbar, NavItem, Icon, Button } from 'react-materialize'
+
 import formSearch from '../plugin/formSearch.js'
 import formDate from '../plugin/formDate.js'
 var xhr = new XMLHttpRequest()
@@ -57,8 +60,15 @@ export class Novel extends Component {
         var novel=this.state.novel||{}
         if(!!novel.title){
             return (
+                
                 <div className="novel-page">
-                    
+                <Row>
+                <Link to='/'>
+                    <Col s={1} className='grid-example'><Icon small>home</Icon></Col>
+                    </Link>
+                    <Col s={9} className='grid-example'><h6>{novel.title}</h6></Col>
+                </Row>
+                
                     <div className="novel-header">    
                         <img className="search-novel-img" src={novel.image} alt={novel.title} />
                         <div className="search-novel-mes-wrap">

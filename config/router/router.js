@@ -1,32 +1,44 @@
 const fs = require('fs')
 var Novel = require('../models/m-novel.js')
 var Chapter = require('../models/m-chapter.js')
+var Logger = require('../models/m-logger.js')
 var express = require("express")
 module.exports = function (app) {
+    
+    app.use(express.static('dist'))
+    app.get('/favicon.ico', function (req, res) {
+        fs.createReadStream('./web/ic_local_library_black_48dp_1x.png').pipe(res)
+    })
+    app.get('/favicon.svg', function (req, res) {
+        fs.createReadStream('./web/ic_local_library_black_48px.svg').pipe(res)
+    })
+    app.get('/favicon.png', function (req, res) {
+        fs.createReadStream('./web/ic_local_library_black_48dp_2x.png').pipe(res)
+    })
+    app.use(function (req, res, next) {
+        
+        //filter request of crawler
+        if (req.headers["user-agent"].indexOf('python') > -1) {
+            res.end('404')
+            return
+        }
+
+        var obj = Object.assign({ 
+            method: req.method,
+            url: decodeURI(req.url)
+        }, req.headers)
+        var _logger = new Logger(obj)
+        _logger.save().catch(function (err) {
+           console.log(err)
+        })
+        next();
+    })
     app.get('/', function (req, res) {
         res.render('index', {
             title: '无限中文小说'
         })
     })
-
-    app.use(express.static('dist'))
-    // app.get('/reset.css', function (req, res) {
-    //     res.setHeader('Accept', 'text/plain')
-    //     fs.createReadStream('./dist/css/reset.css').pipe(res)
-    // })
-    // app.get('/main.css', function (req, res) {
-    //     fs.createReadStream('./dist/css/main.css').pipe(res)
-    // })
-    app.get('/favicon.ico', function (req, res) {
-        res.end('404')
-    })
-    // app.get('/main.js', function (req, res) {
-    //     fs.createReadStream('./dist/main.js').pipe(res)
-    // })
-    // app.get('/vendor.js', function (req, res) {
-    //     fs.createReadStream('./www/output/vendor.js').pipe(res)
-    // })
-
+    
     app.get('/index', function (req, res, next) {
         if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
             Novel.findLast(20, function (err, novels) {

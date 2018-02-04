@@ -15,30 +15,6 @@ mongoose.connect(dburl, {
 
 app.set('view engine', 'ejs')
 app.set('views', './config/views')
-app.use(function (req, res, next) {
-    if (["/favicon.ico", "/reset.css", "/main.css", "/vendor.js", "/bundle.js"].indexOf(req.url) > -1) {
-        next()
-        return
-    } else if (req.headers["user-agent"].indexOf('python') > -1) {
-        res.end('404')
-        return
-    } else {
-        var obj = Object.assign({ 
-            method: req.method,
-            url: decodeURI(req.url)
-        }, req.headers)
-        var _logger = new Logger(obj)
-        _logger.save(function (err, log) {
-            if (err) {
-                console.log(err)
-            } else {
-                // console.log(`save log ok`)
-            }
-        })
-        // console.log(_logger)
-        next();
-    }
-})
 require('./config/router/router.js')(app)
 app.listen(port, function (err) {
     if (err)

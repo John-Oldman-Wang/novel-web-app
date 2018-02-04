@@ -4,16 +4,25 @@
     <meta charset="UTF-8">
     <meta name="full-screen" content="yes">
     <meta name="browsermode" content="application">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+    <meta name="format-detection" content="telephone=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <!-- <link rel="stylesheet" href="/reset.css" /> -->
+    <link rel="icon" sizes="192x192" href="/favicon.ico">
+    <link rel="icon" sizes="192x192" href="/favicon.svg">
+    <link rel="shortcut icon" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/favicon.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+    <meta name="msapplication-TileImage" content="/favicon.png">
     <link rel="stylesheet" href="/main.css" />
-    <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css">
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
     <title><%= title  %></title>
-    <meta name="Keywords" content="中文小说、免费小说、武侠小说、言情小说、腐女最爱、玄幻小说">
+    <meta name="Keywords" content="中文小说、免费小说、无广告弹窗、武侠小说、言情小说、腐女最爱、玄幻小说">
     <meta name="Description" content="无线小说网（ourtube.cn）是中文小说网站。无线小说网(ourtube.cn)提供了丰富的武侠、言情、玄幻、以及都市等中文小说。文字内容富有交互性及趣味性，你还可以和朋友一起阅读。">
 
     <script>
@@ -26,8 +35,9 @@
     </noscript>
     <script>
         //防止iframe,frame
+        //console.log('iframe',top==self)
         if (top != self && (!document.referrer || document.referrer.search(/^https?:\/\/(www\.google\.com\/analytics\/web\/|metrika.yandex.ru\/|webvisor\.com\/)/i) !== 0)){
-            top.location = locati
+            top.location = self.location
         }
     </script>
 </head>
@@ -37,7 +47,7 @@
         
         </div>
     </div>
-    <div class="content" id="content"></div>
+    <div class="root" id="root"></div>
     <div id="footer"></div>
     <div id="seo" style="display:none"></div>
 </body>

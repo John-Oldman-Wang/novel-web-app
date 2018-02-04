@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
-import {CardPanel , CardTitle , Card, Autocomplete, Col, Row, Input, Navbar, NavItem, Icon, Button } from 'react-materialize'
+import {Slider,Slide,CardPanel , CardTitle , Card, Autocomplete, Col, Row, Input, Navbar, NavItem, Icon, Button } from 'react-materialize'
 
 
 import Search from './searchHeader.js'
@@ -34,9 +34,9 @@ export class Index extends Component {
     }
     render() {
         return(
-            <div>
-                <Navbar brand='无限小说' right>
-                    <NavItem href="javascript:void(0)" onClick={()=>{
+            <div className='index'>
+                <Navbar brand='Woeble阅读' right>
+                    <NavItem href='javascript:void(0)' onClick={()=>{
                         this.props.history.push('/search?key=')
                     }}>
                         <Icon left>search</Icon>搜索
@@ -45,25 +45,65 @@ export class Index extends Component {
                     <NavItem href='get-started.html'><Icon>refresh</Icon></NavItem>
                     <NavItem href='get-started.html'><Icon>more_vert</Icon></NavItem> */}
                 </Navbar>
-                <ul className="row">
+                <Slider indicators={true}>
+                
+                    <Slide
+                        src="http://lorempixel.com/580/250/nature/1"
+                        title="This is our big Tagline!">
+                        <Link to="search?key=">Here's our small slogan.</Link>
+                    </Slide>
+                    
+                    <Slide
+                        src="http://lorempixel.com/580/250/nature/2"
+                        title="Left aligned Caption"
+                        placement="left">
+                        Here's our small slogan.
+                    </Slide>
+                    <Slide
+                        src="http://lorempixel.com/580/250/nature/3"
+                        title="Right aligned Caption"
+                        placement="right">
+                        Here's our small slogan.
+                    </Slide>
+                </Slider>
+                <ul className='row novelist'>
                     {this.state.novels.map(novel=>{
                         return (
                             <li className="col s4" key={novel._id}>
-                                {/* <Card > */}
-                                <Link to={'/novel?v=' + novel._id} rel={novel.title}>
-                                    <CardTitle style={{fontSize: "0px"}} reveal image="">
-                                        <div className="novel-img">
-                                            <div className="imgbox"></div>
-                                            <div className="img">
-                                                <img src={novel.image} alt={novel.title} />
-                                            </div>
-                                        </div>
-                                        <div style={{ fontSize: "15px" }} className="novel-message">
-                                            <h1 className="novel-title">{novel.title}</h1>
-                                            <h3 className="novel-author">{novel.author}</h3>
-                                        </div>
-                                    </CardTitle>
-                                </Link>
+                            <Link to={'/novel?v=' + novel._id} rel={novel.title}>
+
+                                <div className="novel-img">
+                                    <div className="imgbox">
+                                    </div>
+                                    <div className="img">
+                                        <img className="img" src={novel.image} alt={novel.title}/>
+                                    </div>
+                                </div>
+                                {/* <div className="small card" style={{maxHeight:'80%'}}>
+                                    <div className="card-image" style={{maxHeight:'80%'}}>
+                                    <img className="" src={novel.image} />
+                                    <span className="card-title"></span>
+                                    </div>
+                                <div className="card-reveal">
+                                    <span className="card-title grey-text text-darken-4"><i className="material-icons right">close</i></span></div>
+                                    <div className="card-action novel-header">
+                                        <h6 className="novel-title">
+                                            {novel.title}
+                                        </h6>
+                                        
+                                        <h6 className="novel-title">{novel.author}</h6>
+                                    </div>
+                                </div> */}
+                                {/* <Card className='small'
+                                    header={<CardTitle  image={novel.image}></CardTitle>}
+                                    actions={[
+                                        <Link to={'/novel?v=' + novel._id} rel={novel.title}>
+                                            <h6 className='novel-title'>{novel.title}</h6>
+                                            <h6 className='novel-title'>{novel.title}</h6>
+                                        </Link>
+                                ]} >""
+                                </Card> */}
+                            </Link>
                             </li>
                         );
                     })}
