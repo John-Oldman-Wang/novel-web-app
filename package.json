@@ -4,7 +4,8 @@
   "description": "novel web app",
   "main": "app.js",
   "scripts": {
-    "test": "nodemon app.js",
+    "start": "npm run server&&npm run dev",
+    "server": "nodemon app.js",
     "build": "parcel build ./web/main.js --no-minify --no-cache",
     "dev": "parcel ./web/main.js --no-cache",
     "pro": "parcel build ./web/main.js --no-cache"
@@ -37,12 +38,18 @@
   },
   "dependencies": {
     "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es3-member-expression-literals": "^6.22.0",
+    "babel-plugin-transform-es3-property-literals": "^6.22.0",
     "babel-polyfill": "^6.26.0",
+    "babel-runtime": "^6.26.0",
     "cookie-parser": "^1.4.3",
+    "crypto-browserify": "^3.12.0",
     "ejs": "^2.5.7",
     "express": "^4.16.1",
     "express-session": "^1.15.6",
     "html-loader": "^0.5.1",
+    "material-ui": "^1.0.0-beta.29",
+    "material-ui-icons": "^1.0.0-beta.17",
     "moment": "^2.19.3",
     "mongoose": "^4.11.13",
     "postcss-modules": "^1.1.0",
@@ -51,8 +58,6 @@
     "react-materialize": "^1.1.2",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
-    "material-ui": "^1.0.0-beta.29",
-    "material-ui-icons": "^1.0.0-beta.17",
     "underscore": "^1.8.3"
   }
 }

@@ -1,8 +1,16 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-
 import {Slider,Slide,CardPanel , CardTitle , Card, Autocomplete, Col, Row, Input, Navbar, NavItem, Icon, Button } from 'react-materialize'
 
+// import Card from 'material-ui/Card'
+import { CardMedia, CardActions, CardContent } from 'material-ui/Card'
+import Typography from 'material-ui/Typography'
+import withStyles from 'material-ui/styles/withStyles'
+import List, { ListItem, ListItemText } from 'material-ui/List'
+import Avatar from 'material-ui/Avatar'
+
+import { cipher, decipher } from '../plugin/cryptoBro.js'
+console.log('--->', decipher, cipher)
 
 import Search from './searchHeader.js'
 var xhr = new XMLHttpRequest()
@@ -12,14 +20,14 @@ export class Index extends Component {
         this.state={
            novels:[] 
         }
-        // console.log()
         window.index=this
         window.p1.goto(50)
         xhr.open('GET', '/index?pbj=1', true)
         xhr.setRequestHeader('x-response-type', 'multipart')
         xhr.onreadystatechange = () => {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                var json = JSON.parse(xhr.responseText)
+                var json = JSON.parse(decipher(xhr.responseText) )
+                // console.log(decipher(xhr.responseText) )
                 this.setState({
                     novels: json.novels
                 })
@@ -31,6 +39,7 @@ export class Index extends Component {
         xhr.send()
     }
     componentWillMount(){
+        
     }
     render() {
         return(

@@ -5,5 +5,5 @@ module.exports={
     port: 3000,
     versionOfMainjs:'',
     versionOfMain:'',
-    
+    key: 'novel'
 }

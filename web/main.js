@@ -3,31 +3,9 @@ const Component = React.Component
 import ReactDom from 'react-dom'
 import { Switch, Redirect, BrowserRouter, Route, Link } from 'react-router-dom'
 
-
 import Loader from './component/loader.js'
-
 import Progress from './component/progress.js'
 
-class App extends Component {
-    render() {
-        return (
-            <div id="app">
-            <BrowserRouter ref='br'>
-                <Switch>
-                    <Route exact path='/' component={Loader('Index')}></Route>
-                    <Route path='/novel' component={Loader('Novel')}></Route>
-                    <Route path='/search' component={Loader('Search')}></Route>
-                    <Route path='/chapter' component={Loader('Chapter')}></Route>
-                    <Redirect from="/*" to="/" />
-                </Switch>
-            </BrowserRouter>
-            </div>
-        )
-    }
-    componentDidMount() {
-        console.timeEnd('first')
-    }
-}
 if (typeof Object.assign != 'function') {
     Object.defineProperty(Object, 'assign', {
         value: function assign(target, varArgs) {
@@ -54,4 +32,13 @@ if (typeof Object.assign != 'function') {
 }
 
 window.p1 = ReactDom.render(<Progress pro={0} ></Progress>, document.getElementById("progressBar"))
-ReactDom.render(<App/>, document.getElementById('root'))
+
+ReactDom.render(<BrowserRouter>
+    <Switch>
+        <Route exact path='/' component={Loader('Index')}></Route>
+        <Route path='/novel' component={Loader('Novel')}></Route>
+        <Route path='/search' component={Loader('Search')}></Route>
+        <Route path='/chapter' component={Loader('Chapter')}></Route>
+        <Redirect from="/*" to="/" />
+    </Switch>
+</BrowserRouter>, document.getElementById('root'))
