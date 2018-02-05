@@ -36,13 +36,11 @@ module.exports = function (app) {
         fs.createReadStream('./web/ic_local_library_black_48dp_2x.png').pipe(res)
     })
     app.use(function (req, res, next) {
-
         //filter request of crawler
         if (req.headers["user-agent"].indexOf('python') > -1) {
             res.end('404')
             return
         }
-
         var obj = Object.assign({
             method: req.method,
             url: decodeURI(req.url)
@@ -58,17 +56,9 @@ module.exports = function (app) {
             title: '无限中文小说'
         })
     })
-    // app.get('/secret',function(req,res){
-    //     var s = cipher('you are right,我的天啦，真的对了吗？')
-    //     console.log(s)
-    //     res.end(s)
-    // })
     app.get('/index', function (req, res, next) {
         if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
             Novel.findLast(20, function (err, novels) {
-                // res.json({
-                //     novels: novels
-                // })
                 res.end(cipher(JSON.stringify({
                     novels: novels
                 }))) 
@@ -80,16 +70,16 @@ module.exports = function (app) {
     app.get('/category', function (req, res) {
         if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
             if (req.query.c) {
-                res.json({
+                res.end(cipher(JSON.stringify({
                     novels: []
-                })
+                })))
                 return
             }
             var reg = new RegExp(req.query.c, 'g')
             Novel.find({ category: reg }, { href: 0, meta: 0, "chapters.href": 0 }).limit(20).then(function (novels) {
-                res.json({
+                res.end(cipher(JSON.stringify({
                     novels: novels
-                })
+                })))
             })
         } else {
             next && next()
@@ -98,7 +88,7 @@ module.exports = function (app) {
     app.get('/novel', function (req, res, next) {
         if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
             Novel.findOne({ _id: req.query.v }, { href: 0, meta: 0, "chapters.href": 0 }).exec(function (err, novel) {
-                res.json(novel)
+                res.end(cipher(JSON.stringify(novel)))
             })
         } else {
             next && next()
@@ -109,7 +99,7 @@ module.exports = function (app) {
             //处理无参数传入
             if (req.query.c == "") { }
             Chapter.findOne({ _id: req.query.c }, { href: 0, meta: 0 }).exec(function (err, chapter) {
-                res.json(chapter)
+                res.end(cipher(JSON.stringify(chapter)))
             })
         } else {
             next && next()
@@ -120,20 +110,18 @@ module.exports = function (app) {
             var key = req.query.key.replace()
             var reg = new RegExp(key.split('').join('.*'), 'g')
             Novel.find({ title: reg }, { href: 0, meta: 0 }).limit(20).exec(function (err, novels) {
-                res.json(novels)
+                res.end(cipher(JSON.stringify(novels)))
             })
         } else {
             next && next()
         }
     })
-    //for test
-    app.get('/test', function (req, res) {
-        fs.createReadStream('./www/entry/test.html').pipe(res)
-    })
-    app.get('/test1', function (req, res) {
-        fs.createReadStream('./www/entry/test1.html').pipe(res)
-    })
+
+
     app.use(function (req, res) {
+        if (req.headers['x-response-type'] == 'multipart') {
+            res.end(cipher(JSON.stringify(novels)))
+        }
         res.render('index', {
             title: '无限中文小说'
         })

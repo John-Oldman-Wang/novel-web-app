@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import formSearch from '../plugin/formSearch.js'
+import { cipher, decipher } from '../plugin/cryptoBro.js'
 var xhr = new XMLHttpRequest()
 export class Search extends Component {
     constructor(props) {
@@ -15,8 +16,7 @@ export class Search extends Component {
             this.props.history.action == "POP" || window.p1.goto(50)
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    var json = JSON.parse(xhr.responseText)
-                    console.log(json)
+                    var json = JSON.parse(decipher(xhr.responseText))
                     this.setState({
                         novels: json
                     })
@@ -48,18 +48,16 @@ export class Search extends Component {
         console.log("Search componentWillReceiveProps");
         if (!!nextProps.location) {
             var obj = formSearch(decodeURI(nextProps.location.search))
-            console.log('receive set state')
             this.setState({
                 key: obj.key
             })
-            console.log(this)
             xhr.abort()
             xhr.open('GET', '/search' + nextProps.location.search, true)
             xhr.setRequestHeader('x-response-type', 'multipart')
             nextProps.history.action == "POP" || window.p1.goto(50)
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    var json = JSON.parse(xhr.responseText)
+                    var json = JSON.parse(decipher(xhr.responseText))
                     this.setState({
                         novels: json
                     })

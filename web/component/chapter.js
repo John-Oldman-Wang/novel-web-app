@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import formSearch from '../plugin/formSearch.js'
+
+import { cipher, decipher } from '../plugin/cryptoBro.js'
 var xhr = new XMLHttpRequest()
 var timer;
 export class Chapter extends Component {
@@ -40,7 +42,7 @@ export class Chapter extends Component {
         this.props.history.action == "POP" || window.p1.goto(50)
         xhr.onreadystatechange = () => {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                var json = JSON.parse(xhr.responseText)
+                var json = JSON.parse(decipher(xhr.responseText))
                 if (json == null) {
                     this.props.history.push('/')
                     return
@@ -54,7 +56,7 @@ export class Chapter extends Component {
                 xhr.setRequestHeader('x-response-type', 'multipart')
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                        var json = JSON.parse(xhr.responseText)
+                        var json = JSON.parse(decipher(xhr.responseText))
                         this.setState({
                             novel: Object.assign(this.state.novel, json) || {}
                         })
@@ -88,11 +90,9 @@ export class Chapter extends Component {
 
     }
     componentWillMount() {
-        console.log("chapter componentWillMount");
     }
 
     componentDidMount() {
-        console.log("chapter componentDidMount");
     }
 
     componentWillReceiveProps(nextProps) {
@@ -117,7 +117,7 @@ export class Chapter extends Component {
         xhr.setRequestHeader('x-response-type', 'multipart')
         xhr.onreadystatechange = () => {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                var json = JSON.parse(xhr.responseText)
+                var json = JSON.parse(decipher(xhr.responseText))
                 this.setState({
                     chapter: Object.assign(this.state.chapter, json) || {}
                 })
@@ -127,29 +127,22 @@ export class Chapter extends Component {
             }
         }
         xhr.send()
-        console.log("chapter componentWillReceiveProps");
     }
 
     shouldComponentUpdate() {
-        console.log("chapter shouldComponentUpdate");
         return true;
     }
 
     componentWillUpdate() {
-        console.log("chapter componentWillUpdate");
     }
 
     componentDidUpdate() {
-        console.log("chapter componentDidUpdate");
     }
 
     componentWillUnmount() {
-        console.log("chapter componentWillUnmount");
     }
 
     render() {
-        window.t=this
-        console.log(this)
         if(!("chapter" in this.state)){
             return (<p></p>)
         }

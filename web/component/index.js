@@ -10,7 +10,6 @@ import List, { ListItem, ListItemText } from 'material-ui/List'
 import Avatar from 'material-ui/Avatar'
 
 import { cipher, decipher } from '../plugin/cryptoBro.js'
-console.log('--->', decipher, cipher)
 
 import Search from './searchHeader.js'
 var xhr = new XMLHttpRequest()

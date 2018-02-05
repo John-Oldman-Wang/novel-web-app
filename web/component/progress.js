@@ -11,7 +11,6 @@ class Progrees extends Component {
         this.state.show=this.state.pro!=1
     }
     componentDidMount(){
-        console.log('pro componentDidMount')
         if(this.state.show){
             timer = setTimeout(()=>{
                 this.goto(1)

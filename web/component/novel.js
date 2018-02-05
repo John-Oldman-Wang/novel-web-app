@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom'
 
 import {CardPanel , CardTitle , Card, Autocomplete, Col, Row, Input, Navbar, NavItem, Icon, Button } from 'react-materialize'
 
+import { cipher, decipher } from '../plugin/cryptoBro.js'
 import formSearch from '../plugin/formSearch.js'
 import formDate from '../plugin/formDate.js'
 var xhr = new XMLHttpRequest()
 export class Novel extends Component {
     constructor(props) {
         super(props)
-        console.log(this.props)
         if (this.props.location.search) {
             var query=formSearch(this.props.location.search)
             this.state = {
@@ -32,7 +32,7 @@ export class Novel extends Component {
         this.props.history.action=="POP"||window.p1.goto(50)
         xhr.onreadystatechange = () => {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                var json = JSON.parse(xhr.responseText)
+                var json = JSON.parse(decipher(xhr.responseText))
                 if(json==null){
                     this.props.history.push('/')
                     return
