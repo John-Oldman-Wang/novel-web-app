@@ -12,29 +12,23 @@ import Avatar from 'material-ui/Avatar'
 import { cipher, decipher } from '../plugin/cryptoBro.js'
 
 import Search from './searchHeader.js'
-var xhr = new XMLHttpRequest()
+import request from '../plugin/request.js'
+
 export class Index extends Component {
     constructor(props){
         super(props)
         this.state={
            novels:[] 
         }
-        window.index=this
         window.p1.goto(50)
-        xhr.open('GET', '/index?pbj=1', true)
-        xhr.setRequestHeader('x-response-type', 'multipart')
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                var json = JSON.parse(decipher(xhr.responseText) )
-                // console.log(decipher(xhr.responseText) )
-                this.setState({
-                    novels: json.novels
-                })
-                window.p1.goto(100)
-            }else{
-                window.p1.goto(80)
-            }
-        }
+        var xhr = new request()
+        xhr.get('/index?pbj=1', (e) => {
+            var json = JSON.parse(decipher(e.responseText))
+            this.setState({
+                novels: json.novels
+            })
+            window.p1.goto(100)
+        })
         xhr.send()
     }
     componentWillMount(){
@@ -49,12 +43,8 @@ export class Index extends Component {
                     }}>
                         <Icon left>search</Icon>搜索
                     </NavItem>
-                    {/* <NavItem href='get-started.html'><Icon>view_module</Icon></NavItem>
-                    <NavItem href='get-started.html'><Icon>refresh</Icon></NavItem>
-                    <NavItem href='get-started.html'><Icon>more_vert</Icon></NavItem> */}
                 </Navbar>
                 <Slider indicators={true}>
-                
                     <Slide
                         src="http://lorempixel.com/580/250/nature/1"
                         title="This is our big Tagline!">
@@ -87,30 +77,6 @@ export class Index extends Component {
                                         <img className="img" src={novel.image} alt={novel.title}/>
                                     </div>
                                 </div>
-                                {/* <div className="small card" style={{maxHeight:'80%'}}>
-                                    <div className="card-image" style={{maxHeight:'80%'}}>
-                                    <img className="" src={novel.image} />
-                                    <span className="card-title"></span>
-                                    </div>
-                                <div className="card-reveal">
-                                    <span className="card-title grey-text text-darken-4"><i className="material-icons right">close</i></span></div>
-                                    <div className="card-action novel-header">
-                                        <h6 className="novel-title">
-                                            {novel.title}
-                                        </h6>
-                                        
-                                        <h6 className="novel-title">{novel.author}</h6>
-                                    </div>
-                                </div> */}
-                                {/* <Card className='small'
-                                    header={<CardTitle  image={novel.image}></CardTitle>}
-                                    actions={[
-                                        <Link to={'/novel?v=' + novel._id} rel={novel.title}>
-                                            <h6 className='novel-title'>{novel.title}</h6>
-                                            <h6 className='novel-title'>{novel.title}</h6>
-                                        </Link>
-                                ]} >""
-                                </Card> */}
                             </Link>
                             </li>
                         );
