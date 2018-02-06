@@ -1,8 +1,15 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(global) :
         typeof define === 'function' && define.amd ? define(factory) :
-            (global.request = factory());
-})(this, function () {
+            (global.request = factory(global));
+})(window || this, function (root) {
+    if(!root.document||!root.XMLHttpRequest){
+        //throw new Error("request requires a window with a document");
+        console.log(root)
+        console.log(!root.document)
+        console.log(!(XMLHttpRequest in root))
+        return {}
+    }
     var req = Symbol('request')
     var u = Symbol('requestUrl')
     var s = Symbol('successCallBack')
@@ -19,6 +26,8 @@
             xhr.addEventListener('error',(e)=>{
                 console.log(`${this[m]} this ${this[u]} error!`)
             })
+            window.xhr=xhr
+            window.req=this
             xhr.onreadystatechange = (...arg) => {
                 if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                     var self = this
@@ -28,7 +37,11 @@
                             if (name == 'target' || name == 'srcElement') {
                                 return self
                             } else if (['response', 'responseText'].indexOf(name) > -1) {
-                                return self[req][name]
+                                try {
+                                    return JSON.parse(self[req][name])
+                                } catch (error) {
+                                    return self[req][name]
+                                }
                             }
                         }
                     })
@@ -38,6 +51,11 @@
             }
             xhr.onerror = (...args) => {
                 this[e] && this[e].apply(this, args)
+            }
+            xhr.onprogress = (...args) => {
+                var e=args[0]
+                var cLength=this.getResponseHeader('content-length')
+                console.log(e,cLength)
             }
         }
         open(url, cb) {
@@ -60,10 +78,10 @@
         abort() {
             this[req].abort()
         }
-        send() {
+        send(...arg) {
             this.abort()
             this.open()
-            this[req].send()
+            this[req].send.apply(this[req],arg)
         }
         set url(value) {
             this[u] = value
@@ -79,23 +97,23 @@
             }
             this[m] = method
         }
-        set(type, fun) {
-            var arr = ['timeout', 'error', 'uploadprogres', 'loadstart', 'progress', 'loadend', 'load', 'readystatechange']
-            var xhr = this[req]
-            if (fun != undefined && typeof type == 'string' && arr.indexOf(type) > -1) {
-                if (type == 'timeout') {
-                    xhr.timeout = typeof fun != 'number' - 0
-                }
-            } else {
-                return f
-            }
-        }
+        // set(type, fun) {
+        //     var arr = ['timeout', 'error', 'uploadprogres', 'loadstart', 'progress', 'loadend', 'load', 'readystatechange']
+        //     var xhr = this[req]
+        //     if (fun != undefined && typeof type == 'string' && arr.indexOf(type) > -1) {
+        //         if (type == 'timeout') {
+        //             xhr.timeout = typeof fun != 'number' - 0
+        //         }
+        //     } else {
+        //         return f
+        //     }
+        // }
         getResponseHeader() {
             var xhr = this[req]
             if (arguments[0] == undefined) {
                 return null
             }
-            return xhr.getResponseHeader(arguments)
+            return xhr.getResponseHeader(...arguments)
         }
         getAllResponseHeaders() {
             var xhr = this[req]
