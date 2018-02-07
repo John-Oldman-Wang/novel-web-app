@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { ProgressBar } from 'react-materialize'
 import "babel-polyfill";
 
 const pages = {

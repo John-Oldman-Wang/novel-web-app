@@ -55,7 +55,6 @@
             xhr.onprogress = (...args) => {
                 var e=args[0]
                 var cLength=this.getResponseHeader('content-length')
-                console.log(e,cLength)
             }
         }
         open(url, cb) {

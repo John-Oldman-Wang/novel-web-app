@@ -2,29 +2,21 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import formSearch from '../plugin/formSearch.js'
 import { cipher, decipher } from '../plugin/cryptoBro.js'
-var xhr = new XMLHttpRequest()
+import request from '../plugin/request.js'
+var xhr = new request()
 export class Search extends Component {
     constructor(props) {
         super(props)
         var obj
         if(!!this.props.location){
             obj =formSearch(decodeURI(this.props.location.search))
-            console.log(obj)
-            var xhr = new XMLHttpRequest()
-            xhr.open('GET', '/search' + this.props.location.search+'&pbj=1', true)
-            xhr.setRequestHeader('x-response-type', 'multipart')
-            this.props.history.action == "POP" || window.p1.goto(50)
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    var json = JSON.parse(decipher(xhr.responseText))
-                    this.setState({
-                        novels: json
-                    })
-                    this.props.history.action == "POP" || window.p1.goto(100)
-                } else {
-                    this.props.history.action == "POP" || window.p1.goto(80)
-                }
-            }
+            xhr.get( '/search' + this.props.location.search+'&pbj=1', (e) => {
+                var json = JSON.parse(decipher(e.responseText))
+                this.setState({
+                    novels: json
+                })
+                this.props.history.action == "POP" || window.p1.goto(100)
+            })
             xhr.send()
         }
         this.state = {
@@ -52,35 +44,24 @@ export class Search extends Component {
                 key: obj.key
             })
             xhr.abort()
-            xhr.open('GET', '/search' + nextProps.location.search, true)
-            xhr.setRequestHeader('x-response-type', 'multipart')
-            nextProps.history.action == "POP" || window.p1.goto(50)
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    var json = JSON.parse(decipher(xhr.responseText))
-                    this.setState({
-                        novels: json
-                    })
-                    nextProps.history.action == "POP" || window.p1.goto(100)
-                } else {
-                    nextProps.history.action == "POP" || window.p1.goto(80)
-                }
-            }
+            xhr.get('/search' + nextProps.location.search, (e) => {
+                var json = JSON.parse(decipher(e.responseText))
+                this.setState({
+                    novels: json
+                })
+                
+            })
             xhr.send()
         }
     }
     shouldComponentUpdate() {
-        console.log("Search shouldComponentUpdate");
         return true;
     }
     componentWillUpdate() {
-        console.log("Search componentWillUpdate");
     }
     componentDidUpdate() {
-        console.log("Search componentDidUpdate");
     }
     componentWillUnmount() {
-        console.log("Search componentWillUnmount");
     }
     render() {
         return (

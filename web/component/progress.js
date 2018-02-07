@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { LinearProgress } from 'material-ui/Progress';
 var timer
 class Progrees extends Component {
     constructor(props) {

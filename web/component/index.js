@@ -1,19 +1,97 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
-import {Slider,Slide,CardPanel , CardTitle , Card, Autocomplete, Col, Row, Input, Navbar, NavItem, Icon, Button } from 'react-materialize'
 
-// import Card from 'material-ui/Card'
-import { CardMedia, CardActions, CardContent } from 'material-ui/Card'
-import Typography from 'material-ui/Typography'
-import withStyles from 'material-ui/styles/withStyles'
-import List, { ListItem, ListItemText } from 'material-ui/List'
-import Avatar from 'material-ui/Avatar'
 
-import { cipher, decipher } from '../plugin/cryptoBro.js'
 
+// import { Slider, Slide, CardPanel, CardTitle , Autocomplete, Col, Row, Input, Navbar, NavItem, Icon, Button } from 'react-materialize'
+
+import { withStyles } from 'material-ui/styles'
+import Card from 'material-ui/Card'
+import AppBar from 'material-ui/AppBar'
+import Drawer from 'material-ui/Drawer';
+import Menu, { MenuItem} from 'material-ui/Menu';
+import Toolbar from 'material-ui/Toolbar'
+import IconButton from 'material-ui/IconButton'
+import MenuIcon from 'material-ui-icons/Menu'
+import Input, { InputLabel, InputAdornment } from 'material-ui/Input'
+import { FormControl } from 'material-ui/Form'
+import SearchIcon from 'material-ui-icons/Search'
+
+
+import SearchMeunItem from './searchMeunItem.js'
 import Search from './searchHeader.js'
 import request from '../plugin/request.js'
+import { cipher, decipher } from '../plugin/cryptoBro.js'
 
+const styles = theme => ({
+    appbar:{
+        display: 'flex',
+        justifyContent: 'space-around'
+    },
+    menuButton:{
+        marginRight: '-40px',
+        // marginRight: '2em'
+    }
+})
+
+class GuttersGrid extends Component {
+    constructor(){
+        super()
+        this.state = {
+            isSearchOpen: false,
+            open: !!0
+        }
+    }
+    toggleDrawer(){
+        this.setState({
+            open: !this.state.open
+        })
+    }
+    render() {
+        const {classes} =this.props
+        return(<React.Fragment>
+        <AppBar
+            title="weoble"
+            showMenuIconButton={true}
+        >
+        <Toolbar className={classes.appbar}>
+            <IconButton
+                
+                aria-label="icon"
+            >
+
+            </IconButton>
+            <p>Woeble阅读</p>
+            <IconButton
+                aria-label="Menu"
+                className={classes.menuButton}
+                onClick={this.toggleDrawer.bind(this)}
+            >
+                <MenuIcon />
+            </IconButton>
+        </Toolbar>
+        </AppBar>
+        <Drawer open={this.state.open} onClose={()=>{this.toggleDrawer()} }>
+            <SearchMeunItem />
+            <MenuItem>Menu Item</MenuItem>
+            <MenuItem>Menu Item 2</MenuItem>
+        </Drawer></React.Fragment>
+        )
+    }
+}
+
+// GuttersGrid.propTypes = {
+//     classes: PropTypes.object.isRequired,
+// };
+var Test=withStyles(styles)(GuttersGrid)
+
+export function Index (props){
+    // render(){
+        return <Test {...props} />
+    // } 
+}
+/*
 export class Index extends Component {
     constructor(props){
         super(props)
@@ -35,8 +113,10 @@ export class Index extends Component {
         
     }
     render() {
-        return(
+        var classes={}
+        return (
             <div className='index'>
+                <Test />
                 <Navbar brand='Woeble阅读' right>
                     <NavItem href='javascript:void(0)' onClick={()=>{
                         this.props.history.push('/search?key=')
@@ -46,22 +126,23 @@ export class Index extends Component {
                 </Navbar>
                 <Slider indicators={true}>
                     <Slide
-                        src="http://lorempixel.com/580/250/nature/1"
-                        title="This is our big Tagline!">
-                        <Link to="search?key=">Here's our small slogan.</Link>
+                        src="1.jpg"
+                        title="狂神"
+                        >
+                        <Link to="novel?v=5a4fd3557b78fd2acc16c56e">狂神</Link>
                     </Slide>
                     
                     <Slide
-                        src="http://lorempixel.com/580/250/nature/2"
-                        title="Left aligned Caption"
+                        src="2.jpg"
+                        title={""}
                         placement="left">
-                        Here's our small slogan.
+                        <Link to="novel?v=5a4fd3597b78fd2acc16c705"></Link>
                     </Slide>
                     <Slide
-                        src="http://lorempixel.com/580/250/nature/3"
-                        title="Right aligned Caption"
+                        src="3.jpg"
+                        title={""}
                         placement="right">
-                        Here's our small slogan.
+                        <Link to="novel?v="></Link>
                     </Slide>
                 </Slider>
                 <ul className='row novelist'>
@@ -87,4 +168,4 @@ export class Index extends Component {
     }
     componentDidMount(){
     }
-}
+}*/
