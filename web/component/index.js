@@ -27,11 +27,11 @@ import { cipher, decipher } from '../plugin/cryptoBro.js'
 const styles = theme => ({
     appbar:{
         display: 'flex',
-        justifyContent: 'space-around'
+        justifyContent: 'space-between'
     },
-    menuButton:{
-        marginRight: '-40px',
-        // marginRight: '2em'
+    appbarTile:{
+        userSelect: 'none',
+        cursor: 'default'
     }
 })
 
@@ -53,19 +53,19 @@ class GuttersGrid extends Component {
         return(<React.Fragment>
         <AppBar
             title="weoble"
-            showMenuIconButton={true}
         >
         <Toolbar className={classes.appbar}>
             <IconButton
-                
                 aria-label="icon"
             >
-
+                <svg fill='#000000' height='48' viewBox='0 0 24 24' width='48' xmlns='http://www.w3.org/2000/svg'>
+                    <path d='M0 0h24v24H0z' fill='none'/>
+                    <path fill='rgba(0,0,0,.5)' d='M12 11.55C9.64 9.35 6.48 8 3 8v11c3.48 0 6.64 1.35 9 3.55 2.36-2.19 5.52-3.55 9-3.55V8c-3.48 0-6.64 1.35-9 3.55zM12 8c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z'/>
+                </svg>
             </IconButton>
-            <p>Woeble阅读</p>
+            <p className={classes.appbarTile}>Woeble阅读</p>
             <IconButton
                 aria-label="Menu"
-                className={classes.menuButton}
                 onClick={this.toggleDrawer.bind(this)}
             >
                 <MenuIcon />
@@ -76,7 +76,8 @@ class GuttersGrid extends Component {
             <SearchMeunItem />
             <MenuItem>Menu Item</MenuItem>
             <MenuItem>Menu Item 2</MenuItem>
-        </Drawer></React.Fragment>
+        </Drawer>
+        </React.Fragment>
         )
     }
 }
