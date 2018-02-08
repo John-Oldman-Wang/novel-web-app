@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { CircularProgress } from 'material-ui/Progress'
 import "babel-polyfill";
 
 const pages = {
@@ -43,7 +44,13 @@ module.exports =  function (url) {
             var C = this.state.Component
             const props = Object.assign({}, this.props);
             return (
-                this.state.status == 'pendding' ? <p size={80} thickness={5} >loading</p> : <C {...props} />
+                this.state.status == 'pendding' ? <div style={{
+                    textAlign: 'center',
+                    paddingTop: '120px'
+                }}>
+                    <CircularProgress size={60} thickness={3} />
+                    <p>正在加载</p>
+                </div>: <C {...props} />
             );
         }
     }

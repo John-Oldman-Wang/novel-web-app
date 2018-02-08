@@ -22,7 +22,9 @@ const decipher = function cipher(key, text) {
     r += ci.final('utf-8')
     return r
 }.bind(null, key)
-
+const checkRequst=function(req){
+    return req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1
+}
 module.exports = function (app) {
 
     app.use(express.static('dist'))
@@ -49,7 +51,7 @@ module.exports = function (app) {
         _logger.save().catch(function (err) {
             console.log(err)
         })
-        next();
+        next()
     })
     app.get('/', function (req, res) {
         res.render('index', {
@@ -59,9 +61,11 @@ module.exports = function (app) {
     app.get('/index', function (req, res, next) {
         if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
             Novel.findLast(20, function (err, novels) {
-                res.end(cipher(JSON.stringify({
-                    novels: novels
-                }))) 
+                setTimeout(() => {
+                    res.end(cipher(JSON.stringify({
+                        novels: novels
+                    }))) 
+                }, 2000)
             })
         } else {
             next && next()
@@ -116,7 +120,6 @@ module.exports = function (app) {
             next && next()
         }
     })
-
 
     app.use(function (req, res) {
         if (req.headers['x-response-type'] == 'multipart') {

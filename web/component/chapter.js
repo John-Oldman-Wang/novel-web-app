@@ -9,7 +9,13 @@ export class Chapter extends Component {
     constructor(props) {
         super(props)
         if (this.props.location.search){
+            console.log(this.props.location.search)
             var obj = formSearch(this.props.location.search)
+            if(obj.c==''){
+                this.props.history.push('/')
+                this.state = {}
+                return
+            }
             var novel = this.props.location.state || {}
         }else{
             this.props.history.push('/')
@@ -75,12 +81,6 @@ export class Chapter extends Component {
             this.refs.header.style.display = "flex";
             this.refs.content.style.paddingTop = "40px";
             this.refs.menu.style.display = "flex";
-            // timer = setTimeout(() => {
-            //     if(this.refs.header) this.refs.header.style.display="none";
-            //     if (this.refs.menu) this.refs.menu.style.display="none";
-            //     this.refs.content.style.paddingTop = "0px";
-            // }, 3000)
-            //alert(this.refs.header.style.display)
         } else {
             // clearTimeout(timer)
             this.refs.content.style.paddingTop = "0px";
@@ -97,6 +97,11 @@ export class Chapter extends Component {
 
     componentWillReceiveProps(nextProps) {
         var obj = formSearch(nextProps.location.search)
+        if (obj.c == '') {
+            this.props.history.push('/novel?v='+this.state.chapter.novel_id)
+            this.state = {}
+            return
+        }
         var novel = this.state.novel
         var chapter
         for (var i = 0; i < novel.chapters.length; i++) {

@@ -14,10 +14,15 @@ import Menu, { MenuItem} from 'material-ui/Menu';
 import Toolbar from 'material-ui/Toolbar'
 import IconButton from 'material-ui/IconButton'
 import MenuIcon from 'material-ui-icons/Menu'
+import CancelIcon from 'material-ui-icons/Cancel'
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input'
 import { FormControl } from 'material-ui/Form'
 import SearchIcon from 'material-ui-icons/Search'
-
+import GridList from 'material-ui/GridList'
+import {GridListTile} from 'material-ui/GridList'
+import Paper from 'material-ui/Paper'
+import { CircularProgress } from 'material-ui/Progress'
+// import Input, { InputLabel, InputAdornment } from 'material-ui/Input'
 
 import SearchMeunItem from './searchMeunItem.js'
 import Search from './searchHeader.js'
@@ -26,22 +31,55 @@ import { cipher, decipher } from '../plugin/cryptoBro.js'
 
 const styles = theme => ({
     appbar:{
+        position: 'relative',
+    },
+    toolBar:{
         display: 'flex',
         justifyContent: 'space-between'
     },
-    appbarTile:{
+    appbarTitle:{
         userSelect: 'none',
-        cursor: 'default'
+        cursor: 'default',
+        margin: '0px'
+    },
+    searchBtn:{
+        marginRight: '10px'
+    },
+    iconWrap:{
+        marginRight: '-10px',
+        display: 'flex',
+        flexWrap: 'nowrap'
+    },
+    novelItem:{
+        textAlign: 'center'
+    },
+    progress:{
+        textAlign: 'center',
+        paddingTop: '120px'
+    },
+    fadeIn:{
+        animation: 'fade-in',
+        animationDuration: '1.5s',
     }
 })
 
 class GuttersGrid extends Component {
-    constructor(){
-        super()
+    constructor(props){
+        super(props)
+        console.log(this.props)
         this.state = {
             isSearchOpen: false,
-            open: !!0
+            open: !!0,
+            novels:[]
         }
+        var xhr = new request()
+        xhr.get('/index?pbj=1',(e)=>{
+            var json = JSON.parse(decipher(e.responseText))
+            console.log(json)
+            this.setState({
+                novels: json.novels
+            })
+        }).send()
     }
     toggleDrawer(){
         this.setState({
@@ -53,8 +91,9 @@ class GuttersGrid extends Component {
         return(<React.Fragment>
         <AppBar
             title="weoble"
+            className={classes.appbar}
         >
-        <Toolbar className={classes.appbar}>
+        <Toolbar className={classes.toolBar}>
             <IconButton
                 aria-label="icon"
             >
@@ -63,13 +102,25 @@ class GuttersGrid extends Component {
                     <path fill='rgba(0,0,0,.5)' d='M12 11.55C9.64 9.35 6.48 8 3 8v11c3.48 0 6.64 1.35 9 3.55 2.36-2.19 5.52-3.55 9-3.55V8c-3.48 0-6.64 1.35-9 3.55zM12 8c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z'/>
                 </svg>
             </IconButton>
-            <p className={classes.appbarTile}>Woeble阅读</p>
-            <IconButton
-                aria-label="Menu"
-                onClick={this.toggleDrawer.bind(this)}
-            >
-                <MenuIcon />
-            </IconButton>
+            {
+                !this.state.isSearchOpen ? <p className={classes.appbarTitle}>Woeble阅读</p>:<Input type='text' autoFocus onKeyUp={(e)=>{
+                    if(e.keyCode=='13'){
+                        this.props.history.push('/search?key=' + e.target.value)
+                    }
+                }}/>
+            }
+            <span className={classes.iconWrap}>
+                <IconButton onClick={()=>{
+                    this.setState({
+                        isSearchOpen: !this.state.isSearchOpen
+                    })}}>{this.state.isSearchOpen ? <CancelIcon />:<SearchIcon />}
+                </IconButton>
+                <IconButton
+                    aria-label="Menu"
+                    onClick={this.toggleDrawer.bind(this)}
+                ><MenuIcon />
+                </IconButton>
+            </span>
         </Toolbar>
         </AppBar>
         <Drawer open={this.state.open} onClose={()=>{this.toggleDrawer()} }>
@@ -77,14 +128,29 @@ class GuttersGrid extends Component {
             <MenuItem>Menu Item</MenuItem>
             <MenuItem>Menu Item 2</MenuItem>
         </Drawer>
+            {!!this.state.novels.length?(<GridList
+                cols={3}
+                cellHeight={240}
+                className={classes.fadeIn}
+            >{this.state.novels.map((item)=>{
+                    return <GridListTile
+                        title={item.title}
+                        key={item.image} className={classes.novelItem}>
+                        <Link to={'/novel?v=' + item._id}><img title={item.title} src={item.image} /></Link>
+                        </GridListTile>
+                })}
+            </GridList>) : <div className={classes.progress}>
+                    <CircularProgress size={60} thickness={3}/>
+                    <p>正在加载</p>
+                </div>}
         </React.Fragment>
         )
     }
 }
 
-// GuttersGrid.propTypes = {
-//     classes: PropTypes.object.isRequired,
-// };
+GuttersGrid.propTypes = {
+    classes: PropTypes.object.isRequired,
+};
 var Test=withStyles(styles)(GuttersGrid)
 
 export function Index (props){

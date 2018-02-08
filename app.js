@@ -7,9 +7,7 @@ var Novel = require('./config/models/m-novel.js')
 var Chapter = require('./config/models/m-chapter.js')
 var Logger = require('./config/models/m-logger.js')
 const { port, dbUrl } = require('./config/config.js') 
-// var port = 3000
-// var dburl = "mongodb://localhost:27017/novelApp1"
-console.log(`${''}`)
+
 mongoose.connect(dbUrl, {
     useMongoClient: true,
 })

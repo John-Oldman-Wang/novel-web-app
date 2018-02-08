@@ -67,12 +67,14 @@
             this[m] = 'GET'
             this[s] = cb || this[s]
             this[e] = er || this[e]
+            return this
         }
         post(url, cb, er) {
             this[u] = url
             this[s] = cb || this[s]
             this[e] = er || this[e]
             this[m] = 'POST'
+            return this
         }
         abort() {
             this[req].abort()

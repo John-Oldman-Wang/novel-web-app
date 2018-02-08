@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
-// import { CardPanel, CardTitle, Card, Autocomplete, Col, Row, Input, Navbar, NavItem, Icon, Button } from 'react-materialize'
+import { CardPanel, CardTitle, Card, Autocomplete, Col, Row, Input, Navbar, NavItem, Icon, Button } from 'react-materialize'
 
 import { cipher, decipher } from '../plugin/cryptoBro.js'
 import formSearch from '../plugin/formSearch.js'
