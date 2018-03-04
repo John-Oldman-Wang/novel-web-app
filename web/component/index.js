@@ -60,13 +60,15 @@ const styles = theme => ({
     fadeIn:{
         animation: 'fade-in',
         animationDuration: '1.5s',
+    },
+    searchInput:{
+        width: '60%'
     }
 })
 
 class GuttersGrid extends Component {
     constructor(props){
         super(props)
-        console.log(this.props)
         this.state = {
             isSearchOpen: false,
             open: !!0,
@@ -75,7 +77,6 @@ class GuttersGrid extends Component {
         var xhr = new request()
         xhr.get('/index?pbj=1',(e)=>{
             var json = JSON.parse(decipher(e.responseText))
-            console.log(json)
             this.setState({
                 novels: json.novels
             })
@@ -103,7 +104,7 @@ class GuttersGrid extends Component {
                 </svg>
             </IconButton>
             {
-                !this.state.isSearchOpen ? <p className={classes.appbarTitle}>Woeble阅读</p>:<Input type='text' autoFocus onKeyUp={(e)=>{
+                !this.state.isSearchOpen ? <p className={classes.appbarTitle}>Woeble阅读</p>:<Input className={classes.searchInput} type='text' autoFocus onKeyUp={(e)=>{
                     if(e.keyCode=='13'){
                         this.props.history.push('/search?key=' + e.target.value)
                     }
@@ -152,7 +153,6 @@ GuttersGrid.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 var Test=withStyles(styles)(GuttersGrid)
-
 export function Index (props){
     // render(){
         return <Test {...props} />
