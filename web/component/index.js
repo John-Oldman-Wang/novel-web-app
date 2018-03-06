@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom'
 // import { Slider, Slide, CardPanel, CardTitle , Autocomplete, Col, Row, Input, Navbar, NavItem, Icon, Button } from 'react-materialize'
 
 import { withStyles } from 'material-ui/styles'
-import Card from 'material-ui/Card'
 import AppBar from 'material-ui/AppBar'
 import Drawer from 'material-ui/Drawer';
 import Menu, { MenuItem} from 'material-ui/Menu';
@@ -24,6 +23,7 @@ import Paper from 'material-ui/Paper'
 import { CircularProgress } from 'material-ui/Progress'
 // import Input, { InputLabel, InputAdornment } from 'material-ui/Input'
 
+import Alternating from './alternating.js'
 import SearchMeunItem from './searchMeunItem.js'
 import Search from './searchHeader.js'
 import request from '../plugin/request.js'
@@ -129,6 +129,7 @@ class GuttersGrid extends Component {
             <MenuItem>Menu Item</MenuItem>
             <MenuItem>Menu Item 2</MenuItem>
         </Drawer>
+            <Alternating ></Alternating>
             {!!this.state.novels.length?(<GridList
                 cols={3}
                 cellHeight={240}
