@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom'
 import formSearch from '../plugin/formSearch.js'
 
 import { cipher, decipher } from '../plugin/cryptoBro.js'
-var xhr = new XMLHttpRequest()
+import request from '../plugin/request.js'
+var xhr = new request()
 var timer;
 export class Chapter extends Component {
     constructor(props) {
         super(props)
         if (this.props.location.search){
-            console.log(this.props.location.search)
             var obj = formSearch(this.props.location.search)
             if(obj.c==''){
                 this.props.history.push('/')
@@ -43,37 +43,22 @@ export class Chapter extends Component {
         if ('paragraphs' in this.state.chapter){
             return
         }
-        xhr.open('GET', '/chapter' + this.props.location.search + "&pbj=1", true)
-        xhr.setRequestHeader('x-response-type', 'multipart')
-        this.props.history.action == "POP" || window.p1.goto(50)
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                var json = JSON.parse(decipher(xhr.responseText))
-                if (json == null) {
-                    this.props.history.push('/')
-                    return
-                }
-                this.setState({
-                    chapter: Object.assign({}, this.state.chapter, json) || {}
-                })
-                this.props.history.action == "POP" || window.p1.goto(100)
-                xhr.abort()
-                xhr.open('GET', '/novel?v=' + this.state.chapter.novel_id + "&pbj=1", true)
-                xhr.setRequestHeader('x-response-type', 'multipart')
-                xhr.onreadystatechange = () => {
-                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                        var json = JSON.parse(decipher(xhr.responseText))
-                        this.setState({
-                            novel: Object.assign(this.state.novel, json) || {}
-                        })
-                    }
-                }
-                xhr.send()
-            } else {
-                this.props.history.action == "POP" || window.p1.goto(80)
+        xhr.get('/chapter' + this.props.location.search + "&pbj=1",(e)=>{
+            var json = JSON.parse(decipher(e.responseText))
+            if (json == null) {
+                this.props.history.push('/')
+                return
             }
-        }
-        xhr.send()
+            this.setState({
+                chapter: Object.assign({}, this.state.chapter, json) || {}
+            })
+            xhr.get('/novel?v=' + this.state.chapter.novel_id + "&pbj=1",(e)=>{
+                var json = JSON.parse(decipher(e.responseText))
+                this.setState({
+                    novel: Object.assign(this.state.novel, json) || {}
+                })
+            }).send()
+        }).send()
     }
     handle(e) {
         if (this.refs.header.style.display == "none") {
@@ -98,7 +83,6 @@ export class Chapter extends Component {
     componentWillReceiveProps(nextProps) {
         var obj = formSearch(nextProps.location.search)
         if (obj.c == '') {
-            this.props.history.push('/novel?v='+this.state.chapter.novel_id)
             this.state = {}
             return
         }
@@ -116,7 +100,6 @@ export class Chapter extends Component {
         if ('paragraphs' in chapter && chapter.paragraphs.length>0) {
             return
         }
-        this.props.history.action == "POP" || window.p1.goto(50)
         xhr.abort()
         xhr.open('GET', '/chapter' + nextProps.location.search + "&pbj=1", true)
         xhr.setRequestHeader('x-response-type', 'multipart')
@@ -126,9 +109,6 @@ export class Chapter extends Component {
                 this.setState({
                     chapter: Object.assign(this.state.chapter, json) || {}
                 })
-                this.props.history.action == "POP" || window.p1.goto(100)
-            } else {
-                this.props.history.action == "POP" || window.p1.goto(80)
             }
         }
         xhr.send()

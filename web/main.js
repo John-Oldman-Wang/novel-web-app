@@ -30,9 +30,6 @@ if (typeof Object.assign != 'function') {
         configurable: true
     });
 }
-
-window.p1 = ReactDom.render(<Progress pro={0} ></Progress>, document.getElementById("progressBar"))
-
 ReactDom.render(<BrowserRouter>
     <Switch>
         <Route exact path='/' component={Loader('Index')}></Route>

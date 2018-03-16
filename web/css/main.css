@@ -210,7 +210,7 @@
     margin: 0.8em 8px;;
 }
 .chapter-header{
-    position: fixed;
+    position: absolute;
     top:0px;
     left:0px;
     right: 0px;

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
 import { CardPanel, CardTitle, Card, Autocomplete, Col, Row, Input, Navbar, NavItem, Icon, Button } from 'react-materialize'
-
+import IconButton from 'material-ui/IconButton'
 import { cipher, decipher } from '../plugin/cryptoBro.js'
 import formSearch from '../plugin/formSearch.js'
 import formDate from '../plugin/formDate.js'
@@ -36,7 +36,6 @@ export class Novel extends Component {
             this.setState({
                 novel: Object.assign(this.state.novel, json || {})
             })
-            this.props.history.action == "POP" || window.p1.goto(100)
         })
         xhr.send()
     }
@@ -63,7 +62,14 @@ export class Novel extends Component {
                 <div className="novel-page">
                     <Row>
                         <Link to='/'>
-                            <Col s={1} className='grid-example'><Icon small>home</Icon></Col>
+                            <Col s={1} className='grid-example'><IconButton
+                                aria-label="icon"
+                            >
+                                <svg fill='#000000' height='48' viewBox='0 0 24 24' width='48' xmlns='http://www.w3.org/2000/svg'>
+                                    <path d='M0 0h24v24H0z' fill='none' />
+                                    <path fill='rgba(0,0,0,.5)' d='M12 11.55C9.64 9.35 6.48 8 3 8v11c3.48 0 6.64 1.35 9 3.55 2.36-2.19 5.52-3.55 9-3.55V8c-3.48 0-6.64 1.35-9 3.55zM12 8c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z' />
+                                </svg>
+                            </IconButton></Col>
                         </Link>
                         <Col s={9} className='grid-example'><h6>{novel.title}</h6></Col>
                     </Row>
