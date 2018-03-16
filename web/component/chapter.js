@@ -9,6 +9,8 @@ var timer;
 export class Chapter extends Component {
     constructor(props) {
         super(props)
+        console.log("c constructor")
+        window.c=this
         if (this.props.location.search){
             var obj = formSearch(this.props.location.search)
             if(obj.c==''){
@@ -83,7 +85,10 @@ export class Chapter extends Component {
     componentWillReceiveProps(nextProps) {
         var obj = formSearch(nextProps.location.search)
         if (obj.c == '') {
-            this.state = {}
+            setTimeout(() => {
+                nextProps.history.push('/')
+            }, 2000);
+            delete this.state.chapter
             return
         }
         var novel = this.state.novel
@@ -100,18 +105,12 @@ export class Chapter extends Component {
         if ('paragraphs' in chapter && chapter.paragraphs.length>0) {
             return
         }
-        xhr.abort()
-        xhr.open('GET', '/chapter' + nextProps.location.search + "&pbj=1", true)
-        xhr.setRequestHeader('x-response-type', 'multipart')
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                var json = JSON.parse(decipher(xhr.responseText))
-                this.setState({
-                    chapter: Object.assign(this.state.chapter, json) || {}
-                })
-            }
-        }
-        xhr.send()
+        xhr.get('/chapter' + nextProps.location.search + "&pbj=1", (e)=>{
+            var json = JSON.parse(decipher(e.responseText))
+            this.setState({
+                chapter: Object.assign(this.state.chapter, json) || {}
+            })
+        }).send()
     }
 
     shouldComponentUpdate() {
@@ -129,7 +128,7 @@ export class Chapter extends Component {
 
     render() {
         if(!("chapter" in this.state)){
-            return (<p></p>)
+            return (<p>无小说内容，两秒跳会主页。。。</p>)
         }
         
         var chapter = this.state.chapter
@@ -144,6 +143,7 @@ export class Chapter extends Component {
                     break;
                 }
             }
+            var index = chapters.indexOf(chapter)
             provChapter = chapters[(chapters.indexOf(chapter) + chapters.length - 1) % chapters.length] || {}
             nextChapter = chapters[(chapters.indexOf(chapter) + 1) % chapters.length] || {}
         } else {

@@ -1,6 +1,6 @@
-import React from 'react'
+import * as React from 'react'
 const Component = React.Component
-import ReactDom from 'react-dom'
+import * as ReactDom from 'react-dom'
 import { Switch, Redirect, BrowserRouter, Route, Link } from 'react-router-dom'
 
 import Loader from './component/loader.js'
@@ -30,6 +30,8 @@ if (typeof Object.assign != 'function') {
         configurable: true
     });
 }
+console.log(React)
+console.log(ReactDom)
 ReactDom.render(<BrowserRouter>
     <Switch>
         <Route exact path='/' component={Loader('Index')}></Route>
