@@ -9,7 +9,8 @@
     "build": "parcel build ./web/main.js --no-minify --no-cache",
     "dev": "parcel ./web/main.js --no-cache",
     "pro": "parcel build ./web/main.js --no-cache",
-    "css": "parcel build ./web/css/main.css --no-cache"
+    "css": "parcel build ./web/css/main.css --no-cache",
+    "ssr": "babel web --out-dir ssr"
   },
   "nodemonConfig": {
     "ignore": [

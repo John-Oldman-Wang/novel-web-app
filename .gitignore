@@ -6,3 +6,4 @@ www/output
 yarn.lock
 dist
 /crawler
+/ssr
