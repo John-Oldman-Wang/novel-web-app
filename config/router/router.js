@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 var Novel = require('../models/m-novel.js')
 var Chapter = require('../models/m-chapter.js')
 var Logger = require('../models/m-logger.js')
@@ -25,6 +26,8 @@ const decipher = function cipher(key, text) {
 const checkRequst=function(req){
     return req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1
 }
+var dataServer = express()
+var ssrServer = express()
 module.exports = function (app) {
 
     app.use(express.static('dist'))
@@ -53,7 +56,97 @@ module.exports = function (app) {
         })
         next()
     })
-    app.get('/', function (req, res) {
+    app.use(function(req,res,next){
+        if (checkRequst(req)){
+            dataServer(req,res,next)
+        }else{
+            ssrServer(req, res, next)
+        }
+        return
+    })
+
+    ssrServer.set('view engine', 'ejs')
+    ssrServer.set('views', path.join(__dirname,'../views'))
+    ssrServer.get('/', function (req, res) {
+        res.render('index', {
+            title: '无限中文小说'
+        })
+    })
+    ssrServer.use(function (req, res) {
+        res.render('index', {
+            title: '无限中文小说'
+        })
+    })
+    dataServer.get('/index', function (req, res, next) {
+        Novel.findLast(20, function (err, novels) {
+            setTimeout(() => {
+                res.end(cipher(JSON.stringify({
+                    novels: novels
+                }))) 
+            }, 2000)
+        })
+    })
+    dataServer.get('/category', function (req, res) {
+        if (!req.query.c) {
+            res.end(cipher(JSON.stringify({
+                novels: []
+            })))
+            return
+        }
+        var reg = new RegExp(req.query.c, 'g')
+        Novel.find({
+            category: reg
+        }, {
+            href: 0,
+            meta: 0,
+            "chapters.href": 0
+        }).limit(20).then(function (novels) {
+            res.end(cipher(JSON.stringify({
+                novels: novels
+            })))
+        })
+    })
+    dataServer.get('/novel', function (req, res, next) {
+        Novel.findOne({
+            _id: req.query.v
+        }, {
+            href: 0,
+            meta: 0,
+            "chapters.href": 0
+        }).exec(function (err, novel) {
+            res.end(cipher(JSON.stringify(novel)))
+        })
+    })
+    dataServer.get('/chapter', function (req, res, next) {
+        if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
+            //处理无参数传入
+            if (req.query.c == "") {}
+            Chapter.findOne({
+                _id: req.query.c
+            }, {
+                href: 0,
+                meta: 0
+            }).exec(function (err, chapter) {
+                res.end(cipher(JSON.stringify(chapter)))
+            })
+        } else {
+            next && next()
+        }
+    })
+    dataServer.get('/search', function (req, res, next) {
+        var key = req.query.key//.replace()
+        var reg = new RegExp(key.split('').join('.*'), 'g')
+        Novel.find({
+            title: reg
+        }, {
+            href: 0,
+            meta: 0
+        }).limit(20).exec(function (err, novels) {
+            res.end(cipher(JSON.stringify(novels)))
+        })
+    })
+    return
+    /*app.get('/', function (req, res) {
         res.render('index', {
             title: '无限中文小说'
         })
@@ -128,5 +221,5 @@ module.exports = function (app) {
         res.render('index', {
             title: '无限中文小说'
         })
-    })
+    })*/
 }

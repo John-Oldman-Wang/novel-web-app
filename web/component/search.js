@@ -51,7 +51,7 @@ export class Search extends Component {
                 key: obj.key
             })
             xhr.abort()
-            xhr.get('/search' + nextProps.location.search, (e) => {
+            xhr.get('/search' + nextProps.location.search+'&pbj=1', (e) => {
                 var json = JSON.parse(decipher(e.responseText))
                 this.setState({
                     novels: json
