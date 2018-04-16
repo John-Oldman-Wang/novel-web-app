@@ -30,8 +30,6 @@ if (typeof Object.assign != 'function') {
         configurable: true
     });
 }
-console.log(React)
-console.log(ReactDom)
 ReactDom.render(<BrowserRouter>
     <Switch>
         <Route exact path='/' component={Loader('Index')}></Route>
