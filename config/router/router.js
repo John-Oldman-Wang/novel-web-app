@@ -32,13 +32,13 @@ module.exports = function (app) {
 
     app.use(express.static('dist'))
     app.get('/favicon.ico', function (req, res) {
-        fs.createReadStream('./web/ic_local_library_black_48dp_1x.png').pipe(res)
+        fs.createReadStream('./config/icons/ic_local_library_black_48dp_1x.png').pipe(res)
     })
     app.get('/favicon.svg', function (req, res) {
-        fs.createReadStream('./web/ic_local_library_black_48px.svg').pipe(res)
+        fs.createReadStream('./config/icons/ic_local_library_black_48px.svg').pipe(res)
     })
     app.get('/favicon.png', function (req, res) {
-        fs.createReadStream('./web/ic_local_library_black_48dp_2x.png').pipe(res)
+        fs.createReadStream('./config/icons/ic_local_library_black_48dp_2x.png').pipe(res)
     })
     app.use(function (req, res, next) {
         //filter request of crawler
