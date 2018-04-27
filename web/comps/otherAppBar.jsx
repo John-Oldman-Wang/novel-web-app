@@ -7,6 +7,7 @@ import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import HomeIcon from '@material-ui/icons/Home';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 
@@ -17,7 +18,7 @@ import DraftsIcon from '@material-ui/icons/Drafts';
 import Divider from 'material-ui/Divider';
 // import Button from 'material-ui/Button';
 // import List from 'material-ui/List';
-const styles =theme=>({
+const styles = theme => ({
     root: {
         flexGrow: 1,
     },
@@ -26,15 +27,20 @@ const styles =theme=>({
     },
     menuButton: {
         marginLeft: -12,
-        marginRight: 20,
+        marginRight: 0,
+    },
+    loginBtn: {
+        paddingLeft: `0px`,
+        paddingRight: `0px`,
+        minWidth: `auto`
     },
     listwrap: {
         // width: '100%',
         width: 250,
         backgroundColor: theme.palette.background.paper,
     }
-}); 
-class IndexAppBar extends React.Component {
+});
+class OtherAppBar extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -56,31 +62,34 @@ class IndexAppBar extends React.Component {
                 <AppBar position="static">
                     <Toolbar>
                         <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-                            <MenuIcon onClick={()=>{
-                                this.setState({
-                                    open: true
-                                })
-                            }}/>
+                            <HomeIcon onClick={() => {
+                                this.props.history.push('/')
+                            }} />
                         </IconButton>
                         <Typography variant="title" color="inherit" className={classes.flex}>
                             Woeble阅读
-                        </Typography>{
-                            !isLogin ? <Button onClick={(e => {
+                        </Typography>
+                        <div>
+                            <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+                                <MenuIcon onClick={() => {
+                                    this.setState({
+                                        open: true
+                                    })
+                                }} />
+                            </IconButton>
+                            {!isLogin ? <Button className={classes.loginBtn} onClick={(e => {
                                 this.handleChange(e)
                             })} color="inherit">Login</Button> : 
-                            <div>
-                                <IconButton
-                                    aria-owns={'menu-appbar'}
-                                    aria-haspopup="true"
-                                    onClick={(e) => {
-                                        this.setState({
-                                            anchorEl: e.target
-                                        })
-                                    }}
-                                    color="inherit"
-                                >
-                                    <AccountCircle />
-                                </IconButton>
+                            <IconButton
+                                aria-owns={'menu-appbar'}
+                                aria-haspopup="true"
+                                onClick={(e) => {
+                                    this.setState({
+                                        anchorEl: e.target
+                                    })
+                                }}
+                                color="inherit">
+                                <AccountCircle />
                                 <Menu
                                     id="menu-appbar"
                                     anchorEl={anchorEl}
@@ -99,7 +108,8 @@ class IndexAppBar extends React.Component {
                                             anchorEl: null
                                         })
                                     }}
-                                ><MenuItem onClick={(e) => {
+                                >
+                                    <MenuItem onClick={(e) => {
                                         e.stopPropagation()
                                         this.setState({
                                             anchorEl: null
@@ -119,13 +129,14 @@ class IndexAppBar extends React.Component {
                                         })
                                     }}>退出登陆</MenuItem>
                                 </Menu>
-                            </div>
-                        }</Toolbar>
+                            </IconButton>}
+                        </div>
+                    </Toolbar>
                 </AppBar>
-                <SwipeableDrawer 
+                <SwipeableDrawer
                     anchor="left"
                     open={this.state.open}
-                    onClose={(e=>{
+                    onClose={(e => {
                         this.setState({
                             open: false
                         })
@@ -142,7 +153,7 @@ class IndexAppBar extends React.Component {
                         </ListItemIcon>
                         <ListItemText primary="Inbox" />
                     </ListItem>
-                        <Divider/>
+                    <Divider />
                     <ListItem button>
                         <ListItemIcon>
                             <DraftsIcon />
@@ -156,8 +167,8 @@ class IndexAppBar extends React.Component {
     }
 }
 
-IndexAppBar.propTypes = {
+OtherAppBar.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(IndexAppBar);
+export default withStyles(styles)(OtherAppBar);

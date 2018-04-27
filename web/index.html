@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" invert style="font-size: 15px;font-family: Roboto, Arial, sans-serif; background-color: #fafafa;">
+
 <head>
     <meta charset="UTF-8">
     <meta name="full-screen" content="yes">
@@ -20,23 +21,25 @@
     </noscript>
     <script>
         //防止iframe,frame
-        if (top != self && (!document.referrer || document.referrer.search(/^https?:\/\/(www\.google\.com\/analytics\/web\/|metrika.yandex.ru\/|webvisor\.com\/)/i) !== 0)){
+        if (top != self && (!document.referrer || document.referrer.search(/^https?:\/\/(www\.google\.com\/analytics\/web\/|metrika.yandex.ru\/|webvisor\.com\/)/i) !== 0)) {
             top.location = locati
         }
     </script>
 </head>
-<body>
-    <div id="root"></div>
+
+<body style="padding: 0px;margin: 0px;">
+    <div style="display:flex;flex-direction: column;" id="root"></div>
 </body>
 <!-- <script src='../output/bundle.js'></script> -->
 <script src='./main.js'></script>
 <script>
-    ;(function(){
+    ; (function () {
         function onload() {
             var a = console.timeEnd('load page time')
             window.removeEventListener('load', onload)
         }
-        window.addEventListener('load',onload)
+        window.addEventListener('load', onload)
     })()
 </script>
-</html>
+
+</html> 

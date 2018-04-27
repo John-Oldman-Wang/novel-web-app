@@ -4,36 +4,31 @@ import "babel-polyfill";
 
 const pages = {
     Index: import('../pages/index.jsx'),
-    Search: import('./search.js'),
-    Novel: import('./novel.js'),
-    Chapter: import('./chapter.js')
+    // Search: import('./search.js'),
+    Novel: import('../pages/novel.jsx'),
+    // Chapter: import('./chapter.js')
 }
 
-module.exports =  function (url) {
+module.exports = function (url) {
     return class extends Component {
         constructor() {
             super()
             var promise = pages[url]
-            if(typeof promise =='object'){
+            if (typeof promise == 'object') {
                 this.state = {
                     Component: '',
                     status: 'pendding'
                 }
-                if(url=='Novel'){
-                    console.log("load ",url)
-                }
                 promise.then((page) => {
-                    setTimeout(() => {
-                        pages[url]=page[url]
-                        this.setState({
-                            Component: page[url],
-                            status: 'ok'
-                        })
-                    }, 0);
+                    pages[url] = page[url]
+                    this.setState({
+                        Component: page[url],
+                        status: 'ok'
+                    })
                 }).catch(function (err) {
                     console.log(err)
                 })
-            }else if(typeof promise == 'function'){
+            } else if (typeof promise == 'function') {
                 this.state = {
                     Component: promise,
                     status: 'ok'
@@ -46,11 +41,12 @@ module.exports =  function (url) {
             return (
                 this.state.status == 'pendding' ? <div style={{
                     textAlign: 'center',
-                    paddingTop: '120px'
+                    paddingTop: '120px',
+                    margin: `0 auto`
                 }}>
                     <CircularProgress size={60} thickness={3} />
-                    <p>正在加载</p>
-                </div>: <C {...props} />
+                    <p>正在加载</p></div> : <C {...props} />
+
             );
         }
     }
