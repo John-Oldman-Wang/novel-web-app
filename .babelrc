@@ -1,7 +1,15 @@
 {
     "presets": [
-        "env",
-        "react"
+        [
+            "env",
+            {
+                "spec": true,
+                "useBuiltIns": false
+            }
+        ],
+        [
+            "react"
+        ]
     ],
     "plugins": [
         "syntax-dynamic-import"

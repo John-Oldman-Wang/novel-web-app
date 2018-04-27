@@ -3,7 +3,7 @@ import { CircularProgress } from 'material-ui/Progress'
 import "babel-polyfill";
 
 const pages = {
-    Index: import('./index.js'),
+    Index: import('../pages/index.jsx'),
     Search: import('./search.js'),
     Novel: import('./novel.js'),
     Chapter: import('./chapter.js')
