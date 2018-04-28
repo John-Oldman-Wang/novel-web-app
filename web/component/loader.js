@@ -1,20 +1,26 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { CircularProgress } from 'material-ui/Progress'
-import "babel-polyfill";
+// import "babel-polyfill";
 
 const pages = {
     Index: import('../pages/index.jsx'),
-    // Search: import('./search.js'),
     Novel: import('../pages/novel.jsx'),
-    // Chapter: import('./chapter.js')
+    Chapter: import('../pages/chapter.jsx')
+    // Search: import('./search.js'),
 }
 
 module.exports = function (url) {
-    return class extends Component {
+    if (typeof pages[url] == 'function'){
+        console.log('return ')
+        return pages[url]
+    }
+    return class extends PureComponent {
         constructor() {
             super()
+            console.log(url,'comstrucoter')
             var promise = pages[url]
             if (typeof promise == 'object') {
+                console.log(url,'promise')
                 this.state = {
                     Component: '',
                     status: 'pendding'
@@ -37,7 +43,6 @@ module.exports = function (url) {
         }
         render() {
             var C = this.state.Component
-            const props = Object.assign({}, this.props);
             return (
                 this.state.status == 'pendding' ? <div style={{
                     textAlign: 'center',
@@ -45,7 +50,7 @@ module.exports = function (url) {
                     margin: `0 auto`
                 }}>
                     <CircularProgress size={60} thickness={3} />
-                    <p>正在加载</p></div> : <C {...props} />
+                </div> : <C {...this.props} />
 
             );
         }

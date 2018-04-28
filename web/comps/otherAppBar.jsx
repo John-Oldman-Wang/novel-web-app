@@ -16,8 +16,7 @@ import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import InboxIcon from '@material-ui/icons/Inbox';
 import DraftsIcon from '@material-ui/icons/Drafts';
 import Divider from 'material-ui/Divider';
-// import Button from 'material-ui/Button';
-// import List from 'material-ui/List';
+
 const styles = theme => ({
     root: {
         flexGrow: 1,
@@ -32,13 +31,17 @@ const styles = theme => ({
     loginBtn: {
         paddingLeft: `0px`,
         paddingRight: `0px`,
+        width:`48px`,
         minWidth: `auto`
     },
     listwrap: {
         // width: '100%',
         width: 250,
         backgroundColor: theme.palette.background.paper,
-    }
+    },
+    content: {
+        
+    },
 });
 class OtherAppBar extends React.Component {
     constructor(props) {
@@ -55,7 +58,7 @@ class OtherAppBar extends React.Component {
         })
     }
     render() {
-        const { classes } = this.props;
+        const { classes,title } = this.props;
         const { isLogin, anchorEl } = this.state
         return (
             <div className={classes.root}>
@@ -66,8 +69,8 @@ class OtherAppBar extends React.Component {
                                 this.props.history.push('/')
                             }} />
                         </IconButton>
-                        <Typography variant="title" color="inherit" className={classes.flex}>
-                            Woeble阅读
+                        <Typography noWrap variant="title" color="inherit" className={classes.flex}>
+                            {title}
                         </Typography>
                         <div>
                             <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">

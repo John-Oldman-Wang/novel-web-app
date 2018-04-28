@@ -28,6 +28,12 @@ const styles =theme=>({
         marginLeft: -12,
         marginRight: 20,
     },
+    loginBtn:{
+        paddingLeft: `0px`,
+        paddingRight: `0px`,
+        width: `48px`,
+        minWidth: `auto`
+    },
     listwrap: {
         // width: '100%',
         width: 250,
@@ -62,10 +68,10 @@ class IndexAppBar extends React.Component {
                                 })
                             }}/>
                         </IconButton>
-                        <Typography variant="title" color="inherit" className={classes.flex}>
+                        <Typography align='center' variant="title" color="inherit" className={classes.flex}>
                             Woeble阅读
                         </Typography>{
-                            !isLogin ? <Button onClick={(e => {
+                            !isLogin ? <Button className={classes.loginBtn} onClick={(e => {
                                 this.handleChange(e)
                             })} color="inherit">Login</Button> : 
                             <div>

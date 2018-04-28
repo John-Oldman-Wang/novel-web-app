@@ -1,10 +1,11 @@
 import * as React from 'react'
 const Component = React.Component
-import * as ReactDom from 'react-dom'
+import ReactDom from 'react-dom'
 import { Switch, Redirect, BrowserRouter, Route, Link } from 'react-router-dom'
 
 import Loader from './component/loader.js'
 import Progress from './component/progress.js'
+
 ReactDom.render(<BrowserRouter>
     <Switch>
         <Route exact path='/' component={Loader('Index')}></Route>

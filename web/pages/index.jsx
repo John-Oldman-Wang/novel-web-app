@@ -4,6 +4,7 @@ import Grid from 'material-ui/Grid';
 
 import IndexAppBar from '../comps/indexAppBar.jsx'
 import ColumnCard from '../comps/columnCard.jsx'
+
 const styles = {
     content:{
         padding: 8,
@@ -22,7 +23,6 @@ class Index extends Component {
             </div>
             <Grid className={classes.content} container spacing={16}>
                 <Grid item lg={2} md={3} xs={4} ><ColumnCard onClick={e=>{
-                    console.log('click')
                     this.props.history.push('/novel')
                 }} /></Grid>
                 <Grid item lg={2} md={3} xs={4} ><ColumnCard /></Grid>

@@ -2,11 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Card, { CardContent, CardMedia } from 'material-ui/Card';
-import IconButton from 'material-ui/IconButton';
 import Typography from 'material-ui/Typography';
-import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import SkipNextIcon from '@material-ui/icons/SkipNext';
+import PermIdentity from '@material-ui/icons/PermIdentity';
+import Button from 'material-ui/Button';
+import StarBorder from '@material-ui/icons/StarBorder';
 
 const styles = theme => ({
     card: {
@@ -14,58 +13,66 @@ const styles = theme => ({
     },
     details: {
         display: 'flex',
+        flex: `1 0 0%`,
         flexDirection: 'column',
+        overflow: `hidden`,
     },
     content: {
         flex: '1 0 auto',
+        padding: `8px`,
         paddingBottom: `0px`
     },
     cover: {
-        width: 151,
-        height: 151,
+        width: 130,
+        height: 130,
     },
     controls: {
         display: 'flex',
         alignItems: 'center',
         paddingLeft: theme.spacing.unit,
-        // paddingBottom: theme.spacing.unit,
-    },
-    playIcon: {
-        height: 38,
-        width: 38,
     },
 });
 
 function RowCard(props) {
     const { classes, theme } = props;
-
+    // console.log(theme)
     return (
-            <Card className={classes.card}>
+        <Card className={classes.card}>
             <CardMedia
                 className={classes.cover}
                 image="https://qidian.qpic.cn/qdbimg/349573/23813/180"
                 title="Live from space album cover"
             />
-                <div className={classes.details}>
-                    <CardContent className={classes.content}>
-                        <Typography variant="headline">Live From Space</Typography>
-                        <Typography variant="subheading" color="textSecondary">
-                            Mac Miller
+            <div className={classes.details}>
+                <CardContent className={classes.content}>
+                    <Typography noWrap variant="title">
+                        狂神狂神狂神狂神狂神狂神狂神狂神    
+                    </Typography>
+                    <div className={classes.card}>
+                        <PermIdentity style={{
+                            fontSize: `1rem`,
+                            marginRight: `8px`,
+                            color: `rgba(0, 0, 0, 0.87)`,
+                            height: `1.46429em`
+                        }} />
+                        <Typography style={{
+                            flex: `1 0 0%`,
+                        }} noWrap align='left' variant="body1" color="textSecondary">
+                            唐家三少
                         </Typography>
-                    </CardContent>
-                    <div className={classes.controls}>
-                        <IconButton aria-label="Previous">
-                            {theme.direction === 'rtl' ? <SkipNextIcon /> : <SkipPreviousIcon />}
-                        </IconButton>
-                        <IconButton aria-label="Play/pause">
-                            <PlayArrowIcon className={classes.playIcon} />
-                        </IconButton>
-                        <IconButton aria-label="Next">
-                            {theme.direction === 'rtl' ? <SkipPreviousIcon /> : <SkipNextIcon />}
-                        </IconButton>
                     </div>
+                    <Typography noWrap align='left' variant="button">
+                        玄幻 / 东方玄幻
+                    </Typography>
+                </CardContent>
+                <div className={classes.controls}>
+                    <Button className={classes.btn} size="small" color="primary">
+                        继续阅读
+                    </Button>
+                    <StarBorder />
                 </div>
-            </Card>
+            </div>
+        </Card>
     );
 }
 
