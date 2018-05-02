@@ -8,13 +8,15 @@ var crypto = require('crypto')
 
 var { key } = require('../config.js')
 
-const cipher =function cipher(key, text ) {
-    var ci = crypto.createCipher('aes-256-cbc', key)
-    var r = ''
-    r += ci.update(text, 'utf-8', 'hex')
-    r += ci.final('hex')
-    return r
-}.bind(null, key)
+const cipher =(function(key){
+    return function cipher(text) {
+        var ci = crypto.createCipher('aes-256-cbc', key)
+        var r = ''
+        r += ci.update(text, 'utf-8', 'hex')
+        r += ci.final('hex')
+        return r
+    }
+})(key)
 
 const decipher = function cipher(key, text) {
     var ci = crypto.createDecipher('aes-256-cbc', key)
@@ -73,17 +75,18 @@ module.exports = function (app) {
         })
     })
     ssrServer.use(function (req, res) {
-        res.render('index', {
-            title: '无限中文小说'
-        })
+        fs.createReadStream('./dist/index.html').pipe(res)
+        return
     })
     dataServer.get('/index', function (req, res, next) {
         Novel.findLast(20, function (err, novels) {
-            setTimeout(() => {
-                res.end(cipher(JSON.stringify({
-                    novels: novels
-                }))) 
-            }, 2000)
+            if(err){
+                console.log(err)
+            }
+            // console.log(novels)
+            res.end(cipher(JSON.stringify({
+                novels: novels
+            })))
         })
     })
     dataServer.get('/category', function (req, res) {
@@ -146,80 +149,4 @@ module.exports = function (app) {
         })
     })
     return
-    /*app.get('/', function (req, res) {
-        res.render('index', {
-            title: '无限中文小说'
-        })
-    })
-    app.get('/index', function (req, res, next) {
-        if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
-            Novel.findLast(20, function (err, novels) {
-                setTimeout(() => {
-                    res.end(cipher(JSON.stringify({
-                        novels: novels
-                    }))) 
-                }, 2000)
-            })
-        } else {
-            next && next()
-        }
-    })
-    app.get('/category', function (req, res) {
-        if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
-            if (req.query.c) {
-                res.end(cipher(JSON.stringify({
-                    novels: []
-                })))
-                return
-            }
-            var reg = new RegExp(req.query.c, 'g')
-            Novel.find({ category: reg }, { href: 0, meta: 0, "chapters.href": 0 }).limit(20).then(function (novels) {
-                res.end(cipher(JSON.stringify({
-                    novels: novels
-                })))
-            })
-        } else {
-            next && next()
-        }
-    })
-    app.get('/novel', function (req, res, next) {
-        if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
-            Novel.findOne({ _id: req.query.v }, { href: 0, meta: 0, "chapters.href": 0 }).exec(function (err, novel) {
-                res.end(cipher(JSON.stringify(novel)))
-            })
-        } else {
-            next && next()
-        }
-    })
-    app.get('/chapter', function (req, res, next) {
-        if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
-            //处理无参数传入
-            if (req.query.c == "") { }
-            Chapter.findOne({ _id: req.query.c }, { href: 0, meta: 0 }).exec(function (err, chapter) {
-                res.end(cipher(JSON.stringify(chapter)))
-            })
-        } else {
-            next && next()
-        }
-    })
-    app.get('/search', function (req, res, next) {
-        if (req.headers['x-response-type'] == 'multipart') {
-            var key = req.query.key.replace()
-            var reg = new RegExp(key.split('').join('.*'), 'g')
-            Novel.find({ title: reg }, { href: 0, meta: 0 }).limit(20).exec(function (err, novels) {
-                res.end(cipher(JSON.stringify(novels)))
-            })
-        } else {
-            next && next()
-        }
-    })
-
-    app.use(function (req, res) {
-        if (req.headers['x-response-type'] == 'multipart') {
-            res.end(cipher(JSON.stringify(novels)))
-        }
-        res.render('index', {
-            title: '无限中文小说'
-        })
-    })*/
 }

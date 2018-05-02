@@ -30,16 +30,12 @@ const styles = theme => ({
 class Chapter extends Component {
     constructor(props) {
         super(props)
-        console.log('Chapter constructor')
     }
     render() {
-        console.log('Chapter render')
         const { classes } = this.props
-        console.log(this.props)
         return (
             <React.Fragment>
                 <div className={classes.root}>
-                    {/* <Link to={'/chapter'}>chapter</Link> */}
                     <Paper className={classes.content} elevation={4}>
                         <div style={{
                             display: `flex`,

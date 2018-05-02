@@ -7,6 +7,9 @@ const pages = {
     Novel: import('../pages/novel.jsx'),
     Chapter: import('../pages/chapter.jsx')
     // Search: import('./search.js'),
+    // Index: import('./index.js'),
+    // Novel: import('./novel.js'),
+    // Chapter: import('./chapter.js'),
 }
 
 module.exports = function (url) {

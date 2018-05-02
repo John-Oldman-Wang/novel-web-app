@@ -2,7 +2,7 @@ import React,{ Component } from "react";
 import { Link } from "react-router-dom";
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input'
 import { FormControl } from 'material-ui/Form'
-import SearchIcon from 'material-ui-icons/Search'
+import SearchIcon from '@material-ui/icons/Search'
 
 import IconButton from 'material-ui/IconButton'
 

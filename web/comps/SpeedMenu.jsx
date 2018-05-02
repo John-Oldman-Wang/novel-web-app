@@ -6,15 +6,18 @@ import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 
-import ContentCopyIcon from '@material-ui/icons/ContentCopy';
 import NavigateNext from '@material-ui/icons/NavigateNext';
-import PrintIcon from '@material-ui/icons/Print';
-import ShareIcon from '@material-ui/icons/Share';
-import DeleteIcon from '@material-ui/icons/Delete';
-
+import BookMark from '@material-ui/icons/Bookmark';
+import BookMarkBorder from '@material-ui/icons/BookmarkBorder';
+import HomeIcon from '@material-ui/icons/Home';
+import FormatListNumbered from '@material-ui/icons/FormatListNumbered';
 import CloseIcon from '@material-ui/icons/Close';
 
-
+import SwipeableDrawer from 'material-ui/SwipeableDrawer';
+import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
+import InboxIcon from '@material-ui/icons/Inbox';
+import DraftsIcon from '@material-ui/icons/Drafts';
+import Divider from 'material-ui/Divider';
 // import Button from 'material-ui/Button';
 
 const styles = theme => ({
@@ -26,21 +29,21 @@ const styles = theme => ({
         bottom: theme.spacing.unit * 2,
         left: theme.spacing.unit * 3,
     },
+    listwrap:{
+        width: `250px`
+    }
 });
-const actions = [
-    { icon: <ContentCopyIcon />, name: 'Copy' },
-    { icon: <NavigateNext />, name: 'Next' },
-    { icon: <NavigateNext style={{
-        transform: `rotate(180deg)`
-    }} />, name: 'Prev' },
-    { icon: <ShareIcon />, name: 'Share' },
-    { icon: <DeleteIcon />, name: 'Delete' },
-];
+function Mark(props){
+    const { isMark } = props
+    return (isMark ? <BookMark color={props.color} /> : <BookMarkBorder color={props.color}/>)
+}
+
 class SpeedMenu extends React.Component {
     constructor(props){
         super(props)
         this.state = {
             open: false,
+            Dopen: false,
             hidden: false,
         };
     }
@@ -73,8 +76,24 @@ class SpeedMenu extends React.Component {
     render(){
         const { classes, theme } = this.props;
         const { hidden, open } = this.state;
-        // console.log(theme)
-        return (<SpeedDial
+        const actions = [
+            { icon: <NavigateNext color={'primary'} />, name: 'Next' },
+            {
+                icon: <NavigateNext color={'primary'} style={{
+                    transform: `rotate(180deg)`
+                }} />, name: 'Prev'
+            },
+            { icon: <Mark isMark={true} color={'primary'} />, name: 'mark' },
+            { icon: <HomeIcon color={'primary'} />, name: 'Home' },
+            { icon: <FormatListNumbered onClick={e=>{
+                e.stopPropagation()
+                this.setState({
+                    open: false,
+                    Dopen: true
+                })
+            }} color={'primary'} />, name: 'list' },
+        ];
+        return (<React.Fragment><SpeedDial
             ariaLabel="SpeedDial openIcon example"
             className={classes.speedDial}
             hidden={hidden}
@@ -87,7 +106,7 @@ class SpeedMenu extends React.Component {
             onMouseLeave={(e)=>{this.handleClose(e)}}
             open={open}
             style={{
-                opacity: !open?`0.3`:'1'
+                opacity: !open?`0.7`:'1'
             }}
         >
             {actions.map(action => (
@@ -100,7 +119,37 @@ class SpeedMenu extends React.Component {
                     }}
                 />
             ))}
-        </SpeedDial>);
+        </SpeedDial>
+            <SwipeableDrawer
+                anchor="right"
+                open={this.state.Dopen}
+                onClose={(e => {
+                    this.setState({
+                        Dopen: false
+                    })
+                })}
+                onOpen={(e => {
+                    this.setState({
+                        Dopen: true
+                    })
+                })}
+            ><div className={classes.listwrap}><List component="nav">
+                <ListItem button>
+                    <ListItemIcon>
+                        <InboxIcon />
+                    </ListItemIcon>
+                        <ListItemText primary="InboxInboxInboxasdasd InboxInboxInboxInboxInbox" />
+                </ListItem>
+                <Divider />
+                <ListItem button>
+                    <ListItemIcon>
+                        <DraftsIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Drafts" />
+                </ListItem>
+            </List></div>
+            </SwipeableDrawer>
+        </React.Fragment>);
     }
 }
 

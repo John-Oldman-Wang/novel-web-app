@@ -15,8 +15,6 @@ import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import InboxIcon from '@material-ui/icons/Inbox';
 import DraftsIcon from '@material-ui/icons/Drafts';
 import Divider from 'material-ui/Divider';
-// import Button from 'material-ui/Button';
-// import List from 'material-ui/List';
 const styles =theme=>({
     root: {
         flexGrow: 1,

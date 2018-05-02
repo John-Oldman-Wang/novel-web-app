@@ -1,5 +1,5 @@
 module.exports={
-    dbUrl: "mongodb://localhost:27017/novelApp2",
+    dbUrl: "mongodb://localhost:27017/novel",
     domain:'',
     siteName:'',
     port: 3000,
