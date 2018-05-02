@@ -5,28 +5,34 @@ import { withStyles } from 'material-ui/styles';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
+
 import ContentCopyIcon from '@material-ui/icons/ContentCopy';
-import SaveIcon from '@material-ui/icons/Save';
+import NavigateNext from '@material-ui/icons/NavigateNext';
 import PrintIcon from '@material-ui/icons/Print';
 import ShareIcon from '@material-ui/icons/Share';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/ModeEdit';
-import Button from 'material-ui/Button';
+
+import CloseIcon from '@material-ui/icons/Close';
+
+
+// import Button from 'material-ui/Button';
 
 const styles = theme => ({
     root: {
         height: 380,
     },
     speedDial: {
-        position: 'absolute',
+        position: 'fixed',
         bottom: theme.spacing.unit * 2,
-        right: theme.spacing.unit * 3,
+        left: theme.spacing.unit * 3,
     },
 });
 const actions = [
     { icon: <ContentCopyIcon />, name: 'Copy' },
-    { icon: <SaveIcon />, name: 'Save' },
-    { icon: <PrintIcon />, name: 'Print' },
+    { icon: <NavigateNext />, name: 'Next' },
+    { icon: <NavigateNext style={{
+        transform: `rotate(180deg)`
+    }} />, name: 'Prev' },
     { icon: <ShareIcon />, name: 'Share' },
     { icon: <DeleteIcon />, name: 'Delete' },
 ];
@@ -72,7 +78,7 @@ class SpeedMenu extends React.Component {
             ariaLabel="SpeedDial openIcon example"
             className={classes.speedDial}
             hidden={hidden}
-            icon={<SpeedDialIcon openIcon={<EditIcon />} />}
+            icon={<SpeedDialIcon openIcon={<CloseIcon />} />}
             onBlur={(e)=>{this.handleClose(e)}}
             onClick={(e)=>{this.handleClick(e)}}
             onClose={(e)=>{this.handleClose(e)}}
@@ -80,13 +86,18 @@ class SpeedMenu extends React.Component {
             onMouseEnter={(e)=>{this.handleOpen(e)}}
             onMouseLeave={(e)=>{this.handleClose(e)}}
             open={open}
+            style={{
+                opacity: !open?`0.3`:'1'
+            }}
         >
             {actions.map(action => (
                 <SpeedDialAction
                     key={action.name}
                     icon={action.icon}
                     tooltipTitle={action.name}
-                    onClick={this.handleClick}
+                    onClick={(e)=>{
+                        console.log(action)
+                    }}
                 />
             ))}
         </SpeedDial>);

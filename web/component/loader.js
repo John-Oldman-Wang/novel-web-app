@@ -10,17 +10,11 @@ const pages = {
 }
 
 module.exports = function (url) {
-    if (typeof pages[url] == 'function'){
-        console.log('return ')
-        return pages[url]
-    }
     return class extends PureComponent {
         constructor() {
             super()
-            console.log(url,'comstrucoter')
             var promise = pages[url]
             if (typeof promise == 'object') {
-                console.log(url,'promise')
                 this.state = {
                     Component: '',
                     status: 'pendding'
