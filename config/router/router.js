@@ -70,11 +70,14 @@ module.exports = function (app) {
     ssrServer.set('view engine', 'ejs')
     ssrServer.set('views', path.join(__dirname,'../views'))
     ssrServer.get('/', function (req, res) {
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
         res.render('index', {
             title: '无限中文小说'
         })
     })
     ssrServer.use(function (req, res) {
+        console.log('this')
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
         fs.createReadStream('./dist/index.html').pipe(res)
         return
     })
