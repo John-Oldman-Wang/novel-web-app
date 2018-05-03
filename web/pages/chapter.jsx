@@ -7,7 +7,7 @@ import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import SpeedMenu from '../comps/SpeedMenu.jsx'
 
-const styles = theme => ({
+const styles = (theme)=>({
     root: {
         padding: 8,
         backgroundImage: `linear-gradient`
@@ -63,14 +63,12 @@ class Chapter extends Component {
                         }
                         if (item.name == "Prev") {
                             if (index == 0) {
-                                console.log('这是第一张')
                                 return
                             }
                             this.props.history.push(`/chapter?c=${novel.chapters[index - 1].chapter_id}`)
                         } else if (item.name == "Next") {
                             var chapters = novel.chapters
                             if (index == chapters.length - 1) {
-                                console.log('这是最后一张')
                                 return
                             }
                             this.props.history.push(`/chapter?c=${chapters[index + 1].chapter_id}`)
