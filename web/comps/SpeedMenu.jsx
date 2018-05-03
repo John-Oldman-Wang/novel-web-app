@@ -37,7 +37,17 @@ function Mark(props){
     const { isMark } = props
     return (isMark ? <BookMark color={props.color} /> : <BookMarkBorder color={props.color}/>)
 }
-
+const actions = [
+    { icon: <NavigateNext color={'primary'} />, name: 'Next' },
+    {
+        icon: <NavigateNext color={'primary'} style={{
+            transform: `rotate(180deg)`
+        }} />, name: 'Prev'
+    },
+    { icon: <Mark isMark={true} color={'primary'} />, name: 'mark' },
+    { icon: <HomeIcon color={'primary'} />, name: 'Home' },
+    { icon: <FormatListNumbered color={'primary'} />, name: 'list' },
+];
 class SpeedMenu extends React.Component {
     constructor(props){
         super(props)
@@ -74,25 +84,9 @@ class SpeedMenu extends React.Component {
         });
     };
     render(){
-        const { classes, theme } = this.props;
+        const { classes, theme, onClick } = this.props;
         const { hidden, open } = this.state;
-        const actions = [
-            { icon: <NavigateNext color={'primary'} />, name: 'Next' },
-            {
-                icon: <NavigateNext color={'primary'} style={{
-                    transform: `rotate(180deg)`
-                }} />, name: 'Prev'
-            },
-            { icon: <Mark isMark={true} color={'primary'} />, name: 'mark' },
-            { icon: <HomeIcon color={'primary'} />, name: 'Home' },
-            { icon: <FormatListNumbered onClick={e=>{
-                e.stopPropagation()
-                this.setState({
-                    open: false,
-                    Dopen: true
-                })
-            }} color={'primary'} />, name: 'list' },
-        ];
+        
         return (<React.Fragment><SpeedDial
             ariaLabel="SpeedDial openIcon example"
             className={classes.speedDial}
@@ -115,7 +109,7 @@ class SpeedMenu extends React.Component {
                     icon={action.icon}
                     tooltipTitle={action.name}
                     onClick={(e)=>{
-                        console.log(action)
+                        onClick(action)
                     }}
                 />
             ))}

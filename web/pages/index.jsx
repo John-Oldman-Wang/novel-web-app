@@ -13,29 +13,28 @@ const styles = {
 class Index extends Component {
     constructor(props){
         super(props)
+        window.i=this
     }
     render(){
-        const {classes} = this.props
+        const { classes, data, dispatch} = this.props
         return (
         <React.Fragment>
             <div className={classes.head}>
                 <IndexAppBar />
             </div>
             <Grid className={classes.content} container spacing={16}>
-                <Grid item lg={2} md={3} xs={4} ><ColumnCard onClick={e=>{
-                    this.props.history.push('/novel')
-                }} /></Grid>
-                <Grid item lg={2} md={3} xs={4} ><ColumnCard /></Grid>
-                <Grid item lg={2} md={3} xs={4} ><ColumnCard /></Grid>
-                <Grid item lg={2} md={3} xs={4} ><ColumnCard /></Grid>
-                <Grid item lg={2} md={3} xs={4} ><ColumnCard /></Grid>
-                <Grid item lg={2} md={3} xs={4} ><ColumnCard /></Grid>
-                <Grid item lg={2} md={3} xs={4} ><ColumnCard /></Grid>
-                <Grid item lg={2} md={3} xs={4} ><ColumnCard /></Grid>
+                {data.map( (item, index)=>{
+                    return (<Grid key={index} item lg={2} md={3} xs={4} >
+                        <ColumnCard onClick={()=>{
+                            this.props.history.push(`/novel?v=${item._id}`)
+                            dispatch(item)
+                        }} title={item.title} author={item.author} image={item.image}/>
+                    </Grid>)
+                })}
             </Grid>
         </React.Fragment>
         )
     }
 }
 
-exports.Index = withStyles(styles)(Index)
+export default withStyles(styles)(Index)

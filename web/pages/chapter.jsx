@@ -12,16 +12,16 @@ const styles = theme => ({
         padding: 8,
         backgroundImage: `linear-gradient`
     },
-    content:{
+    content: {
         padding: `10px 0px`,
-        fontFamily: "Microsoft YaHei" 
+        fontFamily: "Microsoft YaHei"
         // overflow: `scroll`
     },
-    textIndent:{
+    textIndent: {
         textIndent: `2em`,
         padding: `0px 8px`,
     },
-    button:{
+    button: {
         fontSize: `20px`,
         fontWeight: 900
     }
@@ -30,9 +30,11 @@ const styles = theme => ({
 class Chapter extends Component {
     constructor(props) {
         super(props)
+        window.c = this
     }
     render() {
-        const { classes } = this.props
+        const { classes, index } = this.props
+        const { novel, chapter } = (this.props.novelChapter || {})
         return (
             <React.Fragment>
                 <div className={classes.root}>
@@ -41,62 +43,43 @@ class Chapter extends Component {
                             display: `flex`,
                             justifyContent: ``
                         }}>
-                        <Button className={classes.button}>《狂神》</Button>
-                        <Typography style={{
-                            lineHeight: `44px`,
-                            fontWeight: 900
-                        }} component="h5">
-                            我的世界
-                        </Typography>
+                            <Button className={classes.button}>{novel.title ? `《${novel.title}》` : ""}</Button>
+                            <Typography style={{
+                                lineHeight: `44px`,
+                                fontWeight: 900
+                            }} component="h5">
+                                {chapter.title || ""}
+                            </Typography>
                         </div>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
-                        <Typography className={classes.textIndent} component="p">
-                            我的实际啊是多久啊是看得见爱神的箭啊是多久啊是的啊实打实的骄傲是多久啊是大声的阿斯顿阿斯顿阿斯顿
-                        </Typography>
+                        {(chapter.paragraphs || []).map((item, index) => {
+                            return (<Typography key={index} className={classes.textIndent} component="p">
+                                {item}
+                            </Typography>)
+                        })}
                     </Paper>
-                    <SpeedMenu />
+                    <SpeedMenu onClick={(item) => {
+                        if (index == undefined) {
+                            return
+                        }
+                        if (item.name == "Prev") {
+                            if (index == 0) {
+                                console.log('这是第一张')
+                                return
+                            }
+                            this.props.history.push(`/chapter?c=${novel.chapters[index - 1].chapter_id}`)
+                        } else if (item.name == "Next") {
+                            var chapters = novel.chapters
+                            if (index == chapters.length - 1) {
+                                console.log('这是最后一张')
+                                return
+                            }
+                            this.props.history.push(`/chapter?c=${chapters[index + 1].chapter_id}`)
+                        }
+                    }} />
                 </div>
             </React.Fragment>
         )
     }
 }
 
-exports.Chapter = withStyles(styles,{withTheme: true})(Chapter)
+export default withStyles(styles, { withTheme: true })(Chapter)

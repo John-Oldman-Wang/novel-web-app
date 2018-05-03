@@ -33,19 +33,19 @@ const styles = theme => ({
     }
 });
 function ColumbCard(props) {
-    const { classes,onClick } = props
+    const { classes,onClick,image,title,author } = props
     return (<Card className={classes.card}>
         <CardMedia
             className={classes.media}
-            image="https://qidian.qpic.cn/qdbimg/349573/23813/180"
-            title="Contemplative Reptile"
+            image={image||"https://qidian.qpic.cn/qdbimg/349573/23813/180"}
+            title={title || 'title'}
         />
         <CardContent className={classes.content}>
             <Typography noWrap variant="title" component="h3">
-                狂神
+                {title||'title'}
             </Typography>
             <Typography noWrap align="right" color="textSecondary" component="p">
-                唐家三少
+                {author || 'author'}
             </Typography>
         </CardContent>
         <CardActions className={classes.action}>

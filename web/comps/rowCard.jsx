@@ -34,19 +34,19 @@ const styles = theme => ({
 });
 
 function RowCard(props) {
-    const { classes, theme } = props;
+    const { onClick,classes, theme, title, image, author, category } = props;
     // console.log(theme)
     return (
         <Card className={classes.card}>
             <CardMedia
                 className={classes.cover}
-                image="https://qidian.qpic.cn/qdbimg/349573/23813/180"
-                title="Live from space album cover"
+                image={image || "https://qidian.qpic.cn/qdbimg/349573/23813/180"}
+                title={title || "title"}
             />
             <div className={classes.details}>
                 <CardContent className={classes.content}>
                     <Typography noWrap variant="title">
-                        狂神狂神狂神狂神狂神狂神狂神狂神    
+                        {title || ''}
                     </Typography>
                     <div className={classes.card}>
                         <PermIdentity style={{
@@ -58,15 +58,15 @@ function RowCard(props) {
                         <Typography style={{
                             flex: `1 0 0%`,
                         }} noWrap align='left' variant="body1" color="textSecondary">
-                            唐家三少
+                            {author || ''}
                         </Typography>
                     </div>
                     <Typography noWrap align='left' variant="button">
-                        玄幻 / 东方玄幻
+                        {(category || '玄幻 / 东方玄幻').replace('-', ' / ')}
                     </Typography>
                 </CardContent>
                 <div className={classes.controls}>
-                    <Button className={classes.btn} size="small" color="primary">
+                    <Button onClick={onClick} className={classes.btn} size="small" color="primary">
                         继续阅读
                     </Button>
                     <StarBorder />

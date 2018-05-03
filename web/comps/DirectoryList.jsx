@@ -13,24 +13,24 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import Divider from 'material-ui/Divider';
 
 const styles = theme => ({
-    root:{},
+    root: {},
     nested: {
         // paddingLeft: theme.spacing.unit * 2,
     },
-    listItem:{
+    listItem: {
         marginRight: `0px`
     }
 });
 
 class DirectoryList extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props)
-        this.state={
+        this.state = {
             open: false
         }
     }
-    render(){
-        const { classes, theme, onClick } = this.props;
+    render() {
+        const { classes, theme, onClick, list } = this.props;
         return (<React.Fragment>
             <Divider />
             <List component="ul" disablePadding>
@@ -47,52 +47,15 @@ class DirectoryList extends React.Component {
                 </ListItem>
                 <Collapse in={this.state.open} timeout="auto" unmountOnExit>
                     <List component="ul">
-                        <ListItem onClick={onClick} component="li" button>
-                            <ListItemText component="a" primary="第一章" />
-                        </ListItem>
-                        <ListItem component="li" button>
-                            <ListItemText component="a" primary="第二章" />
-                        </ListItem><ListItem component="li" button>
-                            <ListItemText component="a" primary="第一章" />
-                        </ListItem>
-                        <ListItem component="li" button>
-                            <ListItemText component="a" primary="第二章" />
-                        </ListItem><ListItem component="li" button>
-                            <ListItemText component="a" primary="第一章" />
-                        </ListItem>
-                        <ListItem component="li" button>
-                            <ListItemText component="a" primary="第二章" />
-                        </ListItem><ListItem component="li" button>
-                            <ListItemText component="a" primary="第一章" />
-                        </ListItem>
-                        <ListItem component="li" button>
-                            <ListItemText component="a" primary="第二章" />
-                        </ListItem><ListItem component="li" button>
-                            <ListItemText component="a" primary="第一章" />
-                        </ListItem>
-                        <ListItem component="li" button>
-                            <ListItemText component="a" primary="第二章" />
-                        </ListItem><ListItem component="li" button>
-                            <ListItemText component="a" primary="第一章" />
-                        </ListItem>
-                        <ListItem component="li" button>
-                            <ListItemText component="a" primary="第二章" />
-                        </ListItem><ListItem component="li" button>
-                            <ListItemText component="a" primary="第一章" />
-                        </ListItem>
-                        <ListItem component="li" button>
-                            <ListItemText component="a" primary="第二章" />
-                        </ListItem><ListItem component="li" button>
-                            <ListItemText component="a" primary="第一章" />
-                        </ListItem>
-                        <ListItem component="li" button>
-                            <ListItemText component="a" primary="第二章" />
-                        </ListItem><ListItem component="li" button>
-                            <ListItemText component="a" primary="第一章" />
-                        </ListItem>
-                        <ListItem component="li" button>
-                            <ListItemText component="a" primary="第二章" />
-                        </ListItem>
+                        {(list || []).map((item, index) => {
+                            if (index > 100)
+                                return null;
+                            return (<ListItem key={index} onClick={() => {
+                                onClick(item)
+                            }} component="li" button>
+                                <ListItemText component="a" primary={(item.serialName ? item.serialName + " " : "") + item.title || ""} />
+                            </ListItem>)
+                        })}
                     </List>
                 </Collapse>
             </List>

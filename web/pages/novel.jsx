@@ -18,25 +18,30 @@ class Novel extends Component {
         this.state={
             open: false
         }
+        window.n=this
     }
     render() {
-        const { classes } = this.props
+        const { classes, novel, dispatch } = this.props
         return (
             <React.Fragment>
                 <div>
-                    <OtherAppBar title="狂神狂神狂神狂神狂神狂神狂神狂神狂神" {...this.props}/>
+                    <OtherAppBar title={novel.title} {...this.props}/>
                 </div>
                 <div className={classes.content}>
-                    <RowCard />
+                    <RowCard onClick={()=>{
+                        this.props.history.push(`chapter/?c=${novel.chapters[0]._id}`)
+                    }} title={novel.title} author={novel.author} image={novel.image} category={novel.category}/>
                 </div>
                 <div className={classes.content}>
-                    <DirectoryList onClick={(e,item)=>{
-                        this.props.history.push('/chapter')
-                    }}/>
+                    <DirectoryList onClick={(chapter)=>{
+                        console.log(chapter)
+                        this.props.history.push(`chapter?c=${chapter.chapter_id}`)
+                        dispatch(chapter,novel)
+                    }} list={novel.chapters}/>
                 </div>
             </React.Fragment>
         )
     }
 }
 
-exports.Novel = withStyles(styles)(Novel)
+export default withStyles(styles)(Novel)
