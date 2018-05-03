@@ -20,10 +20,12 @@ const styles = (theme)=>({
     textIndent: {
         textIndent: `2em`,
         padding: `0px 8px`,
+        boxShadow: `none`
     },
     button: {
         fontSize: `20px`,
-        fontWeight: 900
+        fontWeight: 900,
+        width: `auto`
     }
 })
 
@@ -46,7 +48,8 @@ class Chapter extends Component {
                             <Button className={classes.button}>{novel.title ? `《${novel.title}》` : ""}</Button>
                             <Typography style={{
                                 lineHeight: `44px`,
-                                fontWeight: 900
+                                fontWeight: 900,
+                                boxShadow: `none`
                             }} component="h5">
                                 {chapter.title || ""}
                             </Typography>

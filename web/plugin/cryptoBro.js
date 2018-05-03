@@ -1,5 +1,5 @@
 import crypto from 'crypto-browserify'
-import { key } from '../../config/config.js'
+import { key } from '../../server/config/config.js'
 window.c = crypto
 const decipher = function ( str) {
     var de = crypto.Decipher('aes-256-cbc', key)

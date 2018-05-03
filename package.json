@@ -6,8 +6,8 @@
   "scripts": {
     "start": "npm run server&&npm run dev",
     "server": "nodemon app.js",
-    "build": "parcel build ./web/index.html --no-cache",
-    "dev": "parcel ./web/index.html --no-cache"
+    "build": "parcel build ./web/index.html --out-dir ./server/dist --no-cache",
+    "dev": "parcel ./web/index.html --out-dir ./server/dis --no-cache"
   },
   "nodemonConfig": {
     "ignore": [

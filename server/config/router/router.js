@@ -8,7 +8,7 @@ var crypto = require('crypto')
 
 var { key } = require('../config.js')
 
-const cipher =(function(key){
+const cipher = (function (key) {
     return function cipher(text) {
         var ci = crypto.createCipher('aes-256-cbc', key)
         var r = ''
@@ -25,7 +25,7 @@ const decipher = function cipher(key, text) {
     r += ci.final('utf-8')
     return r
 }.bind(null, key)
-const checkRequst=function(req){
+const checkRequst = function (req) {
     return req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1
 }
 var dataServer = express()
@@ -34,13 +34,13 @@ module.exports = function (app) {
 
     app.use(express.static('dist'))
     app.get('/favicon.ico', function (req, res) {
-        fs.createReadStream('./config/icons/ic_local_library_black_48dp_1x.png').pipe(res)
+        fs.createReadStream(path.join(__dirname, '../icons/ic_local_library_black_48dp_1x.png')).pipe(res)
     })
     app.get('/favicon.svg', function (req, res) {
-        fs.createReadStream('./config/icons/ic_local_library_black_48px.svg').pipe(res)
+        fs.createReadStream(path.join(__dirname, '../icons/ic_local_library_black_48px.svg')).pipe(res)
     })
     app.get('/favicon.png', function (req, res) {
-        fs.createReadStream('./config/icons/ic_local_library_black_48dp_2x.png').pipe(res)
+        fs.createReadStream(path.join(__dirname, '../icons/ic_local_library_black_48dp_2x.png')).pipe(res)
     })
     app.use(function (req, res, next) {
         //filter request of crawler
@@ -58,17 +58,17 @@ module.exports = function (app) {
         })
         next()
     })
-    app.use(function(req,res,next){
-        if (checkRequst(req)){
-            dataServer(req,res,next)
-        }else{
+    app.use(function (req, res, next) {
+        if (checkRequst(req)) {
+            dataServer(req, res, next)
+        } else {
             ssrServer(req, res, next)
         }
         return
     })
 
     ssrServer.set('view engine', 'ejs')
-    ssrServer.set('views', path.join(__dirname,'../views'))
+    ssrServer.set('views', path.join(__dirname, '../views'))
     ssrServer.get('/', function (req, res) {
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
         res.render('index', {
@@ -76,17 +76,15 @@ module.exports = function (app) {
         })
     })
     ssrServer.use(function (req, res) {
-        console.log('this')
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
-        fs.createReadStream('./dist/index.html').pipe(res)
+        fs.createReadStream(path.join(__dirname, '../../dist/index.html')).pipe(res)
         return
     })
     dataServer.get('/index', function (req, res, next) {
-        Novel.findLast(20, function (err, novels) {
-            if(err){
+        Novel.random(20, function (err, novels) {
+            if (err) {
                 console.log(err)
             }
-            // console.log(novels)
             res.end(cipher(JSON.stringify({
                 novels: novels
             })))
@@ -103,38 +101,38 @@ module.exports = function (app) {
         Novel.find({
             category: reg
         }, {
-            href: 0,
-            meta: 0,
-            "chapters.href": 0
-        }).limit(20).then(function (novels) {
-            res.end(cipher(JSON.stringify({
-                novels: novels
-            })))
-        })
+                href: 0,
+                meta: 0,
+                "chapters.href": 0
+            }).limit(20).then(function (novels) {
+                res.end(cipher(JSON.stringify({
+                    novels: novels
+                })))
+            })
     })
     dataServer.get('/novel', function (req, res, next) {
         Novel.findOne({
             _id: req.query.v
         }, {
-            href: 0,
-            meta: 0,
-            "chapters.href": 0
-        }).exec(function (err, novel) {
-            res.end(cipher(JSON.stringify(novel)))
-        })
+                href: 0,
+                meta: 0,
+                "chapters.href": 0
+            }).exec(function (err, novel) {
+                res.end(cipher(JSON.stringify(novel)))
+            })
     })
     dataServer.get('/chapter', function (req, res, next) {
         if (req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1) {
             //处理无参数传入
-            if (req.query.c == "") {}
+            if (req.query.c == "") { }
             Chapter.findOne({
                 _id: req.query.c
             }, {
-                href: 0,
-                meta: 0
-            }).exec(function (err, chapter) {
-                res.end(cipher(JSON.stringify(chapter)))
-            })
+                    href: 0,
+                    meta: 0
+                }).exec(function (err, chapter) {
+                    res.end(cipher(JSON.stringify(chapter)))
+                })
         } else {
             next && next()
         }
@@ -145,11 +143,11 @@ module.exports = function (app) {
         Novel.find({
             title: reg
         }, {
-            href: 0,
-            meta: 0
-        }).limit(20).exec(function (err, novels) {
-            res.end(cipher(JSON.stringify(novels)))
-        })
+                href: 0,
+                meta: 0
+            }).limit(20).exec(function (err, novels) {
+                res.end(cipher(JSON.stringify(novels)))
+            })
     })
     return
 }

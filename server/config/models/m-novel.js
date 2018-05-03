@@ -68,6 +68,9 @@ novelSchema.statics = {
 		return this.find({}, { href: 0, chapters: 0, meta: 0 })
 			.sort({ 'lastUpdateTime': -1 })
 			.limit(count).exec(cb)
+	},
+	random: function(count,cb){
+		return this.find({}, { href: 0, chapters: 0, meta: 0 }).skip(Math.random()*1000|0).limit(count).exec(cb)
 	}
 }
 
