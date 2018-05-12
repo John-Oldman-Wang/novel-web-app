@@ -8,47 +8,53 @@ var xhr = new request()
 import { connect } from 'react-redux'
 
 const mapStateToProps = (state, props) => {
-    var novelChapter = state.novelChapter
-    if (novelChapter.novel.title && novelChapter.chapter.title) {
-        var chapters = novelChapter.novel.chapters
-        var chapter = novelChapter.chapter
-        for (var i = 0; i < chapters.length; i++) {
-            if(chapter._id == chapters[i].chapter_id){
-                return Object.assign({}, { novelChapter: state.novelChapter }, { index: i })
-                break;
-            }
-        }
-        // novel.forEach((item,index) => {
-        //     if()
-        // });
-    }
-    return { novelChapter: state.novelChapter }
+    return { novel: state.novel, chapter: state.chapter }
 }
 const mapDispatchToProps = (dispatch, props) => {
-    xhr.get(`/chapter${props.location.search.replace(/\&pbj=1/g, '')}&pbj=1`, (e) => {
-        var json = JSON.parse(decipher(e.responseText))
-        if (json == null) {
-            return
+    return (function(dispatch){
+        return {
+            getChapter: function(chapter_id){
+                dispatch({
+                    type: "FETCH_CHAPTER_BEGIN"
+                })
+                xhr.get(`/chapter?c=${chapter_id}&pbj=1`, (e) => {
+                    var json = JSON.parse(decipher(e.responseText))
+                    if (json == null) {
+                        dispatch({
+                            type: "FETCH_CHAPTER_ERROR",
+                            data: new Error('have no this chapter!')
+                        })
+                        return
+                    }
+                    dispatch({
+                        type: `FETCH_CHAPTER_SUCCESS`,
+                        data: json
+                    })
+                }).send()
+            },
+            getNovel: function (novel_id) {
+                dispatch({
+                    type: 'FETCH_NOVEL_BEGIN'
+                })
+                xhr.get(`/novel?v=${novel_id}&pbj=1`, (e) => {
+                    var res = decipher(e.responseText)
+                    var json = JSON.parse(res)
+                    if (json == null) {
+                        dispatch({
+                            type: 'FETCH_NOVEL_ERROR',
+                            data: new Error('have no this novel!')
+                        })
+                        return
+                    }
+                    dispatch({
+                        type: `FETCH_NOVEL_SUCCESS`,
+                        data: json
+                    })
+                }).send()
+            },
         }
-        dispatch({
-            type: `complete_chapter`,
-            chapter: json
-        })
-        xhr.get(`/novel?v=${json.novel_id}&pbj=1`, (e) => {
-            var json = JSON.parse(decipher(e.responseText))
-            if (json == null) {
-                return
-            }
-            // dispatch({
-            //     type: `complete_novel`,
-            //     novel: json
-            // })
-            dispatch({
-                type: `complete_novelchapter`,
-                novel: json
-            })
-        }).send()
-    }).send()
+    })(dispatch)
+    
     return {}
 }
 exports.Chapter = connect(mapStateToProps, mapDispatchToProps)(Chapter)

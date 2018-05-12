@@ -8,41 +8,46 @@ var xhr = new request()
 import { connect } from 'react-redux'
 
 const mapStateToProps = (state, props) => {
-    return ({ novel: state.novel })
+    return state.novel
 }
 const mapDispatchToProps = (dispatch, props) => {
-    if(props.novel&&props.novel._id){
-        xhr.get(`/novel?v=${props.novel._id}&pbj=1`, (e) => {
-            var json = JSON.parse(decipher(e.responseText))
-            if (json == null) {
-                return
-            }
-            dispatch({
-                type: `complete_novel`,
-                novel: json
-            })
-        }).send()
-    }else{
-        xhr.get(`/novel${props.location.search}&pbj=1`, (e) => {
-            var json = JSON.parse(decipher(e.responseText))
-            if (json == null) {
-                return
-            }
-            dispatch({
-                type: `complete_novel`,
-                novel: json
-            })
-        }).send()
-    }
-    
-    return {
-        dispatch: (chapter,novel) => {
-            dispatch({
-                type: 'focus_chapter',
-                chapter,
-                novel
-            })
+    return (function (dispatch) {
+        return {
+            getNovel: function(novel_id){
+                dispatch({
+                    type: 'FETCH_NOVEL_BEGIN'
+                })
+                xhr.get(`/novel?v=${novel_id}&pbj=1`, (e) => {
+                    var res = decipher(e.responseText)
+                    var json = JSON.parse(res)
+                    // console.log(res==null)
+                    if (json == null) {
+                        dispatch({
+                            type: 'FETCH_NOVEL_ERROR',
+                            data: new Error('have no this novel!')
+                        })
+                        return
+                    }
+                    dispatch({
+                        type: `FETCH_NOVEL_SUCCESS`,
+                        data: json
+                    })
+                }).send()
+            },
+            setNovel:function(novel){
+                dispatch({
+                    type: `SET_NOVEL`,
+                    data: novel
+                })
+            },
+            // init: function(){
+            //    dispatch({
+            //         type: `INIT_NOVEL`,
+            //         data: novel
+            //     })
+            // },
+            dispatch: dispatch
         }
-    }
+    })(dispatch)
 }
 exports.Novel = connect(mapStateToProps, mapDispatchToProps)(Novel)

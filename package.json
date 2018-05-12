@@ -7,7 +7,7 @@
     "start": "npm run server&&npm run dev",
     "server": "nodemon app.js",
     "build": "parcel build ./web/index.html --out-dir ./server/dist --no-cache",
-    "dev": "parcel ./web/index.html --out-dir ./server/dis --no-cache"
+    "dev": "parcel ./web/index.html --out-dir ./server/dist --no-cache"
   },
   "nodemonConfig": {
     "ignore": [
@@ -30,7 +30,7 @@
     "babel-preset-react": "^6.24.1",
     "cheerio": "^1.0.0-rc.2",
     "lodash.unescape": "^4.0.1",
-    "parcel-bundler": "^1.7.1",
+    "parcel-bundler": "^1.8.1",
     "request": "^2.83.0"
   },
   "dependencies": {
@@ -52,6 +52,7 @@
     "react-redux": "^5.0.7",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
+    "react-router-redux": "^4.0.8",
     "redux": "^4.0.0",
     "underscore": "^1.8.3"
   }

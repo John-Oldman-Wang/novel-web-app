@@ -1,50 +1,88 @@
 import { combineReducers } from 'redux'
 
-function index(state = [], action) {
+function index(state = {
+    items: [],
+    loading: false,
+    error: null
+}, action) {
     switch (action.type) {
-        case 'set_index':
-            return [...action.data];
-        case 'update_Index':
-            return state;
+        case 'FETCH_NOVELS_BEGIN':
+            return Object.assign({}, state, {
+                loading: true,
+                error: null
+            });
+        case 'FETCH_NOVELS_SUCCESS':
+            return Object.assign({}, state, {
+                loading: false,
+                items: action.data
+            });
+        case 'FETCH_NOVELS_ERROR':
+            return Object.assign({}, state, {
+                loading: false,
+                error: action.data,
+                items: []
+            })
         default:
             return state;
     }
 }
 
-function novel(state = {}, action) {
+function novel(state = {
+    item: {},
+    loading: false,
+    error: null
+}, action) {
     switch (action.type) {
-        case 'focus_novel':
-            return Object.assign({}, state, action.novel)
-        case 'complete_novel':
-            if (state._id && state._id != action.novel._id) {
-                console.log('return complete_novel')
-                return state
+        case 'SET_NOVEL':
+            if (action.data._id == state.item._id) {
+                return Object.assign({}, state, { item: Object.assign({}, state.item, action.data), error: null })
+            } else {
+                return Object.assign({}, state, { item: action.data, error: null })
             }
-            return Object.assign({}, state, action.novel)
+        case 'FETCH_NOVEL_BEGIN':
+            return Object.assign({}, state, {
+                loading: true,
+                error: null
+            });
+        case 'FETCH_NOVEL_SUCCESS':
+            return Object.assign({}, state, {
+                loading: false,
+                item: action.data
+            });
+        case 'FETCH_NOVEL_ERROR':
+            return Object.assign({}, state, {
+                loading: false,
+                error: action.data,
+                item: {}
+            })
         default:
             return state;
     }
 }
-function novelChapter(state = {
-    novel: {},
-    chapter: {}
+function chapter(state = {
+    item: {},
+    loading: false,
+    error: null
 }, action) {
     switch (action.type) {
-        case "focus_chapter":
-            return Object.assign(state, {
-                chapter: Object.assign(action.chapter, { _id: action.chapter.chapter_id }),
-                novel: action.novel
+        case "SET_CHAPTER":
+            return Object.assign({}, state, { item: action.data })
+        case "FETCH_CHAPTER_BEGIN":
+            return Object.assign({}, state, {
+                loading: true,
+                error: null
             })
-        case "complete_chapter":
-            return Object.assign({}, state, { chapter: action.chapter });
-        case "complete_novelchapter":
-            return Object.assign({},state,{novel: action.novel})
-        case "next_chapter":
-            console.log(`next_chapter`)
-            return state;
-        case "pre_chapter":
-            console.log(`pre_chapter`)
-            return state;
+        case "FETCH_CHAPTER_SUCCESS":
+            return Object.assign({}, state, {
+                loading: false,
+                item: action.data
+            })
+        case "FETCH_CHAPTER_ERROR":
+            return Object.assign({}, state, {
+                loading: false,
+                error: action.data,
+                item: {}
+            })
         default:
             return state;
     }
@@ -53,5 +91,5 @@ export default combineReducers({
     // user,
     index,
     novel,
-    novelChapter
+    chapter
 })

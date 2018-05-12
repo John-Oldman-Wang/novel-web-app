@@ -40,13 +40,13 @@ function RowCard(props) {
         <Card className={classes.card}>
             <CardMedia
                 className={classes.cover}
-                image={image || "https://qidian.qpic.cn/qdbimg/349573/23813/180"}
-                title={title || "title"}
+                image={image || "data:image/png;base64,FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"}
+                title={title || ""}
             />
             <div className={classes.details}>
                 <CardContent className={classes.content}>
                     <Typography noWrap variant="title">
-                        {title || ''}
+                        {title || "..."}
                     </Typography>
                     <div className={classes.card}>
                         <PermIdentity style={{
@@ -58,16 +58,16 @@ function RowCard(props) {
                         <Typography style={{
                             flex: `1 0 0%`,
                         }} noWrap align='left' variant="body1" color="textSecondary">
-                            {author || ''}
+                            &nbsp;{author || '...'}
                         </Typography>
                     </div>
                     <Typography noWrap align='left' variant="button">
-                        {(category || '玄幻 / 东方玄幻').replace('-', ' / ')}
+                        {(category || '').replace('-', ' / ')}
                     </Typography>
                 </CardContent>
                 <div className={classes.controls}>
                     <Button onClick={onClick} className={classes.btn} size="small" color="primary">
-                        继续阅读
+                        {onClick ?"继续阅读":""}
                     </Button>
                     <StarBorder />
                 </div>

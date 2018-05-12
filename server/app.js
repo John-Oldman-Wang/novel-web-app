@@ -38,12 +38,12 @@ if (cluster.isMaster) {
     });
 } else {
     // 工作进程可以共享任何 TCP 连接。
-    // 在本例子中，共享的是一个 HTTP 服务器。
+    // 共享的是一个 HTTP 服务器。
     mongoose.connect(dbUrl, {
         useMongoClient: true,
     }, function () {
-        console.log(`connect mongo ok!`)
-        App()
+        console.log(`connect mongo ok!`);
+        App();
     })
     console.log(`工作进程 ${process.pid} 已启动`);
 }

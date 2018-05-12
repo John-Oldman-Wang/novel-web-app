@@ -69,19 +69,34 @@ module.exports = function (app) {
 
     ssrServer.set('view engine', 'ejs')
     ssrServer.set('views', path.join(__dirname, '../views'))
-    ssrServer.get('/', function (req, res) {
-        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
-        res.render('index', {
-            title: '无限中文小说'
-        })
-    })
+    // ssrServer.get('/', function (req, res) {
+    //     res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
+    //     res.render('index', {
+    //         title: '无限中文小说'
+    //     })
+    // })
     ssrServer.use(function (req, res) {
+        console.log('this')
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
-        fs.createReadStream(path.join(__dirname, '../../dist/index.html')).pipe(res)
+        try {
+            fs.stat(path.join(__dirname, '../../dist/index.html'),(err,stat)=>{
+                if(err){
+                    console.log(err)
+                    console.log('stat error')
+                    res.end('no such file')
+                }else{
+                    var stream = fs.createReadStream(path.join(__dirname, '../../dist/index.html'))
+                    stream.pipe(res)
+                }
+            })
+            
+        } catch (error) {
+            res.end('hhh')
+        }
         return
     })
     dataServer.get('/index', function (req, res, next) {
-        Novel.random(20, function (err, novels) {
+        Novel.random(21, function (err, novels) {
             if (err) {
                 console.log(err)
             }
@@ -149,5 +164,5 @@ module.exports = function (app) {
                 res.end(cipher(JSON.stringify(novels)))
             })
     })
-    return
+    return app
 }

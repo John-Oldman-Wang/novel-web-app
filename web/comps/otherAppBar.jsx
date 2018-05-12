@@ -31,7 +31,7 @@ const styles = theme => ({
     loginBtn: {
         paddingLeft: `0px`,
         paddingRight: `0px`,
-        width:`48px`,
+        width: `48px`,
         minWidth: `auto`
     },
     listwrap: {
@@ -40,7 +40,7 @@ const styles = theme => ({
         backgroundColor: theme.palette.background.paper,
     },
     content: {
-        
+
     },
 });
 class OtherAppBar extends React.Component {
@@ -58,7 +58,7 @@ class OtherAppBar extends React.Component {
         })
     }
     render() {
-        const { classes,title } = this.props;
+        const { classes, title } = this.props;
         const { isLogin, anchorEl } = this.state
         return (
             <div className={classes.root}>
@@ -70,7 +70,7 @@ class OtherAppBar extends React.Component {
                             }} />
                         </IconButton>
                         <Typography noWrap variant="title" color="inherit" className={classes.flex}>
-                            {title}
+                            {title||"..."}
                         </Typography>
                         <div>
                             <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
@@ -82,57 +82,57 @@ class OtherAppBar extends React.Component {
                             </IconButton>
                             {!isLogin ? <Button className={classes.loginBtn} onClick={(e => {
                                 this.handleChange(e)
-                            })} color="inherit">Login</Button> : 
-                            <IconButton
-                                aria-owns={'menu-appbar'}
-                                aria-haspopup="true"
-                                onClick={(e) => {
-                                    this.setState({
-                                        anchorEl: e.target
-                                    })
-                                }}
-                                color="inherit">
-                                <AccountCircle />
-                                <Menu
-                                    id="menu-appbar"
-                                    anchorEl={anchorEl}
-                                    anchorOrigin={{
-                                        vertical: 'top',
-                                        horizontal: 'right',
-                                    }}
-                                    transformOrigin={{
-                                        vertical: 'top',
-                                        horizontal: 'right',
-                                    }}
-                                    open={!!anchorEl}
-                                    onClose={(e) => {
-                                        e.stopPropagation()
+                            })} color="inherit">Login</Button> :
+                                <IconButton
+                                    aria-owns={'menu-appbar'}
+                                    aria-haspopup="true"
+                                    onClick={(e) => {
                                         this.setState({
-                                            anchorEl: null
+                                            anchorEl: e.target
                                         })
                                     }}
-                                >
-                                    <MenuItem onClick={(e) => {
-                                        e.stopPropagation()
-                                        this.setState({
-                                            anchorEl: null
-                                        })
-                                    }}>个人中心</MenuItem>
-                                    <MenuItem onClick={(e) => {
-                                        e.stopPropagation()
-                                        this.setState({
-                                            anchorEl: null
-                                        })
-                                    }}>历史记录</MenuItem>
-                                    <MenuItem onClick={(e) => {
-                                        e.stopPropagation()
-                                        this.setState({
-                                            anchorEl: null,
-                                            isLogin: false
-                                        })
-                                    }}>退出登陆</MenuItem>
-                                </Menu>
-                            </IconButton>}
+                                    color="inherit">
+                                    <AccountCircle />
+                                    <Menu
+                                        id="menu-appbar"
+                                        anchorEl={anchorEl}
+                                        anchorOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                        transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                        open={!!anchorEl}
+                                        onClose={(e) => {
+                                            e.stopPropagation()
+                                            this.setState({
+                                                anchorEl: null
+                                            })
+                                        }}
+                                    >
+                                        <MenuItem onClick={(e) => {
+                                            e.stopPropagation()
+                                            this.setState({
+                                                anchorEl: null
+                                            })
+                                        }}>个人中心</MenuItem>
+                                        <MenuItem onClick={(e) => {
+                                            e.stopPropagation()
+                                            this.setState({
+                                                anchorEl: null
+                                            })
+                                        }}>历史记录</MenuItem>
+                                        <MenuItem onClick={(e) => {
+                                            e.stopPropagation()
+                                            this.setState({
+                                                anchorEl: null,
+                                                isLogin: false
+                                            })
+                                        }}>退出登陆</MenuItem>
+                                    </Menu>
+                                </IconButton>}
                         </div>
                     </Toolbar>
                 </AppBar>
