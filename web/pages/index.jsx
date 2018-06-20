@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 
 import IndexAppBar from '../comps/indexAppBar.jsx'
 import ColumnCard from '../comps/columnCard.jsx'
@@ -41,9 +41,7 @@ class Index extends Component {
         }
         return (
             <React.Fragment>
-                <div className={classes.head}>
-                    <IndexAppBar />
-                </div>
+                <IndexAppBar />
                 {content}
             </React.Fragment>
         )

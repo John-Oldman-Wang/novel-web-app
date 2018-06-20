@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 
-import { CircularProgress } from 'material-ui/Progress'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import OtherAppBar from '../comps/otherAppBar.jsx'
 import RowCard from '../comps/rowCard.jsx'
 import DirectoryList from '../comps/DirectoryList.jsx'
@@ -41,7 +41,7 @@ class Novel extends Component {
         }
         if (error) {
             content = <div>Error! {error.message}3 second back to home page</div>;
-            setTimeout(()=>{
+            this.timer=setTimeout(()=>{
                 this.props.history.replace('/')
             },3000)
         } else if (loading) {
@@ -57,6 +57,7 @@ class Novel extends Component {
                 }} title={novel.title} author={novel.author} image={novel.image} category={novel.category} />
             }
         } else {
+            console.log(novel)
             if (Object.keys(novel) == 0) {
                 content = <RowCard onClick={null} title={novel.title} author={novel.author} image={novel.image} category={novel.category} />
             }else if (!flag) {
@@ -64,7 +65,7 @@ class Novel extends Component {
             }else {
                 content = <RowCard onClick={() => {
                     this.props.history.push(`chapter/?c=${novel.chapters[0]._id}`)
-                }} title={novel.title} author={novel.author} image={novel.image} category={novel.category} />
+                }} title={novel.title} author={novel.author} image={novel.image} category={novel.category} smallCategory={novel.smallCategory}/>
             }
             if (Object.keys(novel) == 0 || !flag) {
                 console.log('need get novel')
@@ -83,7 +84,7 @@ class Novel extends Component {
                     {flag?<DirectoryList onClick={(chapter) => {
                         console.log(chapter)
                         this.props.history.push(`chapter?c=${chapter.chapter_id}`)
-                        dispatch(chapter, novel)
+                        //dispatch(chapter, novel)
                     }} list={novel.chapters} /> : <CircularProgress style={{display: 'block',margin: `0 auto`}}/>}
                 </div>
             </React.Fragment>

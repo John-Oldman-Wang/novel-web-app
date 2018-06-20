@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { withStyles } from 'material-ui/styles';
-import Paper from 'material-ui/Paper';
-import Typography from 'material-ui/Typography';
+import { withStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 
-import Button from 'material-ui/Button';
+import Button from '@material-ui/core/Button';
 import SpeedMenu from '../comps/SpeedMenu.jsx'
 
 const styles = (theme)=>({
@@ -37,6 +37,7 @@ class Chapter extends Component {
     render() {
         const { classes, index } = this.props
         const { novel, chapter } = (this.props.novelChapter || {})
+        console.log('chapter', novel,chapter)
         return (
             <React.Fragment>
                 <div className={classes.root}>
@@ -45,16 +46,16 @@ class Chapter extends Component {
                             display: `flex`,
                             justifyContent: ``
                         }}>
-                            <Button className={classes.button}>{novel.title ? `《${novel.title}》` : ""}</Button>
+                            <Button className={classes.button}>{novel ? `《${(novel||{})['title']}》` : ""}</Button>
                             <Typography style={{
                                 lineHeight: `44px`,
                                 fontWeight: 900,
                                 boxShadow: `none`
                             }} component="h5">
-                                {chapter.title || ""}
+                                {chapter&&chapter.title || ""}
                             </Typography>
                         </div>
-                        {(chapter.paragraphs || []).map((item, index) => {
+                        {(chapter&&chapter.paragraphs || []).map((item, index) => {
                             return (<Typography key={index} className={classes.textIndent} component="p">
                                 {item}
                             </Typography>)

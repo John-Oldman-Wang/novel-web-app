@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
@@ -13,11 +13,14 @@ import HomeIcon from '@material-ui/icons/Home';
 import FormatListNumbered from '@material-ui/icons/FormatListNumbered';
 import CloseIcon from '@material-ui/icons/Close';
 
-import SwipeableDrawer from 'material-ui/SwipeableDrawer';
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/Inbox';
 import DraftsIcon from '@material-ui/icons/Drafts';
-import Divider from 'material-ui/Divider';
+import Divider from '@material-ui/core/Divider';
 // import Button from 'material-ui/Button';
 
 const styles = theme => ({

@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "npm run server&&npm run dev",
-    "server": "nodemon app.js",
+    "server": "nodemon ./server/app.js",
     "build": "parcel build ./web/index.html --out-dir ./server/dist --no-cache",
     "dev": "parcel ./web/index.html --out-dir ./server/dist --no-cache"
   },
@@ -30,10 +30,12 @@
     "babel-preset-react": "^6.24.1",
     "cheerio": "^1.0.0-rc.2",
     "lodash.unescape": "^4.0.1",
+    "nodemon": "^1.17.5",
     "parcel-bundler": "^1.8.1",
     "request": "^2.83.0"
   },
   "dependencies": {
+    "@material-ui/core": "^1.2.2",
     "@material-ui/icons": "^1.0.0-beta.43",
     "@material-ui/lab": "^1.0.0-alpha.1",
     "connect-mongo": "^2.0.1",
@@ -42,12 +44,12 @@
     "ejs": "^2.5.7",
     "express": "^4.16.1",
     "express-session": "^1.15.6",
-    "material-ui": "^1.0.0-beta.43",
+    "material-ui": "^0.20.1",
     "moment": "^2.19.3",
     "mongoose": "^4.11.13",
     "postcss-modules": "^1.1.0",
-    "react": "^16.3.2",
-    "react-dom": "^16.2.0",
+    "react": "^15.4.0 || ^16.0.0",
+    "react-dom": "^15.4.0 || ^16.0.0",
     "react-materialize": "^2.2.0",
     "react-redux": "^5.0.7",
     "react-router": "^4.2.0",

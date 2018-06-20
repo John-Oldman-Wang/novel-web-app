@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import Card, { CardContent, CardMedia } from 'material-ui/Card';
-import Typography from 'material-ui/Typography';
+import { withStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Typography from '@material-ui/core/Typography';
 import PermIdentity from '@material-ui/icons/PermIdentity';
-import Button from 'material-ui/Button';
+import Button from '@material-ui/core/Button';
 import StarBorder from '@material-ui/icons/StarBorder';
 
 const styles = theme => ({
@@ -34,8 +36,8 @@ const styles = theme => ({
 });
 
 function RowCard(props) {
-    const { onClick,classes, theme, title, image, author, category } = props;
-    // console.log(theme)
+    const { onClick,classes, theme, title, image, author, category, smallCategory } = props;
+    console.log(props)
     return (
         <Card className={classes.card}>
             <CardMedia
@@ -62,7 +64,7 @@ function RowCard(props) {
                         </Typography>
                     </div>
                     <Typography noWrap align='left' variant="button">
-                        {(category || '').replace('-', ' / ')}
+                        {(category || '').replace('-', ' / ')}/{(smallCategory || '').replace('-', ' / ')}
                     </Typography>
                 </CardContent>
                 <div className={classes.controls}>

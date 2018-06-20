@@ -25,14 +25,17 @@ const decipher = function cipher(key, text) {
     r += ci.final('utf-8')
     return r
 }.bind(null, key)
+
 const checkRequst = function (req) {
     return req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1
 }
+
 var dataServer = express()
 var ssrServer = express()
-module.exports = function (app) {
 
-    app.use(express.static('dist'))
+module.exports = function (app) {
+    
+    app.use(express.static(path.join(__dirname, '../../dist')))
     app.get('/favicon.ico', function (req, res) {
         fs.createReadStream(path.join(__dirname, '../icons/ic_local_library_black_48dp_1x.png')).pipe(res)
     })
@@ -58,6 +61,8 @@ module.exports = function (app) {
         })
         next()
     })
+
+
     app.use(function (req, res, next) {
         if (checkRequst(req)) {
             dataServer(req, res, next)
@@ -76,7 +81,6 @@ module.exports = function (app) {
     //     })
     // })
     ssrServer.use(function (req, res) {
-        console.log('this')
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
         try {
             fs.stat(path.join(__dirname, '../../dist/index.html'),(err,stat)=>{
@@ -95,6 +99,28 @@ module.exports = function (app) {
         }
         return
     })
+
+    if(process.env.NODE_ENV !== 'production'){
+        dataServer.use((req,res,next)=>{
+            setTimeout(() => {
+                next&&next()
+            }, 1500);
+        })
+        console.log(`开发环境延迟1.5秒返回数据！`)
+    }
+
+
+    dataServer.post('/signup',function(req,res){
+        let buf = new Buffer('')
+        req.on('data',(buffer)=>{
+            buf=Buffer.concat([buf,buffer])
+        })
+        req.on('end',()=>{
+            res.end(buf.toString())
+        })
+    })
+
+    
     dataServer.get('/index', function (req, res, next) {
         Novel.random(21, function (err, novels) {
             if (err) {
