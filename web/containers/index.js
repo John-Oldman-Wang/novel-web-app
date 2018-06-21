@@ -1,9 +1,8 @@
-import React from 'react'
 import Index from '../pages/index.jsx'
 
 import request from '../plugin/request'
 
-import { cipher, decipher } from '../plugin/cryptoBro.js'
+import { decipher } from '../plugin/cryptoBro.js'
 var xhr = new request()
 import { connect } from 'react-redux'
 

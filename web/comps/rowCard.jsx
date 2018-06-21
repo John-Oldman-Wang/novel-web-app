@@ -36,8 +36,7 @@ const styles = theme => ({
 });
 
 function RowCard(props) {
-    const { onClick,classes, theme, title, image, author, category, smallCategory } = props;
-    console.log(props)
+    const { onClick,classes, title, image, author, category, smallCategory } = props;
     return (
         <Card className={classes.card}>
             <CardMedia
