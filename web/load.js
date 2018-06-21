@@ -3,10 +3,10 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 // import "babel-polyfill";
 
 const pages = {
-    Index: import('./containers/index.js'),
-    Novel: import('./containers/novel.js'),
-    Chapter: import('./containers/chapter.js'),
-    SignUp: import('./containers/signUp.js'),
+    Index: function(){ console.log('load Index');return import(/* webpackChunkName: 'Index' */'./containers/index.js')},
+    Novel: function(){ console.log('load Novel');return import(/* webpackChunkName: 'Novel' */'./containers/novel.js')},
+    Chapter: function(){ console.log('load Chapter');return import(/* webpackChunkName: 'Chapter' */'./containers/chapter.js')},
+    SignUp: function(){ console.log('load SignUp');return import(/* webpackChunkName: 'SignUp' */'./containers/signUp.js')},
     // Search: import('./search.js'),
     // Index: import('./index.js'),
     // Novel: import('./novel.js'),
@@ -17,39 +17,35 @@ module.exports = function (url) {
     return class extends PureComponent {
         constructor() {
             super()
-            var promise = pages[url]
-            if (typeof promise == 'object') {
-                this.state = {
-                    Component: '',
-                    status: 'pendding'
+            var promise = pages[url]()
+            promise.then((page) => {
+                const C=page[url]
+                this.render=function(){
+                    return <C {...this.props} />
                 }
-                promise.then((page) => {
-                    pages[url] = page[url]
-                    this.setState({
-                        Component: page[url],
-                        status: 'ok'
-                    })
-                }).catch(function (err) {
-                    console.log(err)
-                })
-            } else if (typeof promise == 'function') {
-                this.state = {
-                    Component: promise,
-                    status: 'ok'
-                }
-            }
-        }
-        render() {
-            var C = this.state.Component
-            return (
-                this.state.status == 'pendding' ? <div style={{
+                this.setState({})
+            }).catch(function (err) {
+                console.log(err)
+            })
+            this.render=function(){
+                return <div style={{
                     textAlign: 'center',
                     paddingTop: '120px',
                     margin: `0 auto`
                 }}>
                     <CircularProgress size={60} thickness={3} />
-                </div> : <C {...this.props} />
-
+                </div>
+            }
+        }
+        render() {
+            return (
+                <div style={{
+                    textAlign: 'center',
+                    paddingTop: '120px',
+                    margin: `0 auto`
+                }}>
+                    <CircularProgress size={60} thickness={3} />
+                </div> 
             );
         }
     }
