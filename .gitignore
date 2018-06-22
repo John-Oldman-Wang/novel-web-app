@@ -9,3 +9,4 @@ dist
 /ssr
 .cache
 .DS_Store
+.vscode/
