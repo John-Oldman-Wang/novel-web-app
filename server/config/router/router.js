@@ -3,7 +3,7 @@ const path = require('path')
 var Logger = require('../models/m-logger.js')
 var express = require("express")
 const dataServer = require('./dataServer.js')
-
+const ssrServer = require('./ssrServer.js')
 const isDataRequest = function (req) {
     return req.headers['x-response-type'] == 'multipart' && req.query.pbj == 1
 }
@@ -11,8 +11,6 @@ const isDataRequest = function (req) {
 const isBrowserRequest = (req)=>{
     return !req.headers["user-agent"]||String(req.headers["user-agent"]).includes('python')||String(req.url).includes('.php');
 }
-
-var ssrServer = express()
 
 module.exports = function (app) {
     

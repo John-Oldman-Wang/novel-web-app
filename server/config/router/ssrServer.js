@@ -1,3 +1,6 @@
+const path = require('path')
+const fs = require('fs')
+
 const express = require('express')
 
 const ssrServer = express()
@@ -28,6 +31,7 @@ ssrServer.use(express.static(path.join(__dirname, '../../dist'),{
 }))
 
 ssrServer.use(function (req, res) {
+    console.log(`do this logic`)
     res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
     try {
         fs.stat(path.join(__dirname, '../../dist/index.html'),(err,stat)=>{
