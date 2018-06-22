@@ -12,7 +12,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-
+import Collapse from '@material-ui/core/Collapse';
+import Avatar from '@material-ui/core/Avatar';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -21,6 +22,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/Inbox';
 import DraftsIcon from '@material-ui/icons/Drafts';
 import Divider from '@material-ui/core/Divider';
+
+import category from '../json/category.json'
+
 const styles =theme=>({
     root: {
         flexGrow: 1,
@@ -42,7 +46,11 @@ const styles =theme=>({
         // width: '100%',
         width: 250,
         backgroundColor: theme.palette.background.paper,
-    }
+    },
+    categoryItem: {
+        paddingTop: theme.spacing.unit,
+        paddingBottom: theme.spacing.unit,
+    },
 }); 
 class IndexAppBar extends React.Component {
     constructor(props) {
@@ -50,7 +58,8 @@ class IndexAppBar extends React.Component {
         this.state = {
             isLogin: false,
             anchorEl: null,
-            open: false
+            open: false,
+            categoryOpen: false
         };
     }
     handleChange(e) {
@@ -148,13 +157,34 @@ class IndexAppBar extends React.Component {
                         })
                     })}
                 ><div className={classes.listwrap}><List component="nav">
-                    <ListItem button>
+                    <ListItem onClick={()=>{
+                        this.setState({
+                            categoryOpen: !this.state.categoryOpen
+                        })
+                    }} button>
                         <ListItemIcon>
-                            <InboxIcon />
+                            <DraftsIcon />
                         </ListItemIcon>
-                        <ListItemText primary="Inbox" />
+                        <ListItemText primary="小说分类" />
                     </ListItem>
-                        <Divider/>
+                    <Divider/>
+                    <Collapse in={this.state.categoryOpen}>
+                        <List component="div" disablePadding>
+                            {category.sort((a,b)=>{
+                                return b.num-a.num;
+                            }).map((item,index)=>{
+                                return (
+                                    <ListItem className={classes.categoryItem}  key={index+''+item.num} button>
+                                        <ListItemIcon>
+                                            <InboxIcon />
+                                        </ListItemIcon>
+                                        <ListItemText primary={`${item.category}`} secondary={`${item.num}本`} />
+                                    </ListItem>
+                                );
+                            })}
+                        </List>
+                    </Collapse>
+                    <Divider/>
                     <ListItem button>
                         <ListItemIcon>
                             <DraftsIcon />
