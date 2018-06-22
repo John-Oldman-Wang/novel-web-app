@@ -3,10 +3,10 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 // import "babel-polyfill";
 
 const pages = {
-    Index: function(){ console.log('load Index');return import(/* webpackChunkName: 'Index' */'./containers/index.js')},
-    Novel: function(){ console.log('load Novel');return import(/* webpackChunkName: 'Novel' */'./containers/novel.js')},
-    Chapter: function(){ console.log('load Chapter');return import(/* webpackChunkName: 'Chapter' */'./containers/chapter.js')},
-    SignUp: function(){ console.log('load SignUp');return import(/* webpackChunkName: 'SignUp' */'./containers/signUp.js')},
+    Index: function(){ return import(/* webpackChunkName: 'Index' */'./containers/index.js')},
+    Novel: function(){ return import(/* webpackChunkName: 'Novel' */'./containers/novel.js')},
+    Chapter: function(){ return import(/* webpackChunkName: 'Chapter' */'./containers/chapter.js')},
+    SignUp: function(){ return import(/* webpackChunkName: 'SignUp' */'./containers/signUp.js')},
     // Search: import('./search.js'),
     // Index: import('./index.js'),
     // Novel: import('./novel.js'),
