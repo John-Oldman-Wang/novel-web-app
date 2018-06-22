@@ -5,6 +5,7 @@ module.exports = {
     mode: 'development',
     devtool: 'inline-source-map',
     entry: './web/main.js',
+    target: `web`,
     output: {
         path: path.resolve(__dirname, 'server/dist'),
         filename: '[name]-[hash].js'
