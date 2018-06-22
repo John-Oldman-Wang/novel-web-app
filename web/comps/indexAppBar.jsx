@@ -47,6 +47,10 @@ const styles =theme=>({
         width: 250,
         backgroundColor: theme.palette.background.paper,
     },
+    categoryList:{
+        maxHeight: `360px`,
+        overflow: 'scroll',
+    },
     categoryItem: {
         paddingTop: theme.spacing.unit,
         paddingBottom: theme.spacing.unit,
@@ -167,17 +171,16 @@ class IndexAppBar extends React.Component {
                         </ListItemIcon>
                         <ListItemText primary="小说分类" />
                     </ListItem>
-                    <Divider/>
                     <Collapse in={this.state.categoryOpen}>
-                        <List component="div" disablePadding>
+                        <List className={classes.categoryList} component="div" disablePadding>
                             {category.sort((a,b)=>{
                                 return b.num-a.num;
                             }).map((item,index)=>{
                                 return (
                                     <ListItem className={classes.categoryItem}  key={index+''+item.num} button>
-                                        <ListItemIcon>
+                                        <Avatar>
                                             <InboxIcon />
-                                        </ListItemIcon>
+                                        </Avatar>
                                         <ListItemText primary={`${item.category}`} secondary={`${item.num}本`} />
                                     </ListItem>
                                 );
