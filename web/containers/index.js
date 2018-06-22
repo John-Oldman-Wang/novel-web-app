@@ -1,8 +1,6 @@
 import Index from '../pages/index.jsx'
-
 import request from '../plugin/request'
 
-import { decipher } from '../plugin/cryptoBro.js'
 var xhr = new request()
 import { connect } from 'react-redux'
 
@@ -23,7 +21,7 @@ const mapDispatchToProps = (dispatch, props) => {
                     type: 'FETCH_NOVELS_BEGIN',
                 })
                 xhr.get('/index?pbj=1', (e) => {
-                    var res = decipher(e.responseText)
+                    var res = e.responseText
                     if (!res) {
                         dispatch({
                             type: 'FETCH_NOVELS_ERROR',
@@ -31,8 +29,7 @@ const mapDispatchToProps = (dispatch, props) => {
                         })
                         return
                     }
-                    var json = JSON.parse(res)
-                    console.log(json)
+                    var json = res
                     dispatch({
                         type: 'FETCH_NOVELS_SUCCESS',
                         data: json.novels

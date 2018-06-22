@@ -1,4 +1,3 @@
-import React from 'react'
 import SignUp from '../pages/signUp.jsx'
 
 import { connect } from 'react-redux'

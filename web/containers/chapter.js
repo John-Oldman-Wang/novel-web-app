@@ -1,8 +1,6 @@
-import React from 'react'
 import Chapter from '../pages/chapter.jsx'
 
 import request from '../plugin/request'
-import { cipher, decipher } from '../plugin/cryptoBro.js'
 var xhr = new request()
 
 import { connect } from 'react-redux'
@@ -18,7 +16,7 @@ const mapDispatchToProps = (dispatch, props) => {
                     type: "FETCH_CHAPTER_BEGIN"
                 })
                 xhr.get(`/chapter?c=${chapter_id}&pbj=1`, (e) => {
-                    var json = JSON.parse(decipher(e.responseText))
+                    var json = e.responseText
                     if (json == null) {
                         dispatch({
                             type: "FETCH_CHAPTER_ERROR",
@@ -37,8 +35,8 @@ const mapDispatchToProps = (dispatch, props) => {
                     type: 'FETCH_NOVEL_BEGIN'
                 })
                 xhr.get(`/novel?v=${novel_id}&pbj=1`, (e) => {
-                    var res = decipher(e.responseText)
-                    var json = JSON.parse(res)
+                    var res = e.responseText
+                    var json = res
                     if (json == null) {
                         dispatch({
                             type: 'FETCH_NOVEL_ERROR',
@@ -54,7 +52,5 @@ const mapDispatchToProps = (dispatch, props) => {
             },
         }
     })(dispatch)
-    
-    return {}
 }
 exports.Chapter = connect(mapStateToProps, mapDispatchToProps)(Chapter)
