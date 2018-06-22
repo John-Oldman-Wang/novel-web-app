@@ -5,15 +5,23 @@ import Grid from '@material-ui/core/Grid';
 import IndexAppBar from '../comps/indexAppBar.jsx'
 import ColumnCard from '../comps/columnCard.jsx'
 
-const styles = {
-    content: {
-        padding: 8,
+const styles = (theme)=> {
+    return {
+        content: {
+            padding: theme.spacing.unit,
+        }
     }
 }
 class Index extends React.Component {
     constructor(props) {
         super(props)
         window.i = this
+    }
+    componentWillMount(){
+        const { loading, error, items } =this.props
+        if(!error&&!loading&&items.length === 0){
+            this.props.getNovels()
+        }
     }
     componentDidMount() {
         // this.props.getNovels()
@@ -27,7 +35,6 @@ class Index extends React.Component {
         } else if (loading) {
             content = <div>Loading...</div>;
         } else {
-            data.length == 0 && this.props.getNovels()
             content = <Grid className={classes.content} container spacing={16}>
                 {data.map((item, index) => {
                     return (<Grid key={index} item lg={2} md={3} xs={4} >
