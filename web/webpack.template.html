@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="height: 100%;overflow: hidden;">
 <head>
     <meta charset="UTF-8">
     <meta name="full-screen" content="yes">
     <meta name="browsermode" content="application">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no,maximum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>woeble阅读</title>
     <meta name="Keywords" content="中文小说、免费小说、武侠小说、言情小说、腐女最爱、玄幻小说">
@@ -24,10 +24,16 @@
             top.location = locati
         }
     </script>
+    <style>
+        body{
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+
 </head>
 
-<body style="height:100%;padding: 0px;margin: 0px;">
-    <div style="height: 100%;display:flex;flex-direction: column;" id="root"></div>
+<body style="width: 100vw;height:100vh;padding: 0px;margin: 0px;overflow: scroll;">
+    <div style="min-height: 100%;display:flex;flex-direction: column;overflow: hidden;" id="root"></div>
 </body>
 <script>
     ; (function () {
