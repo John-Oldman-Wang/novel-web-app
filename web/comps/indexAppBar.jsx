@@ -12,18 +12,9 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import Collapse from '@material-ui/core/Collapse';
-import Avatar from '@material-ui/core/Avatar';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/Inbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import Divider from '@material-ui/core/Divider';
 
-import category from '../json/category.json'
+
+import DrawerMenu from './DrawerMenu.jsx';
 
 const styles =theme=>({
     root: {
@@ -47,14 +38,14 @@ const styles =theme=>({
         width: 250,
         backgroundColor: theme.palette.background.paper,
     },
-    categoryList:{
-        maxHeight: `360px`,
-        overflow: 'scroll',
-    },
-    categoryItem: {
-        paddingTop: theme.spacing.unit,
-        paddingBottom: theme.spacing.unit,
-    },
+    // categoryList:{
+    //     maxHeight: `360px`,
+    //     overflow: 'scroll',
+    // },
+    // categoryItem: {
+    //     paddingTop: theme.spacing.unit,
+    //     paddingBottom: theme.spacing.unit,
+    // },
 }); 
 class IndexAppBar extends React.Component {
     constructor(props) {
@@ -65,6 +56,11 @@ class IndexAppBar extends React.Component {
             open: false,
             categoryOpen: false
         };
+        this.toggleDrawerMenu = ()=>{
+            this.setState({
+                open: !this.state.open
+            })
+        }
     }
     handleChange(e) {
         this.setState({
@@ -147,55 +143,11 @@ class IndexAppBar extends React.Component {
                             </div>
                         }</Toolbar>
                 </AppBar>
-                <SwipeableDrawer 
-                    anchor="left"
+                <DrawerMenu
                     open={this.state.open}
-                    onClose={(e=>{
-                        this.setState({
-                            open: false
-                        })
-                    })}
-                    onOpen={(e => {
-                        this.setState({
-                            open: true
-                        })
-                    })}
-                ><div className={classes.listwrap}><List component="nav">
-                    <ListItem onClick={()=>{
-                        this.setState({
-                            categoryOpen: !this.state.categoryOpen
-                        })
-                    }} button>
-                        <ListItemIcon>
-                            <DraftsIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="小说分类" />
-                    </ListItem>
-                    <Collapse in={this.state.categoryOpen}>
-                        <List className={classes.categoryList} component="div" disablePadding>
-                            {category.sort((a,b)=>{
-                                return b.num-a.num;
-                            }).map((item,index)=>{
-                                return (
-                                    <ListItem className={classes.categoryItem}  key={index+''+item.num} button>
-                                        <Avatar>
-                                            <InboxIcon />
-                                        </Avatar>
-                                        <ListItemText primary={`${item.category}`} secondary={`${item.num}本`} />
-                                    </ListItem>
-                                );
-                            })}
-                        </List>
-                    </Collapse>
-                    <Divider/>
-                    <ListItem button>
-                        <ListItemIcon>
-                            <DraftsIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Drafts" />
-                    </ListItem>
-                </List></div>
-                </SwipeableDrawer>
+                    onClose={this.toggleDrawerMenu}
+                    className={classes.listwrap}
+                />
             </div>
         );
     }
