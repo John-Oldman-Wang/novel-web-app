@@ -48,7 +48,7 @@ class Index extends React.Component {
         }
         return (
             <React.Fragment>
-                <IndexAppBar />
+                <IndexAppBar history={this.props.history}/>
                 {content}
             </React.Fragment>
         )

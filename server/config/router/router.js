@@ -9,7 +9,7 @@ const isDataRequest = function (req) {
 }
 
 const isBrowserRequest = (req)=>{
-    return !req.headers["user-agent"]||String(req.headers["user-agent"]).includes('python')||String(req.url).includes('.php');
+    return req.headers["user-agent"]&&!String(req.headers["user-agent"]).includes('python')&&!String(req.url).includes('.php');
 }
 
 module.exports = function (app) {
@@ -26,7 +26,7 @@ module.exports = function (app) {
     })
     app.use(function (req, res, next) {
         //filter request of crawler
-        if (isBrowserRequest(req)) {
+        if (!isBrowserRequest(req)) {
             res.end('404')
             return
         }

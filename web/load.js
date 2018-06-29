@@ -7,7 +7,7 @@ const pages = {
     Novel: function(){ return import(/* webpackChunkName: 'Novel' */'./containers/novel.js')},
     Chapter: function(){ return import(/* webpackChunkName: 'Chapter' */'./containers/chapter.js')},
     SignUp: function(){ return import(/* webpackChunkName: 'SignUp' */'./containers/signUp.js')},
-    // Search: import('./search.js'),
+    Search: function(){ return import(/* webpackChunkName: 'Search' */'./containers/search.js')},
     // Index: import('./index.js'),
     // Novel: import('./novel.js'),
     // Chapter: import('./chapter.js'),

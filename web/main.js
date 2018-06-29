@@ -5,6 +5,7 @@ import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import rootReducer from './reducers'
 const store = createStore(rootReducer)
+window.store = store
 import Loader from './load.js'
 render(<Provider store={store}>
     <BrowserRouter >

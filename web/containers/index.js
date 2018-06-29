@@ -1,8 +1,7 @@
 import Index from '../pages/index.jsx'
-import request from '../plugin/request'
-
-var xhr = new request()
 import { connect } from 'react-redux'
+
+import fetch from '../plugin/fetch-localforage'
 
 const mapStateToProps = (state, props) => {
     return state.index
@@ -20,21 +19,22 @@ const mapDispatchToProps = (dispatch, props) => {
                 dispatch({
                     type: 'FETCH_NOVELS_BEGIN',
                 })
-                xhr.get('/index?pbj=1', (e) => {
-                    var res = e.responseText
-                    if (!res) {
-                        dispatch({
-                            type: 'FETCH_NOVELS_ERROR',
-                            data: new Error('this response is null')
-                        })
-                        return
+                fetch('/index?pbj=1',{
+                    method: "GET",
+                    headers: {
+                        'x-response-type': 'multipart'
                     }
-                    var json = res
+                }).then(json=>{
                     dispatch({
                         type: 'FETCH_NOVELS_SUCCESS',
-                        data: json.novels
+                        data: json.novels||[]
                     })
-                }).send()
+                }).catch(()=>{
+                    dispatch({
+                        type: 'FETCH_NOVELS_ERROR',
+                        data: new Error('this response is null')
+                    })
+                })
             }
         })(dispatch)
     }

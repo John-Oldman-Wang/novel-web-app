@@ -57,7 +57,7 @@ class Novel extends Component {
                 }} title={novel.title} author={novel.author} image={novel.image} category={novel.category} />
             }
         } else {
-            console.log(novel)
+            // console.log(novel)
             if (Object.keys(novel) == 0) {
                 content = <RowCard onClick={null} title={novel.title} author={novel.author} image={novel.image} category={novel.category} />
             }else if (!flag) {
@@ -68,7 +68,7 @@ class Novel extends Component {
                 }} title={novel.title} author={novel.author} image={novel.image} category={novel.category} smallCategory={novel.smallCategory}/>
             }
             if (Object.keys(novel) == 0 || !flag) {
-                console.log('need get novel')
+                // console.log('need get novel')
                 this.props.getNovel(query.v || "")
             }
         }

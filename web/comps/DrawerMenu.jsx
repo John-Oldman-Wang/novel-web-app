@@ -1,6 +1,6 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import SwipeableDrawer from '@material-ui/core/Drawer';
+import Drawer from '@material-ui/core/Drawer';
 import Avatar from '@material-ui/core/Avatar';
 import Collapse from '@material-ui/core/Collapse';
 import List from '@material-ui/core/List';
@@ -10,19 +10,24 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/Inbox';
 import DraftsIcon from '@material-ui/icons/Drafts';
 import Divider from '@material-ui/core/Divider';
+import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
+import Search from '@material-ui/icons/Search';
 
 import category from '../json/category.json';
 
-const stopPropagationDefaultFun = (e)=>{
-    return true
-    if(e.target!==document.body){
-        return true
-    }
-    e.preventDefault();
-	e.stopPropagation();
-    return true;
-	// return false;
-}
+
+// the body of document scroll event
+// const stopPropagationDefaultFun = (e)=>{
+//     return true
+//     if(e.target!==document.body){
+//         return true
+//     }
+//     e.preventDefault();
+// 	e.stopPropagation();
+//     return true;
+// 	// return false;
+// }
 
 
 const styles = (theme)=>({
@@ -33,6 +38,9 @@ const styles = (theme)=>({
     categoryItem: {
         paddingTop: theme.spacing.unit,
         paddingBottom: theme.spacing.unit,
+    },
+    margin: {
+        margin: theme.spacing.unit*2,
     },
 })
 
@@ -58,11 +66,7 @@ class DrawerMenu extends React.PureComponent{
     // }
     render(){
         const { open, onClose, className, classes } = this.props;
-        // if(open){
-        //     var ele = document.body;
-        //     ele.ontouchmove = ele.onscroll= ele.onmousewheel = stopPropagationDefaultFun;
-        // }
-        return (<SwipeableDrawer 
+        return (<Drawer 
             anchor="left"
             open={open}
             onClose={()=>{
@@ -70,7 +74,20 @@ class DrawerMenu extends React.PureComponent{
                 var ele = document.body;
                 ele.ontouchmove = ele.onscroll= ele.onmousewheel = null;
             }}
-        ><div className={className}><List component="nav">
+        ><div className={className}>
+        <div className={classes.margin}>
+            <Grid container spacing={8} alignItems="flex-end">
+            <Grid item>
+                <Search />
+            </Grid>
+            <Grid item>
+                <TextField onClick={()=>{
+                    this.props.history.push('/search')
+                }} id="input-with-icon-grid" label="" placeholder="狂神"/>
+            </Grid>
+            </Grid>
+        </div>
+        <List component="nav">
             <ListItem onClick={()=>{
                 this.setState({
                     categoryOpen: !this.state.categoryOpen
@@ -105,7 +122,7 @@ class DrawerMenu extends React.PureComponent{
                 </ListItemIcon>
                 <ListItemText primary="Drafts" />
             </ListItem>
-        </List></div></SwipeableDrawer>)
+        </List></div></Drawer>)
     }
 }
 

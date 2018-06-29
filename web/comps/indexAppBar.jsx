@@ -144,6 +144,7 @@ class IndexAppBar extends React.Component {
                         }</Toolbar>
                 </AppBar>
                 <DrawerMenu
+                    history={this.props.history}
                     open={this.state.open}
                     onClose={this.toggleDrawerMenu}
                     className={classes.listwrap}

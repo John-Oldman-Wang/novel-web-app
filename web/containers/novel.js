@@ -1,7 +1,6 @@
 import Novel from '../pages/novel.jsx'
 
-import request from '../plugin/request'
-var xhr = new request()
+import fetch from '../plugin/fetch-localforage'
 
 import { connect } from 'react-redux'
 
@@ -15,21 +14,20 @@ const mapDispatchToProps = (dispatch, props) => {
                 dispatch({
                     type: 'FETCH_NOVEL_BEGIN'
                 })
-                xhr.get(`/novel?v=${novel_id}&pbj=1`, (e) => {
-                    var res = e.responseText
-                    var json = res
-                    if (json == null) {
-                        dispatch({
-                            type: 'FETCH_NOVEL_ERROR',
-                            data: new Error('have no this novel!')
-                        })
-                        return
+                fetch(`/novel?v=${novel_id}&pbj=1`).then(json=>{
+                    if(json == null){
+                        throw new Error('has no novel')
                     }
                     dispatch({
                         type: `FETCH_NOVEL_SUCCESS`,
                         data: json
                     })
-                }).send()
+                }).catch(err=>{
+                    dispatch({
+                        type: 'FETCH_NOVEL_ERROR',
+                        data: err
+                    })
+                })
             },
             setNovel:function(novel){
                 dispatch({
