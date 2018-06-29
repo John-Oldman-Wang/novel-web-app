@@ -1,21 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import AppBar from 'material-ui/AppBar';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
-import Button from 'material-ui/Button';
-import IconButton from 'material-ui/IconButton';
+import { withStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import HomeIcon from '@material-ui/icons/Home';
-import Menu, { MenuItem } from 'material-ui/Menu';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 
-import SwipeableDrawer from 'material-ui/SwipeableDrawer';
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
-import InboxIcon from '@material-ui/icons/Inbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import Divider from 'material-ui/Divider';
+import DrawerMenu from './DrawerMenu.jsx';
 
 const styles = theme => ({
     root: {
@@ -51,6 +48,11 @@ class OtherAppBar extends React.Component {
             anchorEl: null,
             open: false
         };
+        this.toggleDrawerMenu = ()=>{
+            this.setState({
+                open: !this.state.open
+            })
+        }
     }
     handleChange(e) {
         this.setState({
@@ -136,35 +138,11 @@ class OtherAppBar extends React.Component {
                         </div>
                     </Toolbar>
                 </AppBar>
-                <SwipeableDrawer
-                    anchor="left"
+                <DrawerMenu
                     open={this.state.open}
-                    onClose={(e => {
-                        this.setState({
-                            open: false
-                        })
-                    })}
-                    onOpen={(e => {
-                        this.setState({
-                            open: true
-                        })
-                    })}
-                ><div className={classes.listwrap}><List component="nav">
-                    <ListItem button>
-                        <ListItemIcon>
-                            <InboxIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Inbox" />
-                    </ListItem>
-                    <Divider />
-                    <ListItem button>
-                        <ListItemIcon>
-                            <DraftsIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Drafts" />
-                    </ListItem>
-                </List></div>
-                </SwipeableDrawer>
+                    onClose={this.toggleDrawerMenu}
+                    className={classes.listwrap}
+                />
             </div>
         );
     }

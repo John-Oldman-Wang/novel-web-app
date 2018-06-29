@@ -1,10 +1,13 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
+// import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
-import Card, { CardActions, CardContent, CardMedia } from 'material-ui/Card';
-import Button from 'material-ui/Button';
-import Typography from 'material-ui/Typography';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+// import Button from 'material-ui/Button';
+import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
     card: {
@@ -21,7 +24,7 @@ const styles = theme => ({
     },
     media: {
         height: 0,
-        paddingTop: '100%', // 16:9
+        paddingTop: '120%', // 1:1
     },
     author:{
         textAlign: `right`,
@@ -29,29 +32,29 @@ const styles = theme => ({
     },
     action:{
         justifyContent: 'flex-end',
-        padding: `4px`
+        padding: `2px`
     }
 });
 function ColumbCard(props) {
     const { classes,onClick,image,title,author } = props
-    return (<Card className={classes.card}>
+    return (<Card onClick={onClick} className={classes.card}>
         <CardMedia
             className={classes.media}
             image={image||"https://qidian.qpic.cn/qdbimg/349573/23813/180"}
             title={title || 'title'}
         />
         <CardContent className={classes.content}>
-            <Typography noWrap variant="title" component="h3">
+            <Typography noWrap variant="body1" component="h5">
                 {title||'title'}
             </Typography>
-            <Typography noWrap align="right" color="textSecondary" component="p">
+            <Typography noWrap variant="caption" align="right" color="textSecondary" component="p">
                 {author || 'author'}
             </Typography>
         </CardContent>
         <CardActions className={classes.action}>
-            <Button onClick={onClick} className={classes.btn} variant="raised" size="small" color="primary">
+            {/* <Button  className={classes.btn} variant="raised" size="small" color="primary">
                 阅读
-            </Button>
+            </Button> */}
         </CardActions>
     </Card>)
 }

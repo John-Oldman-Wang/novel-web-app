@@ -1,4 +1,24 @@
+/*import fetch from 'cross-fetch';
+import localForage from "localforage";
+
+function isNeedCache (){
+    return false
+}
+function req(...arg){
+    const { url } = arg
+    if(isNeedCache(...arg)){
+        return fetch(url).then(res=>{
+            return res.json()
+        }).then(json=>{
+            return res.json()
+            return json
+        })
+    }
+}*/
+
+
 var req = Symbol('request')
+
 var u = Symbol('requestUrl')
 var s = Symbol('successCallBack')
 var e = Symbol('errorCallBack')

@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
-import { withStyles } from 'material-ui/styles';
-import Paper from 'material-ui/Paper';
-import Typography from 'material-ui/Typography';
+// import { Link } from 'react-router-dom'
+import { withStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 
-import Button from 'material-ui/Button';
+import Button from '@material-ui/core/Button';
 import SpeedMenu from '../comps/SpeedMenu.jsx'
 
 const styles = (theme)=>({
@@ -35,8 +35,39 @@ class Chapter extends Component {
         window.c = this
     }
     render() {
-        const { classes, index } = this.props
-        const { novel, chapter } = (this.props.novelChapter || {})
+        const { classes, index, novel, chapter, getChapter, getNovel } = this.props
+        console.log('chapter', novel,chapter)
+        // if(novel.item){}
+        var query = (function (search) {
+            if (search == '') {
+                return {}
+            } else {
+                var str = search.replace(/^\?/, '').replace(/=/g, '":"').replace(/\&/g, '","')
+                str = '{"' + str + '"}'
+                return JSON.parse(str)
+            }
+        })(this.props.location.search)
+        if(chapter.error){
+            return <h1>{chapter.error.message}</h1>
+        }
+        if(chapter.loading){
+            return <h1>loading</h1>
+        }
+        if(Object.keys(chapter.item)==0){
+            getChapter(query.c||'')
+            return <h1>loading</h1>
+        }
+        if(chapter.item._id !== query.c){
+            getChapter(query.c||'')
+            return <h1>loading</h1>
+        }
+        if(!novel.error&&!novel.loading&&Object.keys(novel.item)==0){
+            Promise.resolve().then(()=>{
+                getNovel(chapter.item.novel_id)
+            })
+        }
+        const chapterItem = chapter.item
+        const novelItem = novel.item
         return (
             <React.Fragment>
                 <div className={classes.root}>
@@ -45,16 +76,16 @@ class Chapter extends Component {
                             display: `flex`,
                             justifyContent: ``
                         }}>
-                            <Button className={classes.button}>{novel.title ? `《${novel.title}》` : ""}</Button>
+                            <Button className={classes.button}>{novelItem.title?`《${novelItem.title}》`: ""}</Button>
                             <Typography style={{
                                 lineHeight: `44px`,
                                 fontWeight: 900,
                                 boxShadow: `none`
                             }} component="h5">
-                                {chapter.title || ""}
+                                {chapterItem.title || ""}
                             </Typography>
                         </div>
-                        {(chapter.paragraphs || []).map((item, index) => {
+                        {(chapterItem.paragraphs || []).map((item, index) => {
                             return (<Typography key={index} className={classes.textIndent} component="p">
                                 {item}
                             </Typography>)

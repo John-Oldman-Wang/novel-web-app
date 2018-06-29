@@ -8,3 +8,5 @@ dist
 /crawler
 /ssr
 .cache
+.DS_Store
+.vscode/
