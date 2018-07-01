@@ -9,7 +9,9 @@ const isDataRequest = function (req) {
 }
 
 const isBrowserRequest = (req)=>{
-    return req.headers["user-agent"]&&!String(req.headers["user-agent"]).includes('python')&&!String(req.url).includes('.php');
+    const url = String(req.url)
+    const reg = /(\..*\.)|(\/.*\/)/g
+    return req.headers["user-agent"] && !String(req.headers["user-agent"]).includes('python') && !url.includes('.php') && !url.includes('.asp') && !url.includes('.action') && !url.includes('.txt')&&!reg.test(url);
 }
 
 module.exports = function (app) {
