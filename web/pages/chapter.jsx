@@ -36,8 +36,6 @@ class Chapter extends Component {
     }
     render() {
         const { classes, index, novel, chapter, getChapter, getNovel } = this.props
-        console.log('chapter', novel,chapter)
-        // if(novel.item){}
         var query = (function (search) {
             if (search == '') {
                 return {}
@@ -54,20 +52,35 @@ class Chapter extends Component {
             return <h1>loading</h1>
         }
         if(Object.keys(chapter.item)==0){
-            getChapter(query.c||'')
+            Promise.resolve().then(()=>{
+                getChapter(query.c||'')
+            })
             return <h1>loading</h1>
         }
         if(chapter.item._id !== query.c){
-            getChapter(query.c||'')
+            Promise.resolve().then(() => {
+                getChapter(query.c||'')
+            })
             return <h1>loading</h1>
         }
         if(!novel.error&&!novel.loading&&Object.keys(novel.item)==0){
             Promise.resolve().then(()=>{
                 getNovel(chapter.item.novel_id)
             })
+            return null;
         }
+        console.log('chapter all render')
         const chapterItem = chapter.item
         const novelItem = novel.item
+        let serial;
+        let chapters = (novelItem.chapters||[])
+        for(let i=0; i<chapters.length; i++){
+            if (chapters[i].chapter_id == chapterItem._id){
+                serial=i;
+                break;
+            }
+        }
+
         return (
             <React.Fragment>
                 <div className={classes.root}>
@@ -92,20 +105,17 @@ class Chapter extends Component {
                         })}
                     </Paper>
                     <SpeedMenu onClick={(item) => {
-                        if (index == undefined) {
+                        if(item.name == 'Prev'){
+                            serial != 0 && this.props.history.push(`/chapter?c=${novelItem.chapters[serial - 1].chapter_id}`)
+                            return 
+                        }
+                        if (item.name == 'Next'){
+                            serial != novelItem.chapters.length && this.props.history.push(`/chapter?c=${novelItem.chapters[serial + 1].chapter_id}`)
                             return
                         }
-                        if (item.name == "Prev") {
-                            if (index == 0) {
-                                return
-                            }
-                            this.props.history.push(`/chapter?c=${novel.chapters[index - 1].chapter_id}`)
-                        } else if (item.name == "Next") {
-                            var chapters = novel.chapters
-                            if (index == chapters.length - 1) {
-                                return
-                            }
-                            this.props.history.push(`/chapter?c=${chapters[index + 1].chapter_id}`)
+                        if (item.name == 'Home'){
+                            this.props.history.push(`/`)
+                            return
                         }
                     }} />
                 </div>
