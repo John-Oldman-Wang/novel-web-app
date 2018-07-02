@@ -27,7 +27,7 @@ ssrServer.get('/',function(req,res,next){
 })
 
 ssrServer.use(express.static(path.join(__dirname, '../../dist'),{
-    maxAge: process..env.NODE_ENV=='production'?'1d':0
+    maxAge: process.env.NODE_ENV=='production'?'1d':0
 }))
 
 ssrServer.use(function (req, res) {

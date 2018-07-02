@@ -69,11 +69,7 @@ class DrawerMenu extends React.PureComponent{
         return (<Drawer 
             anchor="left"
             open={open}
-            onClose={()=>{
-                onClose();
-                var ele = document.body;
-                ele.ontouchmove = ele.onscroll= ele.onmousewheel = null;
-            }}
+            onClose={onClose}
         ><div className={className}>
         <div className={classes.margin}>
             <Grid container spacing={8} alignItems="flex-end">
