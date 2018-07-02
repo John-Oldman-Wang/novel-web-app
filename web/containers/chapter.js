@@ -26,7 +26,7 @@ const mapDispatchToProps = (dispatch, props) => {
                     })
                 }).catch(err=>{
                     dispatch({
-                        type: `FETCH_CHAPTER_SUCCESS`,
+                        type: `FETCH_CHAPTER_ERROR`,
                         data: err
                     })
                 })
