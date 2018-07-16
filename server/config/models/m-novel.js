@@ -3,19 +3,21 @@ mongoose.Promise = Promise
 var Schema = mongoose.Schema;
 
 var novelSchema = new Schema({
-	title: String,
-	author: String,
-	category: String,
-	smallCategory:String,
-	shortintroduction: String,
-	introduction: String,
-	lastUpdateTime: Date,
-	state: String,
-	year: Number,
-	image: String,
-	heat: Number,
-	href: String,
-	isMale:Boolean,
+	title: String, // 小说标题
+	titleWords: [String], // 小说标题文字数组
+	author: String, // 小说作者
+	categorys: [String], // 小说所在类别数组
+	category: String, // 小说主要属于的类别
+	smallCategory:String, // 小说次要属于的类别
+	shortintroduction: String, // 小说简短介绍
+	introduction: String, // 小说完整介绍
+	lastUpdateTime: Date, // 小说最后更新时间
+	state: String, // 小说状态
+	year: Number, // 小说年份
+	image: String, // 小说图片地址
+	heat: Number, // 小说观看人数
+	href: String, // 小说源地址
+	isMale:Boolean, // 是否是男性小说
 	chapters: [{
 		title: String,
 		serialName: String,
@@ -41,6 +43,9 @@ novelSchema.pre('save', function (next) {
 	}
 	else {
 		this.meta.updateAt = Date.now()
+	}
+	if(!this.titleWords || this.titleWords.length==0){
+		this.titleWords = this.title.split('');
 	}
 	if ('chapters' in this && this.chapters.length != this.chapterNumber) {
 		this.chapterNumber = this.chapters.length
