@@ -78,11 +78,14 @@ function filterNovelPage({
     // 小说作者
     novel.author = $('.book-info').find('h1').find('a').text().trim()
 
+    var state = $(".book-info").find(".blue").eq(0).text().trim()
+    novel.state = ['连载', '完本'].includes(state) ? state : '未知'
     // 小说分类
     novel.categorys = []
     $(".book-info").find(".red").each(function (index, ele) {
         novel.categorys.push($(this).text())
     })
+    novel.categorys = [...new Set(novel.categorys)]
     novel.category = $(".book-info").find(".red").eq(0).text()
     novel.smallCategory = $(".book-info").find(".red").eq($(".book-info").find(".red").length > 1 ? 1 : 0).text()
     // 小说简短介绍
@@ -215,10 +218,15 @@ async function crawlerOnelist(listurl) {
     // forEach urls of novel pages get novel massge and chapter page url
     for (let i = 0; i < (novelUrls.length); i++) {
         const novelJson = await crawlerOneNovel(novelUrls[i])
-        let _novel = new Novel(novelJson)
-        let novel = await _novel.save()
 
-        console.log(`${novel.title}: ${novel._id} 保存成功`)
+        if (novelJson.chapters.length > 0) {
+            let _novel = new Novel(novelJson)
+            let novel = await _novel.save()
+            console.log(`${novel.title}: ${novel._id} 保存成功`)
+        }else{
+            console.log(`${novelJson.title}: 无章节不保存`)
+        }
+
     }
     console.log(`循环爬去小说信息结束`)
 }
@@ -237,11 +245,13 @@ async function crawlerChapterOfOneNovelInDatabase(skip = 0) {
     }).skip(skip);
     console.log(`${novel.title} 需要爬去章节`)
     const chapters = novel.chapters;
-    const chapterUrls = chapters.map(item=>item.href);
+    const chapterUrls = chapters.map(item => item.href);
     // 先查数据已经保存的此校说的章节
     const chaptersInDB = await Chapter.find({
         // novel_id: novel._id,
-        href: {$in: chapterUrls}
+        href: {
+            $in: chapterUrls
+        }
     });
     console.log(`${novel.title}在数据库里面已经有了${chaptersInDB.length}章节`)
     chaptersInDB.forEach(c => {
@@ -277,9 +287,9 @@ async function crawlerChapterOfAllNovelInDatabase() {
     console.log(`${sectionLength} * ${sectionCount}`)
     for (var i = 0; i < sectionCount; i++) {
         var pros = [];
-        
+
         for (j = i * sectionLength; j < i * sectionLength + sectionLength && j < count; j++) {
-            pros.push(crawlerChapterOfOneNovelInDatabase(j%5))
+            pros.push(crawlerChapterOfOneNovelInDatabase(j % 5))
         }
         console.log(`组织${pros.length}个`)
         await Promise.all(pros)
@@ -316,7 +326,7 @@ mongoose.connect(dburl, {
 }).then(() => {
     console.log('关闭数据库')
     mongoose.connection.close()
-}).catch(() => {
+}).catch((err) => {
     mongoose.connection.close()
     // throw err;
     console.log(`=>main error`, err.message)
