@@ -7,27 +7,15 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/Inbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
+import GroupIcon from '@material-ui/icons/Group';
+import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
+import ChromeReaderModeIcon from '@material-ui/icons/ChromeReaderMode';
 import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Search from '@material-ui/icons/Search';
 
 import category from '../json/category.json';
-
-
-// the body of document scroll event
-// const stopPropagationDefaultFun = (e)=>{
-//     return true
-//     if(e.target!==document.body){
-//         return true
-//     }
-//     e.preventDefault();
-// 	e.stopPropagation();
-//     return true;
-// 	// return false;
-// }
 
 
 const styles = (theme)=>({
@@ -51,19 +39,6 @@ class DrawerMenu extends React.PureComponent{
             categoryOpen: false
         }
     }
-    // shouldComponentUpdate(nextprops,nextstate){
-    //     const flag = !(Object.keys(this.props).every(item=>{
-    //         return this.props[item] == nextprops[item]
-    //     })&&Object.keys(this.state).every(item=>{
-    //         return this.state[item] == nextstate[item]
-    //     }))
-    //     console.log('flag', flag)
-    //     return flag
-    //     // console.log(this.props,nextprops);
-    //     // console.log(this.props.classes == nextprops.classes)
-    //     // console.log(this.state,nextstate)
-    //     // return true
-    // }
     render(){
         const { open, onClose, className, classes } = this.props;
         return (<Drawer 
@@ -90,7 +65,7 @@ class DrawerMenu extends React.PureComponent{
                 })
             }} button>
                 <ListItemIcon>
-                    <DraftsIcon />
+                    <LibraryBooksIcon />
                 </ListItemIcon>
                 <ListItemText primary="小说分类" />
             </ListItem>
@@ -103,7 +78,7 @@ class DrawerMenu extends React.PureComponent{
                         return (
                             <ListItem className={classes.categoryItem}  key={index+''+item.num} button>
                                 <Avatar>
-                                    <InboxIcon />
+                                    <ChromeReaderModeIcon />
                                 </Avatar>
                                 <ListItemText primary={`${item.category}`} secondary={`${item.num}本`} />
                             </ListItem>
@@ -114,9 +89,9 @@ class DrawerMenu extends React.PureComponent{
             <Divider/>
             <ListItem button>
                 <ListItemIcon>
-                    <DraftsIcon />
+                    <GroupIcon />
                 </ListItemIcon>
-                <ListItemText primary="Drafts" />
+                <ListItemText primary="开发人员" />
             </ListItem>
         </List></div></Drawer>)
     }
