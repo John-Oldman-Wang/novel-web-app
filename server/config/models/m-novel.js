@@ -76,6 +76,28 @@ novelSchema.statics = {
 	},
 	random: function(count,cb){
 		return this.find({}, { href: 0, chapters: 0, meta: 0 }).skip(Math.random()*1000|0).limit(count).exec(cb)
+	},
+	search: function(qArray,page){
+		return Promise.all([this.count({
+			titleWords: {
+				$all: qArray
+			}
+		}),
+		this.find({
+			titleWords: {
+				$all: qArray
+			}
+		}, {
+			href: 0,
+			chapters: 0,
+			meta: 0
+		}).skip(page*10-10).limit(10)]).then(result=>{
+			return {
+				count: result[0],
+				data: result[1],
+				page
+			}
+		})
 	}
 }
 
