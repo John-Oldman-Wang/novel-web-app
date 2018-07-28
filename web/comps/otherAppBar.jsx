@@ -55,9 +55,9 @@ class OtherAppBar extends React.Component {
         }
     }
     handleChange(e) {
-        this.setState({
-            isLogin: !this.state.isLogin
-        })
+        // this.setState({
+        //     isLogin: !this.state.isLogin
+        // })
     }
     render() {
         const { classes, title } = this.props;

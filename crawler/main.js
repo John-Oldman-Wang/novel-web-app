@@ -8,26 +8,18 @@ const Chapter = require('../server/config/models/m-chapter')
 
 mongoose.Promise = Promise
 
-const currentUrl = 'https://www.qidian.com/free/all?orderId=&vip=hidden&style=1&pageSize=20&siteid=1&pubflag=0&hiddenField=1&page='
+const {
+    dbUrl
+} = require('../server/config/config')
 
-var dburl = "mongodb://localhost:27017/novel"
+// 小说列表页面的 模板地址
 
-
-const novelListUrl = []
-
-for (let i = 0; i < 100; i++) {
-    novelListUrl.push(`${currentUrl}${i + 1}`)
-}
-
-// function fetchNovelListPage(url) {
-//     return fetch(url).then(async function (res) {
-//         const body = await res.text();
-//         return {
-//             href: res.url,
-//             body
-//         }
-//     })
-// }
+/**
+ * @param {Object} args
+ * @param {String} args.href 小说列表页面的地址
+ * @param {String} args.body 此小说列表内容
+ * @returns {String[]}
+ */
 
 
 function filterNovelListPage({
@@ -48,9 +40,11 @@ function filterNovelListPage({
 }
 
 /**
- * @param href 小说页面地址
- * @param body 小说页面内容
- * @param json 小说章节的json数据
+ * @param {Object} args
+ * @param {String} args.href 小说页面地址
+ * @param {String} args.body 小说页面内容
+ * @param {String} args.json 小说章节的json数据
+ * @returns {Obejct}
  */
 
 function filterNovelPage({
@@ -78,11 +72,14 @@ function filterNovelPage({
     // 小说作者
     novel.author = $('.book-info').find('h1').find('a').text().trim()
 
+    var state = $(".book-info").find(".blue").eq(0).text().trim()
+    novel.state = ['连载', '完本'].includes(state) ? state : '未知'
     // 小说分类
     novel.categorys = []
     $(".book-info").find(".red").each(function (index, ele) {
         novel.categorys.push($(this).text())
     })
+    novel.categorys = [...new Set(novel.categorys)]
     novel.category = $(".book-info").find(".red").eq(0).text()
     novel.smallCategory = $(".book-info").find(".red").eq($(".book-info").find(".red").length > 1 ? 1 : 0).text()
     // 小说简短介绍
@@ -152,7 +149,9 @@ function filterNovelPage({
 }
 
 /**
- * @param body 章节页面内容
+ * 
+ * @param {String} body 章节页面内容
+ * @returns {Object} 小说一章需要包含的信息
  */
 
 function filterChapterPage(body) {
@@ -167,24 +166,11 @@ function filterChapterPage(body) {
 }
 
 
-async function crawlerOneNovel(novelUrl) {
-    //
-    const bookid = novelUrl.replace(/^[^\r\n\d]*(\d+)/, '$1')
-
-    const [novelRes, json] = await Promise.all([fetch(novelUrl), fetch(`https://book.qidian.com/ajax/book/category?_csrfToken=SKHlNkcNlKF1jse9Y2wX0dlX9TILo7LcecsatsDp&bookId=${bookid}`).then(res => {
-        return res.json()
-    })])
-    const href = novelRes.url
-    const body = await novelRes.text();
-    const novelJson = filterNovelPage({
-        href,
-        body,
-        json
-    })
-    return novelJson;
-}
-
-
+/**
+ * 
+ * @param {String} listurl 小说列表页的地址
+ * @return {null}
+ */
 async function crawlerOnelist(listurl) {
     // fetch nove list page
     const listRes = await fetch(listurl)
@@ -215,14 +201,46 @@ async function crawlerOnelist(listurl) {
     // forEach urls of novel pages get novel massge and chapter page url
     for (let i = 0; i < (novelUrls.length); i++) {
         const novelJson = await crawlerOneNovel(novelUrls[i])
-        let _novel = new Novel(novelJson)
-        let novel = await _novel.save()
 
-        console.log(`${novel.title}: ${novel._id} 保存成功`)
+        if (novelJson.chapters.length > 0) {
+            let _novel = new Novel(novelJson)
+            let novel = await _novel.save()
+            console.log(`${novel.title}: ${novel._id} 保存成功`)
+        } else {
+            console.log(`${novelJson.title}: 无章节不保存`)
+        }
+
     }
     console.log(`循环爬去小说信息结束`)
 }
 
+/**
+ * @param {String} novelUrl 单个小说地址
+ * @return {Object} 一部小说需要包含的信息
+ */
+async function crawlerOneNovel(novelUrl) {
+    //
+    const bookid = novelUrl.replace(/^[^\r\n\d]*(\d+)/, '$1')
+
+    const [novelRes, json] = await Promise.all([fetch(novelUrl), fetch(`https://book.qidian.com/ajax/book/category?_csrfToken=SKHlNkcNlKF1jse9Y2wX0dlX9TILo7LcecsatsDp&bookId=${bookid}`).then(res => {
+        return res.json()
+    })])
+    const href = novelRes.url
+    const body = await novelRes.text();
+    const novelJson = filterNovelPage({
+        href,
+        body,
+        json
+    })
+    return novelJson;
+}
+
+
+/**
+ * 
+ * @param {String} chapterUrl 章节页面的地址
+ * @returns {Object} 一个章节需要包含的信息
+ */
 async function crawlerOneChapter(chapterUrl) {
     let chapterContext = await fetch(chapterUrl).then(res => {
         return res.text()
@@ -230,6 +248,10 @@ async function crawlerOneChapter(chapterUrl) {
     return filterChapterPage(chapterContext)
 }
 
+/**
+ * 
+ * @param {Number} skip 查询时需要跳过的数目
+ */
 async function crawlerChapterOfOneNovelInDatabase(skip = 0) {
     // console.log(`skip ${skip}`)
     const novel = await Novel.findOne({
@@ -237,11 +259,13 @@ async function crawlerChapterOfOneNovelInDatabase(skip = 0) {
     }).skip(skip);
     console.log(`${novel.title} 需要爬去章节`)
     const chapters = novel.chapters;
-    const chapterUrls = chapters.map(item=>item.href);
+    const chapterUrls = chapters.map(item => item.href);
     // 先查数据已经保存的此校说的章节
     const chaptersInDB = await Chapter.find({
         // novel_id: novel._id,
-        href: {$in: chapterUrls}
+        href: {
+            $in: chapterUrls
+        }
     });
     console.log(`${novel.title}在数据库里面已经有了${chaptersInDB.length}章节`)
     chaptersInDB.forEach(c => {
@@ -266,6 +290,7 @@ async function crawlerChapterOfOneNovelInDatabase(skip = 0) {
     console.log(`${novel.title} 爬完章节`)
 }
 
+
 async function crawlerChapterOfAllNovelInDatabase() {
     // 爬去 已经在数据库里面 但是 还没有章节 的小说 的章节,更新数据库的 小说的章节信息 并且 保存 章节
     const count = await Novel.count({
@@ -277,9 +302,9 @@ async function crawlerChapterOfAllNovelInDatabase() {
     console.log(`${sectionLength} * ${sectionCount}`)
     for (var i = 0; i < sectionCount; i++) {
         var pros = [];
-        
+
         for (j = i * sectionLength; j < i * sectionLength + sectionLength && j < count; j++) {
-            pros.push(crawlerChapterOfOneNovelInDatabase(j%5))
+            pros.push(crawlerChapterOfOneNovelInDatabase(j % 5))
         }
         console.log(`组织${pros.length}个`)
         await Promise.all(pros)
@@ -289,6 +314,12 @@ async function crawlerChapterOfAllNovelInDatabase() {
 
 async function crawlerNewNovel() {
     // 爬去新小说
+    const currentUrl = 'https://www.qidian.com/free/all?orderId=&vip=hidden&style=1&pageSize=20&siteid=1&pubflag=0&hiddenField=1&page=';
+    const novelListUrl = [];
+
+    for (let i = 0; i < 100; i++) {
+        novelListUrl.push(`${currentUrl}${i + 1}`);
+    }
     var sectionLength = 5;
     var sectionCount = Math.ceil(novelListUrl.length / sectionLength);
     for (var i = 0; i < sectionCount; i++) {
@@ -301,22 +332,94 @@ async function crawlerNewNovel() {
 
 }
 
+async function updatgeNovelInDatabase() {
+    const count = await Novel.count({
+        state: {
+            $not: new RegExp('完本')
+        }
+    })
+    console.log(`有${count}本小说需要检查更新`);
+    const needUpdateNovels = await Novel.find({
+        state: {
+            $not: new RegExp('完本')
+        }
+    }).limit(1)
+    for (let _novel of needUpdateNovels) {
+        let novelJson = await crawlerOneNovel(_novel.href);
+        diffNovel(_novel, novelJson);
+        // _novel.chapters.forEach(chapter => {
+        //     // console.log(chapter.title)
+        // })
+        // delete novelJson.chapters;
+        // console.log(_novel.title);
+        // console.log(novelJson);
+    }
+}
 
+/**
+ * 
+ * @param {Object} _novel 数据库里面小说文档对象
+ * @param {Object} novelJson 重新爬去到的小说对象
+ * @returns {Boolean} 是否改变了数据库文档对象的属性
+ */
+function diffNovel(_novel, novelJson) {
+    if (_novel.title != novelJson.title) {
+        return false;
+    }
+    let chaptersJson = novelJson.chapters;
+    delete novelJson.chapters;
+    Object.assign(_novel, novelJson);
 
-mongoose.connect(dburl, {
+    if (_novel.chapters.length == chaptersJson.length) {
+        return true;
+    }
+    if (_novel.chapters.length > chaptersJson.length) {
+        throw new Error(`此小说出错:${_novel.title}`);
+    }
+
+    if (_novel.chapters.length < chaptersJson.length) {
+        for (let i = 0; i < _novel.chapters.length; i++) {
+            if (chaptersJson[i].href != _novel.chapters[i].href) {
+                throw new Error(`此小说有问题:${_novel.title}`);
+            }
+        }
+    }
+    _novel.chapters = _novel.chapters.concat(chaptersJson.slice(_novel.chapters.length));
+    return true;
+    // let keys = Obejct.keys(_novel);
+    // let needUpdate = false;
+    // for (let key in keys) {
+    //     if (typeof _novel[key] == 'string' && _novel[key].length < novelJson[key].length) {
+    //         needUpdate = true;
+    //         break;
+    //     }
+    //     if (typeof _novel[key] == 'number' && _novel[key] < novelJson[key]) {
+    //         needUpdate = true;
+    //         break;
+    //         return 
+    //     }
+    //     if(typeof _novel[key]=='object'){
+
+    //     }
+    // }
+}
+
+mongoose.connect(dbUrl, {
     useMongoClient: true,
 }).then(async function () {
+    // 这里是入口
     console.log('=>开始爬')
-    await crawlerNewNovel()
+    // await crawlerNewNovel()
 
-    await crawlerChapterOfAllNovelInDatabase()
+    // await crawlerChapterOfAllNovelInDatabase()
 
+    await updatgeNovelInDatabase()
     console.log('=>爬完了')
     return true
 }).then(() => {
     console.log('关闭数据库')
     mongoose.connection.close()
-}).catch(() => {
+}).catch((err) => {
     mongoose.connection.close()
     // throw err;
     console.log(`=>main error`, err.message)
