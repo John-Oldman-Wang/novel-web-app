@@ -11,11 +11,11 @@
     "start:react": "webpack --watch --config ./webpack.config.js",
     "dev:react": "webpack --watch --config ./webpack.config.js",
     "build:react": "node ./webpack.pro.build.js",
-    "start:vue": "webpack --watch --config ./webpack.config.js",
-    "dev:vue": "webpack --watch --config ./webpack.config.js",
+    "start:vue": "webpack --watch --config ./webpack.config.vue.js",
+    "dev:vue": "webpack --watch --config ./webpack.config.vue.js",
     "build:vue": "node ./webpack.pro.build.js",
-    "start:ng": "webpack --watch --config ./webpack.config.js",
-    "dev:ng": "webpack --watch --config ./webpack.config.js",
+    "start:ng": "webpack --watch --config ./webpack.config.angular.js",
+    "dev:ng": "webpack --watch --config ./webpack.config.angular.js",
     "build:ng": "node ./webpack.pro.build.js"
   },
   "nodemonConfig": {
