@@ -2,6 +2,7 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
+import CircularProgress from '@material-ui/core/CircularProgress';
 import IndexAppBar from '../comps/indexAppBar.jsx'
 import ColumnCard from '../comps/columnCard.jsx'
 
@@ -33,7 +34,7 @@ class Index extends React.Component {
         if (error) {
             content = <div>Error! {error.message}</div>;
         } else if (loading) {
-            content = <div>Loading...</div>;
+            content = <div style={{flex: '1'}}><CircularProgress style={{display: 'block',margin: `0 auto`}}/></div>;
         } else {
             content = <Grid className={classes.content} container spacing={16}>
                 {data.map((item, index) => {
@@ -55,4 +56,4 @@ class Index extends React.Component {
     }
 }
 
-export default withStyles(styles)(Index)
+export default withStyles(styles)(Index);
