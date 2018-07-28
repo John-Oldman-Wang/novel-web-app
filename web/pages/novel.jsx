@@ -49,11 +49,11 @@ class Novel extends Component {
                 content = (<RowCard onClick={null} title={novel.title} author={novel.author} image={novel.image} category={novel.category} />);
             } else if (!flag) {
                 content = (<RowCard onClick={() => {
-                    this.props.history.push(`chapter/?c=${novel.chapters[0]._id}`)
+                    this.props.history.push(`chapter?c=${novel.chapters[0].chapter_id}`)
                 }} title={novel.title} author={novel.author} image={novel.image} category={novel.category} />);
             } else {
                 content = (<RowCard onClick={() => {
-                    this.props.history.push(`chapter/?c=${novel.chapters[0]._id}`)
+                    this.props.history.push(`chapter?c=${novel.chapters[0].chapter_id}`)
                 }} title={novel.title} author={novel.author} image={novel.image} category={novel.category} />);
             }
         } else {
@@ -64,7 +64,7 @@ class Novel extends Component {
                 content = (<RowCard onClick={null} title={novel.title} author={novel.author} image={novel.image} category={novel.category} />);
             }else {
                 content = (<RowCard onClick={() => {
-                    this.props.history.push(`chapter/?c=${novel.chapters[0]._id}`)
+                    this.props.history.push(`chapter?c=${novel.chapters[0].chapter_id}`)
                 }} title={novel.title} author={novel.author} image={novel.image} category={novel.category} smallCategory={novel.smallCategory}/>);
             }
             if (Object.keys(novel) == 0 || !flag) {

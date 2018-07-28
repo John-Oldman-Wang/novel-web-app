@@ -68,7 +68,7 @@ function RowCard(props) {
                 </CardContent>
                 <div className={classes.controls}>
                     <Button onClick={onClick} className={classes.btn} size="small" color="primary">
-                        {onClick ?"继续阅读":""}
+                        {onClick ?"开始阅读":""}
                     </Button>
                     <StarBorder />
                 </div>
