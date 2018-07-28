@@ -4,11 +4,19 @@
   "description": "novel web app",
   "main": "app.js",
   "scripts": {
-    "start": "npm run server&&npm run dev",
     "server": "nodemon ./server/app.js",
+    "start": "webpack --watch --config ./webpack.config.js",
+    "dev": "webpack --watch --config ./webpack.config.js",
     "build": "node ./webpack.pro.build.js",
-    "dev": "webpack --watch",
-    "webpack": "webpack --watch"
+    "start:react": "webpack --watch --config ./webpack.config.js",
+    "dev:react": "webpack --watch --config ./webpack.config.js",
+    "build:react": "node ./webpack.pro.build.js",
+    "start:vue": "webpack --watch --config ./webpack.config.js",
+    "dev:vue": "webpack --watch --config ./webpack.config.js",
+    "build:vue": "node ./webpack.pro.build.js",
+    "start:ng": "webpack --watch --config ./webpack.config.js",
+    "dev:ng": "webpack --watch --config ./webpack.config.js",
+    "build:ng": "node ./webpack.pro.build.js"
   },
   "nodemonConfig": {
     "ignore": [
