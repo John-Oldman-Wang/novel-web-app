@@ -10,7 +10,7 @@ const Chapter = require('./config/models/m-chapter.js')
 const Logger = require('./config/models/m-logger.js')
 const { port, dbUrl } = require('./config/config.js') 
 
-function App(){
+function App(port){
     const app = express()
     app.set('view engine', 'ejs')
     app.set('views', './config/views')
@@ -43,7 +43,7 @@ if(process.env.NODE_ENV === 'production'){
             useMongoClient: true,
         }, function () {
             console.log(`connect mongo ok!`);
-            App();
+            App(80);
         })
         console.log(`工作进程 ${process.pid} 已启动`);
     }
@@ -52,7 +52,7 @@ if(process.env.NODE_ENV === 'production'){
         useMongoClient: true,
     }, function () {
         console.log(`connect mongo ok!`);
-        App();
+        App(port);
         console.log(`开发服务已经启动`);
     })
 }
