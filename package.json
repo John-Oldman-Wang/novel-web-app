@@ -8,15 +8,7 @@
     "start": "webpack --watch --config ./webpack.config.js",
     "dev": "webpack --watch --config ./webpack.config.js",
     "build": "node ./webpack.pro.build.js",
-    "start:react": "webpack --watch --config ./webpack.config.js",
-    "dev:react": "webpack --watch --config ./webpack.config.js",
-    "build:react": "node ./webpack.pro.build.js",
-    "start:vue": "webpack --watch --config ./webpack.config.vue.js",
-    "dev:vue": "webpack --watch --config ./webpack.config.vue.js",
-    "build:vue": "node ./webpack.pro.build.js",
-    "start:ng": "webpack --watch --config ./webpack.config.angular.js",
-    "dev:ng": "webpack --watch --config ./webpack.config.angular.js",
-    "build:ng": "node ./webpack.pro.build.js"
+    "prettier": "pretty-quick --staged"
   },
   "nodemonConfig": {
     "ignore": [
@@ -33,6 +25,11 @@
   ],
   "author": "wanglin",
   "license": "ISC",
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run prettier"
+    }
+  },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
@@ -60,11 +57,14 @@
     "ejs": "^2.5.7",
     "express": "^4.16.1",
     "express-session": "^1.15.6",
+    "husky": "^1.3.1",
     "install": "^0.12.1",
     "localforage": "^1.7.2",
     "moment": "^2.19.3",
     "mongoose": "^4.11.13",
     "npm": "^6.1.0",
+    "prettier": "^1.15.3",
+    "pretty-quick": "^1.8.0",
     "react": "^15.4.0 || ^16.0.0",
     "react-dom": "^15.4.0 || ^16.0.0",
     "react-redux": "^5.0.7",
