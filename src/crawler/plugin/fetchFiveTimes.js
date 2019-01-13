@@ -1,5 +1,3 @@
 const fetchTimes = require('./fetchTimes');
 
-
-
-module.exports = fetchTimes(5)
+module.exports = fetchTimes(5);
