@@ -8,7 +8,8 @@ const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 
 const dev = process.env.NODE_ENV !== 'production';
-const { port, dbUrl } = require('./server/config/index.js');
+const port = process.env.PORT || 8080;
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/novel';
 
 async function App(dev, port) {
     const app = next({ dir: path.resolve(__dirname, './client'), dev });
@@ -46,7 +47,7 @@ async function App(dev, port) {
         return handle(req, res);
     });
 
-    server.listen(port, (err) => {
+    server.listen(port, dev ? '0.0.0.0' : '127.0.0.1', (err) => {
         if (err) throw err;
         if (dev) {
             console.log(`> Ready on http://localhost:${port}`);

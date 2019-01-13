@@ -11,7 +11,7 @@ function create(initialState) {
         connectToDevTools: process.browser,
         ssrMode: !process.browser,
         link: new HttpLink({
-            uri: process.env.NODE_ENV !== 'production' ? 'http://localhost:8080/graphql' : 'http://localhost/graphql',
+            uri: process.env.NODE_ENV === 'production' ? `${process.env.SERVER_URI}/graphql` : 'http://localhost:8080/graphql',
             credentials: 'same-origin'
         }),
         cache: new InMemoryCache().restore(initialState || {})
