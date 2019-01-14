@@ -10,6 +10,7 @@ const numCPUs = require('os').cpus().length;
 const dev = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 8080;
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/novel';
+const connectMongoConfig = require('./server/config/connectMongo.config');
 
 async function App(dev, port) {
     const app = next({ dir: path.resolve(__dirname, './client'), dev });
@@ -19,7 +20,7 @@ async function App(dev, port) {
         app.prepare(),
         mongoose.connect(
             dbUrl,
-            { useNewUrlParser: true }
+            connectMongoConfig
         )
     ]);
 
