@@ -34,9 +34,10 @@ class Index extends React.Component {
                 </div>
             );
         } else {
+            const { randomNovels } = data;
             content = (
                 <Grid className={classes.content} container spacing={16}>
-                    {data.randomNovels.map((item, index) => {
+                    {randomNovels.map((item, index) => {
                         return (
                             <Grid key={index} item lg={2} md={3} xs={4}>
                                 <Link href={{ pathname: '/novel', query: { id: item._id } }}>

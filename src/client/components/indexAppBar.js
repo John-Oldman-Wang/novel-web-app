@@ -59,14 +59,16 @@ class IndexAppBar extends React.Component {
             <div className={classes.root}>
                 <AppBar position="static">
                     <Toolbar>
-                        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-                            <MenuIcon
-                                onClick={() => {
-                                    this.setState({
-                                        open: true
-                                    });
-                                }}
-                            />
+                        <IconButton
+                            onClick={() => {
+                                this.setState({
+                                    open: true
+                                });
+                            }}
+                            className={classes.menuButton}
+                            color="inherit"
+                            aria-label="Menu">
+                            <MenuIcon />
                         </IconButton>
                         <Typography align="center" variant="h6" color="inherit" className={classes.flex}>
                             Woeble阅读

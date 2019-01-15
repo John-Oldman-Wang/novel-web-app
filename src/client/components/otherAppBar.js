@@ -65,27 +65,31 @@ class OtherAppBar extends React.Component {
             <div className={classes.root}>
                 <AppBar position="static">
                     <Toolbar>
-                        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-                            <HomeIcon
-                                onClick={() => {
-                                    this.props.router.push({
-                                        pathname: '/'
-                                    });
-                                }}
-                            />
+                        <IconButton
+                            onClick={() => {
+                                this.props.router.push({
+                                    pathname: '/'
+                                });
+                            }}
+                            className={classes.menuButton}
+                            color="inherit"
+                            aria-label="Menu">
+                            <HomeIcon />
                         </IconButton>
                         <Typography noWrap variant="h6" color="inherit" className={classes.flex}>
                             {title || '...'}
                         </Typography>
                         <div>
-                            <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-                                <MenuIcon
-                                    onClick={() => {
-                                        this.setState({
-                                            open: true
-                                        });
-                                    }}
-                                />
+                            <IconButton
+                                onClick={() => {
+                                    this.setState({
+                                        open: true
+                                    });
+                                }}
+                                className={classes.menuButton}
+                                color="inherit"
+                                aria-label="Menu">
+                                <MenuIcon />
                             </IconButton>
                             {!isLogin ? (
                                 <Button

@@ -1,27 +1,29 @@
 const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-require('dotenv').config();
 const Dotenv = require('dotenv-webpack');
 const withOffline = require('next-offline');
-
 const config = withOffline({});
+
+const dev = process.env.NODE_ENV !== 'production';
+
 const webpackFn = config.webpack;
 
 config.webpack = function(...arg) {
     const [, { isServer }] = arg;
     const result = webpackFn.apply(this, arg);
     if (!isServer) {
-        // env
-        result.plugins = result.plugins || [];
-        result.plugins = [
-            ...result.plugins,
+        if (!dev) {
+            result.plugins = result.plugins || [];
+            result.plugins = [
+                ...result.plugins,
 
-            // Read the .env file
-            new Dotenv({
-                path: path.join(__dirname, '.env'),
-                systemvars: true
-            })
-        ];
+                // Read the .env file
+                new Dotenv({
+                    path: path.join(__dirname, '.env'),
+                    systemvars: true
+                })
+            ];
+        }
         // UglifyJsPlugin
         result.optimization.minimizer = [
             new UglifyJsPlugin({
