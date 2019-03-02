@@ -10,12 +10,10 @@ export default class MyDocument extends Document {
                 pageContext = props.pageContext;
                 return <Component {...props} />;
             };
-
             return WrappedComponent;
         });
 
         let css;
-        // It might be undefined, e.g. after an error.
         if (pageContext) {
             css = pageContext.sheetsRegistry.toString();
         }
@@ -23,24 +21,16 @@ export default class MyDocument extends Document {
         return {
             ...page,
             pageContext,
-            // Styles fragment is rendered after the app and page rendering finish.
             styles: (
                 <React.Fragment>
-                    <style
-                        id="jss-server-side"
-                        // eslint-disable-next-line react/no-danger
-                        dangerouslySetInnerHTML={{ __html: css }}
-                    />
+                    <style id="jss-server-side" dangerouslySetInnerHTML={{ __html: css }} />
                     {flush() || null}
                 </React.Fragment>
             )
         };
-        // const initialProps = await Document.getInitialProps(ctx);
-        // return { ...initialProps };
     }
 
     render() {
-        // const { pageContext } = this.props;
         return (
             <html>
                 <Head>
